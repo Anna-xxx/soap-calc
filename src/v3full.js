@@ -1,0 +1,353 @@
+const DB=__DB__;
+const OILS=DB.oils, ACIDS=DB.acids;
+const byName=Object.fromEntries(OILS.map(o=>[o.n,o]));
+const POTS=[["Свой вес",0],["Котёл 12л (без крышки)",2077],["Кастрюля нерж 6л",1390],["Кастрюля белая эмаль",809],["Миска оранж",300],["Миска белая",430],["Кастрюля 1.5 л",436],["Кастрюля 2.0 л",520]];
+const FA=[["Лауриновая",.119,.205],["Миристиновая",.077,.152],["Пальмитиновая",.046,.097],["Стеариновая",.029,.07],["Олеиновая",.042,.08],["Линолевая",.066,.10],["Эруковая",.016,.027],["Рицинолевая",.25,.43],["Линоленовая",.26,.4446]];
+
+const $=id=>document.getElementById(id);
+const nf2=new Intl.NumberFormat('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});
+const nf3=new Intl.NumberFormat('ru-RU',{minimumFractionDigits:3,maximumFractionDigits:3});
+const nf0=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0});
+const ok=x=>Number.isFinite(x);
+const g=x=>ok(x)?nf2.format(x):'—';
+const pc=(x,d=2)=>ok(x)?new Intl.NumberFormat('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d}).format(x*100)+'%':'—';
+const v=id=>{const x=parseFloat(String($(id).value).replace(',','.'));return ok(x)?x:0};
+const div=(a,b)=>b?a/b:NaN;
+function kv(el,rows){
+  $(el).innerHTML=rows.filter(Boolean).map(([k,val,sub,hl])=>`<div class="${hl?'hl':''}"><dt>${k}${sub?`<small>${sub}</small>`:''}</dt><dd>${val}</dd></div>`).join('');
+}
+function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,1800)}
+
+// ---------- state ----------
+const SAMPLE={name:'Пример: хозяйственное',mode:'direct',oils:[
+  {n:'Говяжий жир',ph:'core',fa:0,mzs:450},{n:'Свиное сало',ph:'core',fa:0,mzs:200},
+  {n:'Кокосовое масло',ph:'glue',fa:0,mzs:250},{n:'Подсолнечное масло',ph:'glue',fa:0,mzs:100}],
+  adds:[{n:'Отдушка',p:1.5}],params:{cat:0,catkch:0,kch:70,kna:1.02,kk:1.04,share:100},sample:true};
+let S;
+function oilRow(o){const d=byName[o.n]||{};return {n:o.n||'',ph:o.ph||'core',fa:o.fa||0,mzs:o.mzs||0,
+  sap:o.sap??d.sapK??0,pke:o.pke??(d.pke!=null?d.pke*100:0),iod:o.iod??d.iod??0,titr:o.titr??d.titr??''}}
+function load(){
+  try{const s=JSON.parse(localStorage.getItem('soap.current'));if(s&&s.oils)return s}catch(e){}
+  return JSON.parse(JSON.stringify(SAMPLE));
+}
+function persist(){try{localStorage.setItem('soap.current',JSON.stringify(S))}catch(e){}}
+function saved(){try{return JSON.parse(localStorage.getItem('soap.saved'))||{}}catch(e){return{}}}
+
+// ---------- oils table ----------
+$('oil-names').innerHTML=OILS.map(o=>`<option value="${o.n}">${o.fav?'★ избранное':''}</option>`).join('');
+function renderOils(){
+  const tb=document.querySelector('#oils tbody');
+  tb.innerHTML=S.oils.map((o,i)=>`<tr data-i="${i}">
+    <td class="name" data-label="Сырьё"><input list="oil-names" data-k="n" value="${o.n.replace(/"/g,'&quot;')}" placeholder="Выберите масло" aria-label="Сырьё"></td>
+    <td data-label="Фаза"><select data-k="ph" aria-label="Фаза"><option value="core"${o.ph==='core'?' selected':''}>ядровая</option><option value="glue"${o.ph==='glue'?' selected':''}>клеевая</option></select></td>
+    <td class="w" data-label="ЖК, ${S.unit==='p'?'%':'г'}"><input class="n manual" type="number" step="any" data-k="fa" value="${disp(o.fa)}" aria-label="ЖК"></td>
+    <td class="w" data-label="МЖС, ${S.unit==='p'?'%':'г'}"><input class="n manual" type="number" step="any" data-k="mzs" value="${disp(o.mzs)}" aria-label="МЖС"></td>
+    <td class="p" data-label="ЧО"><input class="n" type="number" step="any" data-k="sap" value="${o.sap}" aria-label="ЧО"></td>
+    <td class="p" data-label="ПКЭ, %"><input class="n" type="number" step="any" data-k="pke" value="${o.pke}" aria-label="ПКЭ, %"></td>
+    <td class="p" data-label="Й"><input class="n" type="number" step="any" data-k="iod" value="${o.iod}" aria-label="Йодное число"></td>
+    <td class="p" data-label="Титр"><input class="n" type="number" step="any" data-k="titr" value="${o.titr}" aria-label="Титр"></td>
+    <td class="n" data-o="p" data-label="Доля"></td><td class="n" data-o="na" data-label="NaOH, г"></td><td class="n" data-o="k" data-label="KOH, г"></td>
+    <td class="del"><button class="btn ghost" type="button" data-del="${i}" aria-label="Удалить строку">✕</button></td></tr>`).join('');
+}
+document.querySelector('#oils tbody').addEventListener('input',e=>{
+  const tr=e.target.closest('tr');if(!tr)return;const i=+tr.dataset.i,k=e.target.dataset.k;const o=S.oils[i];
+  if(k==='n'){o.n=e.target.value;const d=byName[o.n];if(d){o.sap=d.sapK??0;o.pke=d.pke!=null?+(d.pke*100).toFixed(3):0;o.iod=d.iod??0;o.titr=d.titr??'';
+      tr.querySelector('[data-k=sap]').value=o.sap;tr.querySelector('[data-k=pke]').value=o.pke;tr.querySelector('[data-k=iod]').value=o.iod;tr.querySelector('[data-k=titr]').value=o.titr;}}
+  else if(k==='ph')o.ph=e.target.value;
+  else if(k==='titr')o.titr=e.target.value;
+  else if(k==='fa'||k==='mzs'){const x=parseFloat(e.target.value)||0;o[k]=S.unit==='p'?S.total*x/100:x}
+  else o[k]=parseFloat(e.target.value)||0;
+  S.sample=false;updSample();calc();
+});
+document.querySelector('#oils tbody').addEventListener('change',e=>{if(e.target.dataset.k==='ph'){S.oils[+e.target.closest('tr').dataset.i].ph=e.target.value;calc()}});
+document.querySelector('#oils tbody').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!=null){S.oils.splice(+d,1);renderOils();calc()}});
+$('add-oil').onclick=()=>{S.oils.push(oilRow({}));renderOils();calc();document.querySelector('#oils tbody tr:last-child input').focus()};
+
+// ---------- additives ----------
+function renderAdds(){
+  document.querySelector('#adds tbody').innerHTML=S.adds.map((a,i)=>`<tr data-i="${i}">
+   <td><input data-k="n" value="${(a.n||'').replace(/"/g,'&quot;')}" placeholder="Название" aria-label="Добавка"></td>
+   <td class="n"><input class="n manual" style="width:80px" type="number" step="any" data-k="p" value="${a.p}" aria-label="%"></td>
+   <td class="n" data-o="g"></td><td><button class="btn ghost" type="button" data-del="${i}" aria-label="Удалить">✕</button></td></tr>`).join('');
+}
+document.querySelector('#adds tbody').addEventListener('input',e=>{const i=+e.target.closest('tr').dataset.i,k=e.target.dataset.k;S.adds[i][k]=k==='n'?e.target.value:(parseFloat(e.target.value)||0);calc()});
+document.querySelector('#adds tbody').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!=null){S.adds.splice(+d,1);renderAdds();calc()}});
+$('add-add').onclick=()=>{S.adds.push({n:'',p:0});renderAdds();calc()};
+
+// ---------- params ----------
+const PARAMS=['cat','catkch','kch','kna','kk','share'];
+function setParams(){PARAMS.forEach(p=>$(p).value=S.params[p])}
+PARAMS.forEach(p=>$(p).addEventListener('input',()=>{S.params[p]=v(p);calc()}));
+function setMode(m,resetDefaults){
+  S.mode=m;$('m-direct').setAttribute('aria-pressed',m==='direct');$('m-indirect').setAttribute('aria-pressed',m==='indirect');
+  if(resetDefaults){Object.assign(S.params,m==='direct'?{kch:70,kna:1.02,kk:1.04}:{kch:60,kna:1.02,kk:1.111});setParams()}
+  document.querySelectorAll('#kch-fields .ind').forEach(e=>e.hidden=m!=='indirect');
+  document.querySelectorAll('#kch-fields .dir').forEach(e=>e.hidden=m!=='direct');
+  modeTexts();calc();
+}
+$('m-direct').onclick=()=>setMode('direct',true);
+$('m-indirect').onclick=()=>setMode('indirect',true);
+
+// ---------- calc ----------
+let R={};
+function calc(){
+  const P=S.params, ind=S.mode==='indirect';
+  let FA_=0,MZS=0,NA=0,K=0,core=0,glue=0;
+  S.oils.forEach(o=>{FA_+=o.fa;MZS+=o.mzs;const w=o.fa+o.mzs;NA+=o.sap/1.403*w;K+=o.sap*w;if(o.ph==='glue')glue+=w;else core+=w});
+  const O23=FA_+MZS;
+  let sapMix=0,pke=0,pkeNacl=0,iod=0,titr=0,titrW=0;
+  const props={hard:[0,0],clean:[0,0],cond:[0,0],bub:[0,0],cream:[0,0]};
+  const rows=document.querySelectorAll('#oils tbody tr');
+  const warns=[];
+  S.oils.forEach((o,i)=>{const w=o.fa+o.mzs,p=div(w,O23)||0;
+    sapMix+=o.sap*p;pke+=o.pke/100*p;pkeNacl+=o.pke/100*1.15*p;iod+=o.iod*p;
+    const t=parseFloat(o.titr);if(ok(t)){titr+=t*p;titrW+=p}
+    const d=byName[o.n];if(d)for(const k in props)if(d[k]!=null){props[k][0]+=d[k]*p;props[k][1]+=p}
+    if(w>0&&!o.pke)warns.push(o.n||'строка '+(i+1));
+    const tr=rows[i];if(tr){tr.querySelector('[data-o=p]').textContent=pc(p,1);tr.querySelector('[data-o=na]').textContent=g(o.sap/1.403*w);tr.querySelector('[data-o=k]').textContent=g(o.sap*w)}
+  });
+  $('oil-warn').textContent=warns.length?`Нет ПКЭ для: ${warns.join(', ')}. ПКЭ смеси занижена, вода по ПКЭ и размер дозы считаются неверно. Впишите ПКЭ вручную.`:'';
+  const C2=O23+P.cat;
+  const C6=MZS*0.95+FA_+P.cat*P.catkch/100;
+  const F24=NA*P.kna+NA*0.02, G24=K*P.kk+K*0.05;
+  const K22=pke,K23=pke*1.403,M22=pkeNacl,M23=pkeNacl/1.043;
+  const C7=K22?NA/((K22*100)-0.5)*100-(C2+NA):NaN;
+  const C8=K23?K/((K23*100)-0.5)*100-(C2+K):NaN;
+  const A47=div(C6,P.kch)*100;
+  const C14=A47/100*((100*K22)-0.5), C15=A47/100*((100*K23)-0.5);
+  const C16=C14>0?Math.ceil(F24/C14):NaN, C17=C15>0?Math.ceil(G24/C15):NaN;
+  const D16=C16?F24/C16/2:NaN, D17=C17?G24/C17/2:NaN;
+  const D20=C16>1?(F24-D16)/(C16-1):NaN, D21=C17>1?(G24-D17)/(C17-1):NaN;
+  const A48=A47-F24-C2, A49=A47-G24-C2;
+  R={FA_,MZS,O23,C2,C6,NA,K,F24,G24,K22,K23,M22,M23,sapMix,C7,C8,ind};
+
+  const P_=S.unit==='p';
+  $('t-fa').textContent=P_?pc(div(FA_,S.total)||0,1):g(FA_);$('t-mzs').textContent=P_?pc(div(MZS,S.total)||0,1):g(MZS);
+  if(!P_){S.total=+O23.toFixed(2);if(document.activeElement!==$('total'))$('total').value=S.total}
+  const sumP=div(O23,S.total)*100;
+  $('unit-note').className='note'+(P_&&Math.abs(sumP-100)>0.05?' bad':'');
+  $('unit-note').textContent=P_?(Math.abs(sumP-100)>0.05?`Сумма процентов ${nf2.format(sumP)}%, должна быть 100%.`:'Сумма 100%. Измените общий вес, и граммы пересчитаются.'):'Впишите другой общий вес, и все масла пересчитаются в той же пропорции.';$('t-sap').textContent=nf3.format(sapMix);
+  $('t-pke').textContent=pc(K22);$('t-iod').textContent=g(iod);$('t-titr').textContent=titrW?g(titr/titrW):'—';
+  $('t-p').textContent=pc(div(O23,O23)||0,0);$('t-naoh').textContent=g(NA);$('t-koh').textContent=g(K);
+
+  const tiles=[['Смесь, г',g(C2),'с катализатором'],['Жирн. кислот, г',g(C6),'МЖС × 0,95 + ЖК'],
+    ['NaOH, г',g(F24),'с Кщ и избытком','lye'],['KOH, г',g(G24),'с Кщ и избытком','lye'],
+    ['ПКЭ NaOH',pc(K22),'при 100 °С'],['Йодное число',g(iod),iod>55?'выше 55':'норма до 55']];
+  $('tiles').innerHTML=tiles.map(([l,val,u,c])=>`<div class="tile ${c||''}"><span class="l">${l}</span><span class="v">${val}</span><span class="u">${u}</span></div>`).join('');
+
+  const pr=k=>props[k][1]?props[k][0]/props[k][1]:NaN;
+  const bar=x=>ok(x)?`<span class="row" style="justify-content:flex-end;flex-wrap:nowrap"><span class="bar" style="width:90px"><i style="width:${Math.min(100,x)}%"></i></span>${nf0.format(x)}</span>`:'—';
+  kv('props',[['Твёрдость',bar(pr('hard'))],['Очищающие качества',bar(pr('clean'))],['Смягчающие качества',bar(pr('cond'))],['Пузыристость пены',bar(pr('bub'))],['Кремовость пены',bar(pr('cream'))],
+    ['Йодное число (устойчивость к прогорканию)',`${g(iod)} <span class="chip ${iod>55?'warn':'ok'}">${iod>55?'> 55':'≤ 55'}</span>`],
+    ['Титр жиров',titrW?g(titr/titrW)+' °С':'—','по маслам с известным титром'],
+    ['ЧО смеси жиров (KOH)',nf3.format(sapMix)]]);
+
+  kv('full',[['ЖК всего',g(C6)+' г','МЖС × 0,95 + ЖК + катализатор × КЧ'],
+    ['Щёлочь на омыление NaOH / KOH',`${g(NA)} / ${g(K)} г`],
+    ['NaOH итого с избытком',g(F24)+' г',`× Кщ ${P.kna} + 2%`,1],['KOH итого с избытком',g(G24)+' г',`× Кщ ${P.kk} + 5%`,1],
+    ['ПКЭ NaOH / KOH',`${pc(K22)} / ${pc(K23)}`],['ПКЭ NaCl / на KOH',`${pc(M22)} / ${pc(M23)}`],
+    ['Вода при омылении NaOH',g(C7)+' г','концентрация щёлочи = ПКЭ − 0,5%'],['Вода при омылении KOH',g(C8)+' г'],
+    ['Вес массы в котле, NaOH',g(C2+C7+F24)+' г'],['Вес массы в котле, KOH',g(C2+C8+G24)+' г']]);
+  kv('frac',[['Масса при желаемом КЧ',g(A47)+' г',`КЧ ${g(P.kch)}%`],
+    ['Макс. вес дозы NaOH',g(C14)+' г','с учётом ПКЭ'],['Макс. вес дозы KOH',g(C15)+' г'],
+    ['Количество внесений NaOH',ok(C16)?C16:'—'],['Первая доза NaOH',g(D16)+' г','половина средней дозы',1],['Последующие дозы NaOH, каждая',g(D20)+' г',null,1],
+    ['Количество внесений KOH',ok(C17)?C17:'—'],['Первая доза KOH',g(D17)+' г',null,1],['Последующие дозы KOH, каждая',g(D21)+' г',null,1],
+    ['Вода при дробном, NaOH',g(A47-C14-C2)+' г'],['Вода при дробном, KOH',g(A47-C15-C2)+' г'],
+    ['Вода по КЧ, NaOH',g(A48<F24?F24:A48)+' г'],['Вода по КЧ, KOH',g(A49<G24?G24:A49)+' г'],
+    ['Вес массы в котле',g(C2+(A47-C14-C2)+C14)+' г','при дробном внесении']]);
+
+  const salt=ind?C2*0.01:core*0.01+glue*0.04, alk=ind?C2*0.008:core*0.008+glue*0.032;
+  $('mob-rule').textContent=ind?'1,0% соли и 0,8% щёлочи от ядровой МЖС':'1% от ядровой + 4% от клеевой МЖС';
+  kv('mob',[['NaCl 20% р-р: соль',g(salt)+' г',null,1],['NaCl 20% р-р: вода',g(salt*4)+' г'],['NaOH/KOH 50% р-р: щёлочь',g(alk)+' г',null,1],['NaOH/KOH 50% р-р: вода',g(alk)+' г']]);
+  const sh=Math.min(100,Math.max(0,P.share))/100;
+  const W=[];
+  if(sh>0)W.push(['NaOH',F24*sh,'г','lye']);
+  if(sh<1)W.push(['KOH',G24*(1-sh),'г','lye']);
+  W.push(['Вода на омыление',sh>=.5?C7:C8,'г'],['Соль для подвижности',salt,'г'],['Щёлочь для подвижности',alk,'г','lye']);
+  $('weigh').innerHTML=W.map(([l,x,u,c])=>`<div class="${c||''}"><span class="l">${l}</span><span class="v">${g(x)}<small>${u}</small></span></div>`).join('');
+  kv('split',[['NaOH',pc(sh,0)+' → '+g(F24*sh)+' г',null,1],['KOH',pc(1-sh,0)+' → '+g(G24*(1-sh))+' г',null,1]]);
+
+  let ap=0;const arows=document.querySelectorAll('#adds tbody tr');
+  S.adds.forEach((a,i)=>{ap+=a.p;if(arows[i])arows[i].querySelector('[data-o=g]').textContent=g(O23*a.p/100)});
+  $('adds-p').textContent=pc(ap/100);$('adds-g').textContent=g(O23*ap/100);
+  R.addsG=O23*ap/100;
+
+  const carb=[['Na₂CO₃ 70%',F24*0.7*1.32,K22/0.474,(F24*0.7*1.32)/30*100-F24*0.7*1.32,'р-р 30%'],['NaOH 30%',F24*0.3,K22,C7*0.3,'*'],
+    ['K₂CO₃ 70%',G24*0.7*1.23,K23/0.55,(G24*0.7*1.23)/50*100-G24*0.7*1.23,'р-р 50%'],['KOH 30%',G24*0.3,K23,C8*0.3,'*']];
+  $('carb').innerHTML=carb.map(r=>`<tr><td>${r[0]}</td><td class="n">${g(r[1])}</td><td class="n">${pc(r[2])}</td><td class="n">${g(r[3])}</td><td>${r[4]}</td></tr>`).join('');
+
+  calcSalt();persist();
+}
+
+function calcSalt(){
+  const {C6,K22,K23,M22,M23,ind}=R;const P=S.params;
+  const mass=v('brutto')-v('tare');
+  const anNa=C6*1.08, anK=C6*1.14, wfNa=mass-anNa, wfK=mass-anK;
+  const keNa=div(v('ke-na'),wfNa), keK=div(v('ke-k'),wfK);
+  kv('mass',[['Вес массы в котле (нетто)',g(mass)+' г'],['Безводное мыло натровое',g(anNa)+' г','ЖК × 1,08'],['Безводное мыло калийное',g(anK)+' г','ЖК × 1,14'],
+    ['Водная фаза натровое',g(wfNa)+' г','масса в котле − безводное мыло'],['Водная фаза калийное',g(wfK)+' г'],
+    ['КЧ при варке (фактическое)',pc(div(C6,mass))]]);
+  const reqNa=v('ke-req-na')/100, reqK=v('ke-req-k')/100;
+  kv('ke',[['КЭ в водной фазе натр. (факт)',pc(keNa)],['КЭ в водной фазе кали. (факт)',pc(keK)],
+    ['Понижение КЭ: долить воды, натр.',g(v('ke-na')/(reqNa*100)*100-wfNa)+' мл',`до ${pc(reqNa)}`,1],
+    ['Понижение КЭ: долить воды, кали.',g(v('ke-k')/(reqK*100)*100-wfK)+' мл',`до ${pc(reqK)}`,1]]);
+  const sc=[['< 0,5%','стоит колом',0,.005],['0,5%','густая студнеобразная',.005,.0051],['0,5–1,0%','однородная подвижная',.0051,.01],['1,0–3,0%','высал. клей/ядро, мутнеет',.01,.03],['3,0–3,5%','щёлок/клей/ядро',.03,.035],['3,5% – ПКЭ','высаливание щёлок/ядро',.035,9]];
+  $('ke-scale').innerHTML=sc.map(s=>`<div class="${ok(keNa)&&v('ke-na')>0&&keNa>=s[2]&&keNa<s[3]?'on':''}"><b>${s[0]}</b>${s[1]}</div>`).join('');
+
+  $('salting-block').querySelector('h2').textContent=ind?'Полная высолка: расчёт ПКЭ от водной части':'Полная высолка';
+  const Kna=P.kna;
+  kv('salting',[['NaCl 20% р-р для натрового мыла',g(((keNa*1.15)*wfNa-M22*wfNa)/(M22-0.2))+' г','вес раствора; 1 часть = значение / 5',1],
+    ['NaOH 20% р-р для натрового мыла',g(((keNa*wfNa-K22*wfNa)/(K22-0.2))*Kna)+' г',null,1],
+    ['NaCl 20% р-р для калийного мыла',g(((keK*wfK-M23*wfK)/(M23-0.2))*1.043)+' г',null,1],
+    ['NaOH 20% р-р для калийного мыла',g(((keK*wfK-K23*wfK)/(K23-0.2))/1.403*Kna)+' г',null,1],
+    ['NaCl для натрового мыла, сухое в-во',g(wfNa/(100-(M22*100))*100-wfNa-v('ke-na'))+' г']]);
+
+  if(ind){
+    const core=v('w-core');
+    kv('kchout',[['Качественное число основы (итог.)',pc(div(C6-v('w-lye')*0.01-v('w-glue')*0.3,core)),'(ЖК − щёлок × 1% − клей × 30%) / вес ядра'],['Соль при растапливании ядра',core?g(core*0.004)+'–'+g(core*0.005)+' г':'—','0,4–0,5% от массы, если соли в ядре нет']]);
+  }else{
+    const fin=v('w-final'),kch=div(C6+v('w-sf')*0.95,fin);
+    kv('kchout',[['Качественное число готового мыла',pc(kch)+(ok(kch)?` <span class="chip ${kch>=0.74?'ok':kch>=0.64?'warn':'bad'}">${kch>=0.74?'туалетное по ГОСТ':kch>=0.64?'хозяйственное по ГОСТ':'ниже ГОСТ'}</span>`:''),'(ЖК + SF × 0,95) / вес перед разливом'],
+      ['Соль при растапливании ядра',fin?g(fin*0.004)+'–'+g(fin*0.005)+' г':'—','0,4–0,5% от массы, если соли в ядре нет'],
+      ['Доля безводного мыла NaOH',g(C6*1.08)+' г'],['Доля безводного мыла KOH',g(C6*1.14)+' г'],
+      ['Водная фаза и неомыленное, NaOH',g(fin-C6*1.08)+' г'],['Водная фаза и неомыленное, KOH',g(fin-C6*1.14)+' г']]);
+  }
+  const fm=v('fa-mass');const iNa=fm*v('fa-na')/100,iK=fm*v('fa-k')/100;
+  kv('free',[['Натровое: щёлочи в массе',g(iNa)+' г'],['Натровое: % в водной фазе',pc(div(iNa,wfNa),3)],['Калийное: щёлочи в массе',g(iK)+' г'],['Калийное: % в водной фазе',pc(div(iK,wfK),3)]]);
+  const exNa=mass*v('ff-na')/100, exK=mass*v('ff-k')/100;
+  kv('neut',[['Избыток NaOH',g(exNa)+' г'],['МЖС для нейтрализации NaOH',g(div(exNa,R.sapMix/1.403))+' г','избыток / (ЧО смеси / 1,403)',1],
+    ['Избыток KOH',g(exK)+' г'],['МЖС для нейтрализации KOH',g(div(exK,R.sapMix))+' г','избыток / ЧО смеси',1]]);
+}
+['brutto','tare','ke-na','ke-k','ke-req-na','ke-req-k','w-core','w-glue','w-lye','w-sf','w-final','fa-mass','fa-na','fa-k','ff-na','ff-k'].forEach(id=>$(id).addEventListener('input',calcSalt));
+$('pot').innerHTML=POTS.map((p,i)=>`<option value="${i}">${p[0]}${p[1]?' — '+nf0.format(p[1])+' г':''}</option>`).join('');
+$('pot').onchange=()=>{const p=POTS[+$('pot').value];if(p[1])$('tare').value=p[1];calcSalt()};
+
+// ---------- reference ----------
+function calcRef(){
+  const kt=v('cb-kt');const dNa=v('cb-na-v')*kt*0.021, dK=v('cb-k-v')*kt*0.028055;
+  const kNa=div(v('cb-na-w'),dNa),kK=div(v('cb-k-w'),dK);
+  kv('carbcheck',[['NaOH фактически',dNa?nf3.format(dNa)+' г':'—'],['Кщ NaOH',ok(kNa)?nf3.format(kNa):'—',null,1],['KOH фактически',dK?nf3.format(dK)+' г':'—'],['Кщ KOH',ok(kK)?nf3.format(kK):'—',null,1]]);
+  calcRef.k=[kNa,kK];
+  document.querySelectorAll('#sol tbody tr').forEach(tr=>{const [a,b,c]=[...tr.querySelectorAll('input')].map(i=>parseFloat(i.value)||0);
+    tr.querySelector('[data-o=s]').textContent=pc(div(a,a+b));tr.querySelector('[data-o=w]').textContent=c?g(a/(c/100)-a):'—'});
+  const m=v('dil-m'),a=v('dil-a'),b=v('dil-b');
+  kv('dil',[['Долить воды',b?g(m*a/b-m)+' мл':'—','для КЧ: долить 1%-го р-ра электролита',1],['Итого масса',b?g(m+m*a/b-m)+' г':'—']]);
+  let s=0,na=0,k=0;document.querySelectorAll('#pkefa tbody tr').forEach((tr,i)=>{const x=(parseFloat(tr.querySelector('input').value)||0)/100;s+=x;na+=FA[i][1]*x;k+=FA[i][2]*x});
+  $('pkefa-sum').textContent=pc(s,1);$('pkefa-na').textContent=pc(na);$('pkefa-k').textContent=pc(k);
+  kv('pkefa-nacl',[['ПКЭ NaCl',pc(na*1.15)]]);
+  const ac=ACIDS[+$('acid').value]||{},w=v('acid-w'),kk=(ac.sapK||0)*w;
+  kv('acidout',[['KOH на нейтрализацию',g(kk)+' г',`КЧ кислоты ${ac.sapK??'—'}`,1],['NaOH на нейтрализацию',g(kk/1.403)+' г',null,1],
+    ['Вес натровой соли',ac.ksNa?g(w*ac.ksNa)+' г':'—',ac.ksNa?`КС ${ac.ksNa}`:'КС не указан'],['Вес калийной соли',ac.ksK?g(w*ac.ksK)+' г':'—',ac.ksK?`КС ${ac.ksK}`:'']]);
+  kv('cv',[['NaOH из KOH',g(v('cv-k')/1.403)+' г'],['KOH из NaOH',g(v('cv-na')*1.403)+' г']]);
+}
+$('sol').querySelector('tbody').innerHTML=[['40% р-р NaOH',40],['40% р-р KOH',40],['20% р-р NaCl',20],['NaOH',''],['KOH',''],['NaCl','']].map((r,i)=>`<tr><td>${r[0]}</td>
+  <td class="n"><input class="n manual" style="width:80px" type="number" step="any" id="sol-a${i}" value="0" aria-label="Вес"></td>
+  <td class="n"><input class="n manual" style="width:80px" type="number" step="any" id="sol-b${i}" value="0" aria-label="Вода"></td>
+  <td class="n" data-o="s"></td><td class="n"><input class="n manual" style="width:64px" type="number" step="any" id="sol-c${i}" value="${r[1]}" aria-label="Нужно %"></td><td class="n" data-o="w"></td></tr>`).join('');
+$('pkefa').querySelector('tbody').innerHTML=FA.map((f,i)=>`<tr><td>${f[0]}</td><td class="n"><input class="n manual" style="width:80px" type="number" step="any" id="fa${i}" value="0" aria-label="Доля ${f[0]}"></td><td class="n">${pc(f[1],1)}</td><td class="n">${pc(f[2],1)}</td></tr>`).join('');
+$('acid').innerHTML=ACIDS.map((a,i)=>`<option value="${i}">${a.n}</option>`).join('');
+document.getElementById('step-ref').addEventListener('input',calcRef);
+document.getElementById('step-ref').addEventListener('change',calcRef);
+$('apply-k').onclick=()=>{const [a,b]=calcRef.k||[];let n=0;
+  if(ok(a)&&a>0){S.params.kna=+a.toFixed(3);n++}if(ok(b)&&b>0){S.params.kk=+b.toFixed(3);n++}
+  if(n){setParams();calc();toast('Кщ подставлены в рецепт')}else toast('Сначала впишите навеску и расход HCl')};
+
+// ---------- cost ----------
+let COST=[['Масла и жиры, кг',0,0,0],['Реактивы',0,0,0],['Эфирные',0,0,0],['Отдушки',0,0,0],['Травы, кг',0,0,0],['Экстракты',0,0,0],['Добавки',0,0,0],['Тара/упаковка',0,0,0],['Этикетки',0,0,0],['Электричество, часы',1,21,0],['Вода, литры',1000,60,0]];
+try{const c=JSON.parse(localStorage.getItem('soap.cost'));if(Array.isArray(c))COST=c}catch(e){}
+function renderCost(){
+  $('costs').querySelector('tbody').innerHTML=COST.map((r,i)=>`<tr data-i="${i}"><td><input data-c="0" value="${String(r[0]).replace(/"/g,'&quot;')}" aria-label="Статья"></td>
+  ${[1,2].map(c=>`<td class="n"><input class="n manual" style="width:90px" type="number" step="any" data-c="${c}" value="${r[c]}"></td>`).join('')}
+  <td class="n" data-o="u"></td><td class="n"><input class="n manual" style="width:90px" type="number" step="any" data-c="3" value="${r[3]}"></td><td class="n" data-o="t"></td>
+  <td><button class="btn ghost" type="button" data-del="${i}" aria-label="Удалить">✕</button></td></tr>`).join('');
+}
+function calcCost(){
+  let sum=0;document.querySelectorAll('#costs tbody tr').forEach((tr,i)=>{const r=COST[i];const u=div(r[2],r[1]);const t=ok(u)?u*r[3]:0;sum+=t;
+    tr.querySelector('[data-o=u]').textContent=ok(u)?g(u):'—';tr.querySelector('[data-o=t]').textContent=g(t)});
+  $('cost-sum').textContent=g(sum)+' ₽';const tot=sum*v('cost-k');
+  kv('costout',[['Итого с неучтёнными',g(tot)+' ₽',null,1],['Готовое мыло, за 1 кг',v('cost-kg')?g(tot/v('cost-kg'))+' ₽':'—'],['Себестоимость единицы товара',v('cost-packs')?g(tot/v('cost-packs'))+' ₽':'—',null,1]]);
+  try{localStorage.setItem('soap.cost',JSON.stringify(COST))}catch(e){}
+}
+$('costs').addEventListener('input',e=>{const tr=e.target.closest('tr');if(!tr||e.target.dataset.c==null)return;const c=+e.target.dataset.c;COST[+tr.dataset.i][c]=c?(parseFloat(e.target.value)||0):e.target.value;calcCost()});
+$('costs').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!=null){COST.splice(+d,1);renderCost();calcCost()}});
+$('add-cost').onclick=()=>{COST.push(['',0,0,0]);renderCost();calcCost()};
+['cost-k','cost-kg','cost-packs'].forEach(id=>$(id).addEventListener('input',calcCost));
+
+// ---------- saved recipes ----------
+function renderSaved(){const s=saved();$('recipe-list').innerHTML='<option value="">Сохранённые рецепты…</option>'+Object.keys(s).map(k=>`<option>${k.replace(/</g,'&lt;')}</option>`).join('')}
+$('save-recipe').onclick=()=>{const n=$('recipe-name').value.trim();if(!n){toast('Впишите название рецепта');$('recipe-name').focus();return}
+  const s=saved();S.name=n;S.sample=false;s[n]=JSON.parse(JSON.stringify(S));try{localStorage.setItem('soap.saved',JSON.stringify(s));toast('Сохранено в этом браузере')}catch(e){toast('Браузер не дал сохранить')}renderSaved();$('recipe-list').value=n;calc();updSample()};
+$('recipe-list').onchange=()=>{const n=$('recipe-list').value;if(!n)return;const r=saved()[n];if(!r)return;S=JSON.parse(JSON.stringify(r));boot()};
+$('del-recipe').onclick=()=>{const n=$('recipe-list').value;if(!n){toast('Выберите рецепт в списке');return}const s=saved();delete s[n];try{localStorage.setItem('soap.saved',JSON.stringify(s))}catch(e){}renderSaved();toast('Удалено')};
+$('recipe-name').addEventListener('input',e=>{S.name=e.target.value;persist()});
+function updSample(){$('sample-note').textContent=S.sample?'Сейчас открыт пример рецепта. Замените масла и веса на свои. ЖК — свободные жирные кислоты, МЖС — нейтральные жиры. ЧО, ПКЭ, Й и титр подставляются из базы, их можно поправить вручную.':'ЖК — свободные жирные кислоты, МЖС — нейтральные жиры. ЧО, ПКЭ, Й и титр подставляются из базы, их можно поправить вручную. Рецепт запоминается в этом браузере.'}
+
+// ---------- steps ----------
+function go(step){
+  document.querySelectorAll('.steps button').forEach(b=>{b.toggleAttribute('aria-current',b.dataset.step===step);if(b.dataset.step===step)b.setAttribute('aria-current','step')});
+  const n=+step;document.querySelectorAll('.steps button').forEach(b=>b.classList.toggle('done',n&&+b.dataset.step<n));
+  document.querySelectorAll('section.panel').forEach(s=>s.hidden=s.id!=='step-'+step);
+  try{localStorage.setItem('soap.step',step)}catch(e){}
+}
+document.querySelectorAll('.steps button').forEach(b=>b.onclick=()=>go(b.dataset.step));
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{go(b.dataset.go);document.querySelector('.wrap').scrollIntoView({block:'start'})});
+
+// ---------- glossary ----------
+const TERMS={
+  'Способ':'Прямой способ: все жиры омыляются вместе, высаливания нет, мыло после омыления разливают в формы. Косвенный: сначала омыляют ядровые жиры, делают высолку, отделяют ядро от щёлока, затем при необходимости второе омыление и шлифование.',
+  'Фаза':'Ядровые жиры (говяжий, свиной, пальмовое) дают твёрдое ядро. Клеевые (кокосовое, пальмоядровое, жидкие масла) плохо высаливаются. В прямом способе от этого зависит, сколько соли и щёлочи нужно для подвижности.',
+  'ЖК':'Свободные жирные кислоты, например стеариновая или олеиновая. Омыляются сразу и целиком считаются жирными кислотами.',
+  'МЖС':'Масложировая смесь: обычные (нейтральные) масла и жиры. В жирные кислоты пересчитываются с коэффициентом 0,95, потому что около 5% веса уходит в глицерин.',
+  'ЧО':'Число омыления: сколько граммов KOH нужно, чтобы омылить 1 г жира. Для NaOH число делят на 1,403. Пример: говяжий жир 0,200, значит на 100 г нужно 20 г KOH или 14,3 г NaOH.',
+  'ПКЭ':'Предельная концентрация электролита при 100 °С: сколько щёлочи или соли может быть в водной фазе, пока мыло ещё не высаливается. Воду считают так, чтобы раствор был на 0,5% слабее ПКЭ. Если у масла нет ПКЭ, впишите его вручную, иначе вода посчитается неверно.',
+  'Й':'Йодное число показывает, сколько в жире ненасыщенных кислот. Чем выше, тем мягче мыло и тем быстрее оно прогоркает. Для смеси оптимально до 55.',
+  'Титр':'Температура застывания жирных кислот, °С. Чем выше титр, тем твёрже мыло. По ГОСТ для мыла не ниже 35.',
+  'Кщ':'Коэффициент щёлочи: поправка на то, что часть щёлочи при хранении превратилась в карбонат и не работает. Определяется титрованием во вкладке «Справочник», там же кнопка подставляет результат в расчёт.',
+  'КЧ':'Качественное число: массовая доля жирных кислот в мыле, %. Чем выше, тем меньше воды и тем «плотнее» мыло. По ГОСТ туалетное мыло 74–78%, хозяйственное 64–70,5%. При варке массу обычно держат на 52–58%.',
+  'Доля':'Если варите на смеси NaOH и KOH, укажите, какую долю щёлочи даёт NaOH. 100% значит только NaOH, 0% только KOH.',
+  'Катализатор':'Спирт (предпочтительнее) или подмыльный клей с прошлых варок без соли. Ускоряет начало омыления. Если вносите клей, впишите его вес и КЧ, они войдут в расчёт жирных кислот.',
+  'Дробное':'Щёлочь вносится несколькими порциями. Макс. доза ограничена ПКЭ, чтобы масса не высолилась раньше времени. Первая порция в два раза меньше средней, чтобы омыление пошло мягко.',
+  'Подвижность':'Немного соли и щёлочи, чтобы масса была однородной и жидкой, а не стояла колом. Косвенный способ: 1% соли и 0,8% щёлочи от МЖС. Прямой: 1% и 0,8% от ядровых жиров плюс 4% и 3,2% от клеевых.',
+  'КЭ':'Концентрация электролитов: сколько щёлочи и соли растворено в водной фазе, %. Водная фаза = масса в котле минус безводное мыло. По КЭ видно, как ведёт себя масса: от «стоит колом» до разделения на ядро и щёлок.',
+  'Высолка':'Полная высолка: в массу добавляют соль или щёлочь, пока она не разделится на ядро (мыло сверху) и подмыльный щёлок (снизу). Отстаивать до затвердения ядра или 2–4 часа, щёлок слить через нижний кран.',
+  'Шлифование':'КЭ доводят до уровня, при котором масса делится на клей и ядро. Отстаивать при 80–99 °С от 12 до 36 часов. Удачно, если деление произошло, а проба ядра с фенолфталеином бесцветная или чуть розовая.',
+  'SF':'Пережир: масло, которое вносят в конце и которое остаётся неомылённым. Учитывается в КЧ готового мыла с коэффициентом 0,95.',
+  'ФФ':'Фенолфталеин: проба на свободную щёлочь. Малиновый цвет значит избыток щёлочи. По проценту избытка калькулятор считает, сколько жира добавить для нейтрализации.'
+};
+function openTerm(t){const s=$('sheet');$('sheet-t').textContent=t==='Способ'?'Способ варки':t;$('sheet-b').textContent=TERMS[t]||'';s.hidden=false;$('sheet-x').focus()}
+document.addEventListener('click',e=>{const q=e.target.closest('button.q');if(q&&q.dataset.t){e.preventDefault();openTerm(q.dataset.t)}});
+$('sheet-x').onclick=()=>$('sheet').hidden=true;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('sheet').hidden=true});
+$('gloss').innerHTML=Object.entries(TERMS).map(([k,t])=>`<div><dt>${k==='Способ'?'Способ варки':k==='Доля'?'Доля NaOH':k==='Дробное'?'Дробное внесение':k}</dt><dd>${t}</dd></div>`).join('');
+
+// ---------- per-mode instructions ----------
+function modeTexts(){
+  const ind=S.mode==='indirect';
+  $('todo-3').textContent=ind
+    ?'Растопите ядровые жиры, влейте воду по расчёту, введите катализатор. Вносите щёлочь полностью или порциями и варите до омыления. Взвесьте массу в котле и следите за концентрацией электролитов.'
+    :'Заложите в котёл все жиры по рецепту сразу, ядровые и клеевые. Влейте воду и щёлочь по расчёту, варите до полного омыления. Взвесьте массу и проверьте концентрацию электролитов: масса должна быть однородной и подвижной.';
+  $('todo-4').innerHTML=ind
+    ?'<p>Полная высолка: добавьте соль или щёлочь по расчёту ниже, пока масса не разделится на ядро и подмыльный щёлок. Отстаивайте до затвердения ядра или 2–4 часа и слейте щёлок через нижний кран.</p><p>При гарантированно чистом сырье для хозяйственного мыла можно сразу высолить на 2 фазы, клей и ядро (по сути шлифование). Тогда после удачного деления варка окончена.</p>'
+    :'<p>В прямом способе высолки нет: после омыления мыло разливают в формы. Этот этап пропускайте.</p><p>Расчёты ниже нужны для мраморного (эшвегерского) мыла, где перед разливом ставят такую концентрацию электролитов, чтобы мыло в форме само разделилось на ядро и клей.</p>';
+}
+
+function disp(x){return S.unit==='p'?(S.total?+(x/S.total*100).toFixed(2):0):x}
+function setUnit(u){
+  if(u==='p'){const s=S.oils.reduce((a,o)=>a+o.fa+o.mzs,0);if(s>0)S.total=+s.toFixed(2);}
+  S.unit=u;$('u-g').setAttribute('aria-pressed',u==='g');$('u-p').setAttribute('aria-pressed',u==='p');
+  document.querySelectorAll('#oils .u-lab').forEach((e,i)=>e.textContent=(i?'МЖС':'ЖК')+(u==='p'?', %':', г'));
+  $('total').value=S.total||0;renderOils();calc();
+}
+$('u-g').onclick=()=>setUnit('g');$('u-p').onclick=()=>setUnit('p');
+$('total').addEventListener('change',()=>{const t=v('total');if(!(t>0)){$('total').value=S.total;return}
+  const old=S.unit==='p'?S.total:S.oils.reduce((a,o)=>a+o.fa+o.mzs,0);
+  if(old>0){const f=t/old;S.oils.forEach(o=>{o.fa=+(o.fa*f).toFixed(2);o.mzs=+(o.mzs*f).toFixed(2)});S.adds=S.adds;}
+  S.total=t;S.sample=false;renderOils();calc();toast('Рецепт пересчитан на '+nf2.format(t)+' г')});
+function boot(){
+  S.oils=S.oils.map(oilRow);S.adds=S.adds||[];S.params=Object.assign({},SAMPLE.params,S.params||{});
+  $('recipe-name').value=S.sample?'':(S.name||'');
+  S.unit=S.unit||'g';S.total=S.total||S.oils.reduce((a,o)=>a+o.fa+o.mzs,0);setUnit(S.unit);renderAdds();setParams();setMode(S.mode||'direct',false);updSample();
+}
+S=load();boot();renderSaved();calcRef();renderCost();calcCost();
+try{const t=localStorage.getItem('soap.step');go(t&&document.getElementById('step-'+t)?t:'1')}catch(e){go('1')}
+</script>

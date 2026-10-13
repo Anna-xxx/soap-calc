@@ -1,0 +1,354 @@
+<div class="wrap">
+<header class="top">
+  <div style="display:grid;gap:8px">
+    <span class="eyebrow">Варка на ядро · по шаблону «Рассчёт варки»</span>
+    <h1>Расчёт варки мыла</h1>
+    <p class="sub">Пять этапов от рецепта до разлива в формы. На каждом этапе написано, что делать, а значок <span class="q static">?</span> объясняет термин. Все веса в граммах.</p>
+  </div>
+  <div class="mode">
+    <span class="note">Способ варки <button type="button" class="q" data-t="Способ">?</button></span>
+    <div class="seg" role="group" aria-label="Способ варки">
+      <button type="button" id="m-direct" aria-pressed="true">Прямой</button>
+      <button type="button" id="m-indirect" aria-pressed="false">Косвенный</button>
+    </div>
+  </div>
+</header>
+
+<div class="sticky">
+  <div class="tiles" id="tiles"></div>
+  <nav class="steps" aria-label="Этапы">
+    <button type="button" data-step="1" aria-current="step"><b><span>1</span></b>Рецепт</button>
+    <button type="button" data-step="2"><b><span>2</span></b>Щёлочь и вода</button>
+    <button type="button" data-step="3"><b><span>3</span></b>Омыление</button>
+    <button type="button" data-step="4"><b><span>4</span></b>Высолка</button>
+    <button type="button" data-step="5"><b><span>5</span></b>Готовое мыло</button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" data-step="ref" class="tool">Справочник</button>
+    <button type="button" data-step="cost" class="tool">Себестоимость</button>
+  </nav>
+</div>
+
+<!-- ============ 1 РЕЦЕПТ ============ -->
+<section class="panel" id="step-1">
+  <div class="todo">
+    <span class="big">1</span><h3>Этап 1 · что сделать</h3>
+    <p>Составьте масложировую смесь. Выберите масло из списка, впишите его вес в колонку <b>МЖС</b> (обычные масла и жиры) или <b>ЖК</b> (свободные кислоты, например стеариновая). Числа омыления, ПКЭ, йодное число и титр подставятся сами.</p>
+  </div>
+
+  <div class="block">
+    <header>
+      <h2>Масложировая смесь</h2>
+      <div class="row">
+        <input id="recipe-name" placeholder="Название рецепта" aria-label="Название рецепта" style="width:200px">
+        <select id="recipe-list" aria-label="Сохранённые рецепты" style="width:190px"></select>
+        <button class="btn" id="save-recipe" type="button">Сохранить</button>
+        <button class="btn ghost" id="del-recipe" type="button">Удалить</button>
+      </div>
+    </header>
+    <p class="note" id="sample-note"></p>
+    <div class="unitbar">
+      <div class="seg" role="group" aria-label="Как вводить масла">
+        <button type="button" id="u-g" aria-pressed="true">В граммах</button>
+        <button type="button" id="u-p" aria-pressed="false">В процентах</button>
+      </div>
+      <label class="f total" for="total">Общий вес смеси, г<input class="n manual" id="total" type="number" step="any" min="0"></label>
+      <p class="note" id="unit-note"></p>
+    </div>
+    <div class="scroll">
+      <table class="oils" id="oils">
+        <thead><tr>
+          <th>Сырьё</th><th>Фаза <button type="button" class="q" data-t="Фаза">?</button></th>
+          <th class="n"><span class="u-lab">ЖК, г</span> <button type="button" class="q" data-t="ЖК">?</button></th>
+          <th class="n"><span class="u-lab">МЖС, г</span> <button type="button" class="q" data-t="МЖС">?</button></th>
+          <th class="n">ЧО <button type="button" class="q" data-t="ЧО">?</button></th>
+          <th class="n">ПКЭ, % <button type="button" class="q" data-t="ПКЭ">?</button></th>
+          <th class="n">Й <button type="button" class="q" data-t="Й">?</button></th>
+          <th class="n">Титр <button type="button" class="q" data-t="Титр">?</button></th>
+          <th class="n">Доля</th><th class="n">NaOH, г</th><th class="n">KOH, г</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+        <tfoot><tr>
+          <td colspan="2">Итого</td><td class="n" id="t-fa" data-label="ЖК, г"></td><td class="n" id="t-mzs" data-label="МЖС, г"></td>
+          <td class="n" id="t-sap" data-label="ЧО смеси"></td><td class="n" id="t-pke" data-label="ПКЭ"></td><td class="n" id="t-iod" data-label="Й"></td><td class="n" id="t-titr" data-label="Титр"></td>
+          <td class="n" id="t-p" data-label="Доля"></td><td class="n" id="t-naoh" data-label="NaOH, г"></td><td class="n" id="t-koh" data-label="KOH, г"></td><td></td>
+        </tr></tfoot>
+      </table>
+    </div>
+    <div class="row"><button class="btn" id="add-oil" type="button">+ Добавить масло</button>
+      <span class="note">Серые поля вписываете вы, белые подставляются из базы, но их можно поправить.</span></div>
+    <datalist id="oil-names"></datalist>
+    <div class="warnbox" id="oil-warn"></div>
+  </div>
+
+  <div class="block">
+    <header><h2>Каким получится мыло</h2><span class="note">ориентировочно, по базе масел из шаблона</span></header>
+    <dl class="kv" id="props"></dl>
+  </div>
+  <div class="nextrow"><span></span><button class="btn primary" type="button" data-go="2">Дальше: щёлочь и вода →</button></div>
+</section>
+
+<!-- ============ 2 ЩЁЛОЧЬ ============ -->
+<section class="panel" id="step-2" hidden>
+  <div class="todo">
+    <span class="big">2</span><h3>Этап 2 · что сделать</h3>
+    <p>Проверьте <b>Кщ</b> своей щёлочи (вкладка «Справочник», титрование) и подготовьте растворы. Щёлочь можно влить сразу (<b>полное внесение</b>), тогда воды нужно больше, или частями (<b>дробное внесение</b>), тогда масса гуще и ближе к нужному КЧ. Сразу подготовьте соль и щёлочь для подвижности массы.</p>
+  </div>
+  <div class="block">
+    <h2>Параметры</h2>
+    <div class="fields">
+      <label class="f" for="kna">Кщ NaOH <button type="button" class="q" data-t="Кщ">?</button><input class="n manual" id="kna" type="number" step="any" value="1.02"></label>
+      <label class="f" for="kk">Кщ KOH<input class="n manual" id="kk" type="number" step="any" value="1.04"></label>
+      <label class="f" for="kch">Желаемое КЧ, % <button type="button" class="q" data-t="КЧ">?</button><input class="n manual" id="kch" type="number" step="any" value="70"></label>
+      <label class="f" for="share">Доля NaOH в смеси щелочей, % <button type="button" class="q" data-t="Доля">?</button><input class="n manual" id="share" type="number" step="any" value="100"></label>
+      <label class="f" for="cat">Катализатор, г <button type="button" class="q" data-t="Катализатор">?</button><input class="n manual" id="cat" type="number" step="any" value="0"></label>
+      <label class="f" for="catkch">КЧ катализатора, %<input class="n manual" id="catkch" type="number" step="any" value="0"></label>
+    </div>
+  </div>
+  <div class="block">
+    <header><h2>Что отвесить</h2><span class="note">для полного внесения щелочей; для дробного смотрите вариант Б ниже</span></header>
+    <div class="weigh" id="weigh"></div>
+  </div>
+  <div class="grid2">
+    <div class="block">
+      <header><h2>Вариант А · Полное внесение</h2></header>
+      <p class="note">Вся щёлочь сразу, воды столько, чтобы раствор был на 0,5% слабее ПКЭ и масса не высолилась раньше времени.</p>
+      <dl class="kv" id="full"></dl>
+    </div>
+    <div class="block">
+      <header><h2>Вариант Б · Дробное внесение</h2><button type="button" class="q" data-t="Дробное">?</button></header>
+      <p class="note">Щёлочь частями. Следующую порцию вносите, когда предыдущая омылилась.</p>
+      <dl class="kv" id="frac"></dl>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="block">
+      <header><h2>Подвижность массы</h2><button type="button" class="q" data-t="Подвижность">?</button></header>
+      <p class="note" id="mob-rule"></p>
+      <dl class="kv" id="mob"></dl>
+    </div>
+    <div class="block">
+      <header><h2>Две щёлочи</h2></header>
+      <p class="note">Если варите на смеси NaOH и KOH, вес делится по доле из параметров. Отдельного расчёта по двум щелочам нет, как и в шаблоне.</p>
+      <dl class="kv" id="split"></dl>
+    </div>
+  </div>
+  <details class="block more">
+    <summary><h2>Карбонатное омыление</h2><span class="note">если омыляете содой или поташом</span></summary>
+    <div class="scroll"><table><thead><tr><th>Реактив</th><th class="n">Вес, г</th><th class="n">ПКЭ</th><th class="n">Вода, г</th><th>Р-р</th></tr></thead><tbody id="carb"></tbody></table></div>
+    <p class="note">Воду для 30% растворов щёлочи можно долить на глаз.</p>
+  </details>
+  <div class="nextrow"><button class="btn" type="button" data-go="1">← Рецепт</button><button class="btn primary" type="button" data-go="3">Дальше: омыление →</button></div>
+</section>
+
+<!-- ============ 3 ОМЫЛЕНИЕ ============ -->
+<section class="panel" id="step-3" hidden>
+  <div class="todo">
+    <span class="big">3</span><h3>Этап 3 · что сделать</h3>
+    <p id="todo-3"></p>
+    <p>Соль вводите, когда омылено около 50% сырья: она уменьшает гидролиз мыла.</p>
+  </div>
+  <div class="grid2">
+    <div class="block">
+      <h2>Взвесьте массу в котле</h2>
+      <div class="fields">
+        <label class="f" for="pot">Котёл<select id="pot"></select></label>
+        <label class="f" for="tare">Вес тары, г<input class="n manual" id="tare" type="number" step="any" value="0"></label>
+        <label class="f" for="brutto">Вес с массой (брутто), г<input class="n manual" id="brutto" type="number" step="any" value="0"></label>
+      </div>
+      <dl class="kv" id="mass"></dl>
+    </div>
+    <div class="block">
+      <header><h2>Концентрация электролитов</h2><button type="button" class="q" data-t="КЭ">?</button></header>
+      <p class="note">Впишите, сколько граммов электролита (щёлочь и соль) сейчас в водной фазе, по анализу или по вашему учёту внесённого.</p>
+      <div class="fields">
+        <label class="f" for="ke-na">КЭ, г (натровое)<input class="n manual" id="ke-na" type="number" step="any" value="0"></label>
+        <label class="f" for="ke-k">КЭ, г (калийное)<input class="n manual" id="ke-k" type="number" step="any" value="0"></label>
+        <label class="f" for="ke-req-na">Нужная КЭ, % (натр.)<input class="n manual" id="ke-req-na" type="number" step="any" value="1"></label>
+        <label class="f" for="ke-req-k">Нужная КЭ, % (кали.)<input class="n manual" id="ke-req-k" type="number" step="any" value="1"></label>
+      </div>
+      <h3>Как ведёт себя масса</h3>
+      <div class="scale" id="ke-scale"></div>
+      <dl class="kv" id="ke"></dl>
+    </div>
+  </div>
+  <div class="block">
+    <header><h2>Свободная щёлочь</h2><span class="note">по результатам анализа</span></header>
+    <div class="fields">
+      <label class="f" for="fa-mass">Масса для анализа, г<input class="n manual" id="fa-mass" type="number" step="any" value="0"></label>
+      <label class="f" for="fa-na">Натровое, % в массе<input class="n manual" id="fa-na" type="number" step="any" value="0"></label>
+      <label class="f" for="fa-k">Калийное, % в массе<input class="n manual" id="fa-k" type="number" step="any" value="0"></label>
+    </div>
+    <dl class="kv" id="free"></dl>
+    <p class="note">Массу не изменять после замера до следующего анализа.</p>
+  </div>
+  <div class="nextrow"><button class="btn" type="button" data-go="2">← Щёлочь и вода</button><button class="btn primary" type="button" data-go="4">Дальше: высолка →</button></div>
+</section>
+
+<!-- ============ 4 ВЫСОЛКА ============ -->
+<section class="panel" id="step-4" hidden>
+  <div class="todo">
+    <span class="big">4</span><h3>Этап 4 · что сделать</h3>
+    <div id="todo-4"></div>
+  </div>
+  <div class="alert">Перед отстаиванием доведите массу до кипения и дайте хорошо прокипеть во всей толще. Так электролит распределится равномерно, хлопья разобьются, ядро отдаст больше воды и КЧ будет выше.</div>
+  <div class="grid2">
+    <div class="block" id="salting-block">
+      <header><h2>Полная высолка</h2><button type="button" class="q" data-t="Высолка">?</button></header>
+      <p class="note">Растворы 20%: 1 часть вещества и 4 части воды. Значения ниже — вес раствора. Расчёт берёт массу и КЭ из этапа 3.</p>
+      <dl class="kv" id="salting"></dl>
+    </div>
+    <div class="block">
+      <header><h2>КЭ для частичной высолки и шлифования</h2><button type="button" class="q" data-t="Шлифование">?</button></header>
+      <p class="note">«Справочник» Товбина, для рецептов около 80% ядровых и 20% клеевых жиров.</p>
+      <div class="scroll"><table><thead><tr><th>КЧ массы</th><th class="n">КЭ в массе</th><th class="n">КЭ в водной фазе</th></tr></thead>
+      <tbody><tr><td>52–54%</td><td class="n">1,30%</td><td class="n">2,80%</td></tr><tr><td>54–56%</td><td class="n">1,00%</td><td class="n">2,20%</td></tr><tr><td>56–58%</td><td class="n">0,80%</td><td class="n">1,90%</td></tr></tbody></table></div>
+    </div>
+  </div>
+  <details class="block more">
+    <summary><h2>Если нужно: преснение и повторная высолка</h2></summary>
+    <p>Повторная полная или трёхфазная высолка делается после охлаждения и разогрева ядра, если ядро многоводное или в нём избыток электролитов. Трёхфазная лучше чистит от примесей и электролитов, но потери ЖК выше.</p>
+    <p>Преснение: добавить немного 3% щёлочи и сильно кипятить, пока не осядет пена. Цель — отбелить ядро и убрать многоводность. После него может понадобиться трёхфазная высолка. <b>Постоянно мешать, мыло может безвозвратно пригореть.</b></p>
+  </details>
+  <div class="nextrow"><button class="btn" type="button" data-go="3">← Омыление</button><button class="btn primary" type="button" data-go="5">Дальше: готовое мыло →</button></div>
+</section>
+
+<!-- ============ 5 ГОТОВОЕ ============ -->
+<section class="panel" id="step-5" hidden>
+  <div class="todo">
+    <span class="big">5</span><h3>Этап 5 · что сделать</h3>
+    <p>Растопите ядро, введите добавки и разлейте мыло в формы. Перед разливом взвесьте массу, чтобы узнать итоговое КЧ. В товарное ядро при растапливании нужна соль около 0,4–0,5% от массы, если её там нет: это защищает мыло от закисления.</p>
+  </div>
+  <div class="grid2">
+    <div class="block">
+      <header><h2>Качественное число</h2><button type="button" class="q" data-t="КЧ">?</button></header>
+      <div class="fields" id="kch-fields">
+        <label class="f ind" for="w-core">Вес ядра, г<input class="n manual" id="w-core" type="number" step="any" value="0"></label>
+        <label class="f ind" for="w-glue">Вес подмыльного клея, г<input class="n manual" id="w-glue" type="number" step="any" value="0"></label>
+        <label class="f ind" for="w-lye">Вес 1-го подмыльного щёлока, г<input class="n manual" id="w-lye" type="number" step="any" value="0"></label>
+        <label class="f dir" for="w-sf">Пережир SF, г <button type="button" class="q" data-t="SF">?</button><input class="n manual" id="w-sf" type="number" step="any" value="0"></label>
+        <label class="f dir" for="w-final">Вес перед разливом, г<input class="n manual" id="w-final" type="number" step="any" value="0"></label>
+      </div>
+      <dl class="kv" id="kchout"></dl>
+    </div>
+    <div class="block">
+      <header><h2>Нейтрализация избытка щёлочи</h2><button type="button" class="q" data-t="ФФ">?</button></header>
+      <div class="fields">
+        <label class="f" for="ff-na">Проба ФФ, % NaOH<input class="n manual" id="ff-na" type="number" step="any" value="0"></label>
+        <label class="f" for="ff-k">Проба ФФ, % KOH<input class="n manual" id="ff-k" type="number" step="any" value="0"></label>
+      </div>
+      <dl class="kv" id="neut"></dl>
+      <p class="note">Масса берётся из этапа 3. Ориентиры пробы: более 0,3%, 0,2%, 0,1%, менее 0,1%.</p>
+    </div>
+  </div>
+  <div class="block">
+    <header><h2>Добавки и ароматы</h2><span class="note">% от веса МЖС, пережир сюда не вписывать</span></header>
+    <div class="scroll"><table id="adds"><thead><tr><th>Добавка</th><th class="n">%</th><th class="n">Вес, г</th><th></th></tr></thead><tbody></tbody>
+      <tfoot><tr><td>Итого</td><td class="n" id="adds-p"></td><td class="n" id="adds-g"></td><td></td></tr></tfoot></table></div>
+    <div class="row"><button class="btn" id="add-add" type="button">+ Добавка</button></div>
+  </div>
+  <div class="block">
+    <header><h2>Сверка с ГОСТ</h2></header>
+    <div class="scroll"><table><thead><tr><th>Показатель</th><th>Туалетное</th><th>Хозяйственное</th></tr></thead><tbody>
+      <tr><td>Массовая доля ЖК (КЧ)</td><td>от 74% до 78%, не менее</td><td>от 64% до 70,5%, не менее</td></tr>
+      <tr><td>Содопродукты (на Na₂O)</td><td>0,00–0,22%, не более</td><td>1,0%, не более</td></tr>
+      <tr><td>Титр застывания ЖК, °С</td><td>от 35 до 41, не менее</td><td>от 35 до 42, не менее</td></tr>
+      <tr><td>Соль</td><td>0,7%, не более</td><td>не регламентирует</td></tr>
+      <tr><td>Пенообразование</td><td>320–400 см³, не менее</td><td>не регламентирует</td></tr>
+      <tr><td>Свободная щёлочь</td><td>не регламентирует</td><td>0,15–0,2%, не выше</td></tr>
+    </tbody></table></div>
+    <p class="note">Плотность мыла около 1,192 г/см³: вес бруска ≈ длина × ширина × высота (см) × 1,192.</p>
+  </div>
+  <div class="nextrow"><button class="btn" type="button" data-go="4">← Высолка</button><button class="btn" type="button" data-go="cost">Посчитать себестоимость →</button></div>
+</section>
+
+<!-- ============ СПРАВОЧНИК ============ -->
+<section class="panel" id="step-ref" hidden>
+  <div class="grid2">
+    <div class="block">
+      <header><h2>Проверка щёлочи на карбонизацию</h2><button type="button" class="q" data-t="Кщ">?</button></header>
+      <p class="note">В 30 мл воды растворить 0,25–0,50 г щёлочи, добавить 10% раствор хлорида бария (2 г на 18 мл воды), фенолфталеин и титровать 0,5Н HCl.</p>
+      <div class="fields">
+        <label class="f" for="cb-na-w">Навеска NaOH, г<input class="n manual" id="cb-na-w" type="number" step="any" value="0"></label>
+        <label class="f" for="cb-na-v">Расход 0,5Н HCl, мл<input class="n manual" id="cb-na-v" type="number" step="any" value="0"></label>
+        <label class="f" for="cb-k-w">Навеска KOH, г<input class="n manual" id="cb-k-w" type="number" step="any" value="0"></label>
+        <label class="f" for="cb-k-v">Расход 0,5Н HCl, мл<input class="n manual" id="cb-k-v" type="number" step="any" value="0"></label>
+        <label class="f" for="cb-kt">Коэфф. «К» титранта<input class="n manual" id="cb-kt" type="number" step="any" value="1"></label>
+      </div>
+      <dl class="kv" id="carbcheck"></dl>
+      <div class="row"><button class="btn" id="apply-k" type="button">Подставить Кщ в расчёт</button></div>
+    </div>
+    <div class="block">
+      <header><h2>Крепость растворов</h2></header>
+      <div class="scroll"><table id="sol"><thead><tr><th>Вещество</th><th class="n">Вещество, г</th><th class="n">Вода, г</th><th class="n">Крепость</th><th class="n">Нужно, %</th><th class="n">Воды нужно, мл</th></tr></thead><tbody></tbody></table></div>
+      <p class="note">Предельные растворы: NaOH и KOH 50%, NaCl 20%.</p>
+      <h3>Разбавление, понижение КЭ или КЧ</h3>
+      <div class="fields">
+        <label class="f" for="dil-m">Исходная масса, г<input class="n manual" id="dil-m" type="number" step="any" value="0"></label>
+        <label class="f" for="dil-a">Исходный %<input class="n manual" id="dil-a" type="number" step="any" value="0"></label>
+        <label class="f" for="dil-b">Целевой %<input class="n manual" id="dil-b" type="number" step="any" value="0"></label>
+      </div>
+      <dl class="kv" id="dil"></dl>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="block">
+      <header><h2>ПКЭ по жирным кислотам</h2><button type="button" class="q" data-t="ПКЭ">?</button></header>
+      <div class="scroll"><table id="pkefa"><thead><tr><th>Кислота</th><th class="n">Доля в МЖС, %</th><th class="n">NaOH 100 °С</th><th class="n">KOH 100 °С</th></tr></thead><tbody></tbody>
+      <tfoot><tr><td>ПКЭ смеси</td><td class="n" id="pkefa-sum"></td><td class="n" id="pkefa-na"></td><td class="n" id="pkefa-k"></td></tr></tfoot></table></div>
+      <dl class="kv" id="pkefa-nacl"></dl>
+      <p class="note">Результат ориентировочный, с запасом: +1% (NaOH), +1,5% (KOH), +1% (NaCl).</p>
+    </div>
+    <div class="block">
+      <header><h2>Соли кислот</h2></header>
+      <div class="fields">
+        <label class="f" for="acid">Кислота<select id="acid"></select></label>
+        <label class="f" for="acid-w">Вес кислоты, г<input class="n manual" id="acid-w" type="number" step="any" value="0"></label>
+      </div>
+      <dl class="kv" id="acidout"></dl>
+      <p class="note">Кислоту растворить в воде в отдельной посуде и нейтрализовать щёлочью, раствор влить в мыльную массу. В шлифованное ядро вводить готовый раствор соли при разогреве.</p>
+      <h3>Пересчёт щелочей</h3>
+      <div class="fields">
+        <label class="f" for="cv-k">KOH, г → NaOH<input class="n manual" id="cv-k" type="number" step="any" value="0"></label>
+        <label class="f" for="cv-na">NaOH, г → KOH<input class="n manual" id="cv-na" type="number" step="any" value="0"></label>
+      </div>
+      <dl class="kv" id="cv"></dl>
+    </div>
+  </div>
+  <div class="block">
+    <header><h2>Словарь терминов</h2></header>
+    <dl class="gloss" id="gloss"></dl>
+  </div>
+</section>
+
+<!-- ============ СЕБЕСТОИМОСТЬ ============ -->
+<section class="panel" id="step-cost" hidden>
+  <div class="block">
+    <header><h2>Затраты на варку</h2><span class="note">Закуплено: сколько и за сколько. Потрачено: сколько ушло в эту варку.</span></header>
+    <div class="scroll"><table id="costs"><thead><tr><th>Статья</th><th class="n">Закуплено, ед.</th><th class="n">Сумма, ₽</th><th class="n">Цена ед.</th><th class="n">Потрачено, ед.</th><th class="n">Итого, ₽</th><th></th></tr></thead><tbody></tbody>
+    <tfoot><tr><td colspan="5">Итого предварительно</td><td class="n" id="cost-sum"></td><td></td></tr></tfoot></table></div>
+    <div class="row"><button class="btn" id="add-cost" type="button">+ Статья</button></div>
+  </div>
+  <div class="grid2">
+    <div class="block">
+      <div class="fields">
+        <label class="f" for="cost-k">Коэфф. неучтённых расходов<input class="n manual" id="cost-k" type="number" step="any" value="1.25"></label>
+        <label class="f" for="cost-kg">Готовое мыло, кг<input class="n manual" id="cost-kg" type="number" step="any" value="0"></label>
+        <label class="f" for="cost-packs">Количество упаковок<input class="n manual" id="cost-packs" type="number" step="any" value="0"></label>
+      </div>
+      <dl class="kv" id="costout"></dl>
+    </div>
+    <div class="block">
+      <h2>Тарифы из шаблона</h2>
+      <dl class="kv"><div><dt>Вода холодная</dt><dd>60 ₽ / м³</dd></div><div><dt>Электричество</dt><dd>7 ₽ / кВт·ч</dd></div><div><dt>Духовка, 3 кВт·ч</dt><dd>21 ₽ / час</dd></div></dl>
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="false" aria-labelledby="sheet-t" hidden>
+  <div class="sheet-in">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h2 id="sheet-t"></h2><button class="btn ghost" type="button" id="sheet-x" aria-label="Закрыть">✕</button></div>
+    <p id="sheet-b"></p>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
