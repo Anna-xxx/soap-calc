@@ -141,8 +141,8 @@ table.oils td[data-o="na"],table.oils td[data-o="k"]{color:var(--lye);font-weigh
 .chip.bad{background:var(--bad-soft);color:var(--bad)}
 .warnbox{background:var(--lye-soft);color:var(--ink);border-radius:var(--r-s);padding:12px 14px;font-size:.88rem}
 .warnbox:empty{display:none}
-.scale{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px;font-size:.72rem}
-.scale div{background:var(--sunk);padding:8px;color:var(--muted);min-width:0;line-height:1.3}
+.scale{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:3px;font-size:.78rem}
+.scale div{background:var(--sunk);padding:8px;color:var(--muted);min-width:0;overflow-wrap:anywhere;hyphens:auto;line-height:1.3}
 .scale div:first-child{border-radius:var(--r-s) 0 0 var(--r-s)}
 .scale div:last-child{border-radius:0 var(--r-s) var(--r-s) 0}
 .scale div.on{background:var(--accent);color:var(--accent-ink)}
@@ -864,7 +864,7 @@ function calcSalt(){
   kv('ke',[['КЭ в водной фазе натр. (факт)',pc(keNa)],['КЭ в водной фазе кали. (факт)',pc(keK)],
     ['Понижение КЭ: долить воды, натр.',g(v('ke-na')/(reqNa*100)*100-wfNa)+' мл',`до ${pc(reqNa)}`,1],
     ['Понижение КЭ: долить воды, кали.',g(v('ke-k')/(reqK*100)*100-wfK)+' мл',`до ${pc(reqK)}`,1]]);
-  const sc=[['< 0,5%','стоит колом',0,.005],['0,5%','густая студнеобразная',.005,.0051],['0,5–1,0%','однородная подвижная',.0051,.01],['1,0–3,0%','высал. клей/ядро, мутнеет',.01,.03],['3,0–3,5%','щёлок/клей/ядро',.03,.035],['3,5% – ПКЭ','высаливание щёлок/ядро',.035,9]];
+  const sc=[['< 0,5%','стоит колом',0,.005],['0,5%','густая, как студень',.005,.0051],['0,5–1,0%','однородная подвижная',.0051,.01],['1,0–3,0%','мутнеет, клей и ядро',.01,.03],['3,0–3,5%','щёлок/клей/ядро',.03,.035],['3,5% – ПКЭ','высаливание щёлок/ядро',.035,9]];
   $('ke-scale').innerHTML=sc.map(s=>`<div class="${ok(keNa)&&v('ke-na')>0&&keNa>=s[2]&&keNa<s[3]?'on':''}"><b>${s[0]}</b>${s[1]}</div>`).join('');
 
   $('salting-block').querySelector('h2').textContent=ind?'Полная высолка: расчёт ПКЭ от водной части':'Полная высолка';
