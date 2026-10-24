@@ -46,7 +46,7 @@ function renderOils(){
     <td class="name" data-label="Сырьё"><input list="oil-names" data-k="n" value="${o.n.replace(/"/g,'&quot;')}" placeholder="Выберите масло" aria-label="Сырьё"></td>
     <td data-label="Фаза"><select data-k="ph" aria-label="Фаза"><option value="core"${o.ph==='core'?' selected':''}>ядровая</option><option value="glue"${o.ph==='glue'?' selected':''}>клеевая</option></select></td>
     <td class="w" data-label="Вес, ${S.unit==='p'?'%':'г'}"><input class="n manual" type="number" step="any" data-k="wt" value="${disp(o.fa+o.mzs)}" aria-label="Вес"></td>
-    <td data-label="Тип"><select data-k="kind" aria-label="Тип сырья"><option value="mzs"${kindOf(o)==='mzs'?' selected':''}>масло или жир</option><option value="fa"${kindOf(o)==='fa'?' selected':''}>жирная кислота</option></select></td>
+    <td data-label="Что это"><select data-k="kind" aria-label="Тип сырья"><option value="mzs"${kindOf(o)==='mzs'?' selected':''}>масло или жир</option><option value="fa"${kindOf(o)==='fa'?' selected':''}>жирная кислота</option></select></td>
     <td class="p" data-label="ЧО"><input class="n" type="number" step="any" data-k="sap" value="${o.sap}" aria-label="ЧО"></td>
     <td class="p" data-label="ПКЭ, %"><input class="n" type="number" step="any" data-k="pke" value="${o.pke}" aria-label="ПКЭ, %"></td>
     <td class="p" data-label="Й"><input class="n" type="number" step="any" data-k="iod" value="${o.iod}" aria-label="Йодное число"></td>
