@@ -273,4 +273,10 @@ table.oils th{white-space:nowrap}
 @media (min-width:761px){table.oils th:first-child{width:17%}table.oils th:nth-child(4){width:14%}table.oils th.kind{padding-left:10px}}
 @media (min-width:761px){table.oils th,table.oils td,table.oils td input.n{text-align:left}table.oils th{padding-left:6px}table.oils th .q{margin-left:4px}table.oils td[data-o]{padding-left:6px}}
 @media (min-width:761px){table.oils th:nth-child(6){width:8%}table.oils th:nth-child(5),table.oils th:nth-child(7),table.oils th:nth-child(8){width:6.5%}}
+.howto{margin:0;padding-left:1.3em;display:grid;gap:10px;max-width:80ch}
+.howto li{line-height:1.5}
+#step-help .block p{max-width:80ch}
+.gloss div{align-content:start}
+.gloss dd{font-family:var(--f-ui);line-height:1.5}
+.gloss dt{font-family:var(--f-ui);font-weight:700}
 </style>

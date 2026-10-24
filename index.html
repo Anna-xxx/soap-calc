@@ -278,6 +278,12 @@ table.oils th{white-space:nowrap}
 @media (min-width:761px){table.oils th:first-child{width:17%}table.oils th:nth-child(4){width:14%}table.oils th.kind{padding-left:10px}}
 @media (min-width:761px){table.oils th,table.oils td,table.oils td input.n{text-align:left}table.oils th{padding-left:6px}table.oils th .q{margin-left:4px}table.oils td[data-o]{padding-left:6px}}
 @media (min-width:761px){table.oils th:nth-child(6){width:8%}table.oils th:nth-child(5),table.oils th:nth-child(7),table.oils th:nth-child(8){width:6.5%}}
+.howto{margin:0;padding-left:1.3em;display:grid;gap:10px;max-width:80ch}
+.howto li{line-height:1.5}
+#step-help .block p{max-width:80ch}
+.gloss div{align-content:start}
+.gloss dd{font-family:var(--f-ui);line-height:1.5}
+.gloss dt{font-family:var(--f-ui);font-weight:700}
 </style>
 </head>
 <body>
@@ -308,6 +314,7 @@ table.oils th{white-space:nowrap}
     <span class="sep" aria-hidden="true"></span>
     <button type="button" data-step="ref" class="tool">Справочник</button>
     <button type="button" data-step="cost" class="tool">Себестоимость</button>
+    <button type="button" data-step="help" class="tool">Пояснения</button>
   </nav>
 </div>
 
@@ -660,10 +667,6 @@ table.oils th{white-space:nowrap}
       <dl class="kv" id="cv"></dl>
     </div>
   </div>
-  <div class="block">
-    <header><h2>Словарь терминов</h2></header>
-    <dl class="gloss" id="gloss"></dl>
-  </div>
 </section>
 
 <!-- ============ СЕБЕСТОИМОСТЬ ============ -->
@@ -689,6 +692,42 @@ table.oils th{white-space:nowrap}
     </div>
   </div>
 </section>
+
+<!-- ============ ПОЯСНЕНИЯ ============ -->
+<section class="panel" id="step-help" hidden>
+  <div class="block">
+    <header><h2>Для чего этот калькулятор</h2></header>
+    <p>Он считает варку мыла на ядро по шаблону «Расчёт варки»: сколько взять щёлочи и воды на ваш набор масел, как вести омыление и высолку, сколько соли и жира добавить и сколько стоит готовое мыло. Все веса в граммах. Числа считаются сразу, как только вы что-то меняете.</p>
+    <p class="note">Рецепты, котлы и введённые данные хранятся только в вашем браузере. На другом устройстве их не будет.</p>
+  </div>
+  <div class="block">
+    <header><h2>Как пользоваться</h2></header>
+    <ol class="howto">
+      <li><b>Выберите способ варки</b> вверху справа. <i>Прямой</i>: все жиры омыляются вместе, высолки нет, мыло сразу разливают. <i>Косвенный</i>: варка на ядро с высолкой.</li>
+      <li><b>Рецепт.</b> Добавьте масла и жиры, впишите вес каждого. Можно вводить в граммах или процентах от общего веса. Числа омыления, ПКЭ, йодное число и титр подставятся из базы. Сохраните рецепт, если будете варить его снова.</li>
+      <li><b>Щёлочь и вода.</b> Проверьте параметры: коэффициент щёлочи (Кщ), желаемое качественное число (КЧ), какой щёлочью варите. Вверху блок «Что отвесить»: сколько щёлочи, воды и соли приготовить. Ниже выберите, вносите щёлочь сразу (вкладка А) или порциями (вкладка Б).</li>
+      <li><b>Омыление.</b> Варите, взвесьте котёл с массой. Впишите вес котла и брутто, калькулятор посчитает вес массы, концентрацию электролитов и подскажет, сколько воды долить.</li>
+      <li><b>Высолка</b> (только косвенный способ). Сколько соли или щёлочи добавить, чтобы масса разделилась на ядро и щёлок. Внизу второе омыление и шлифование, если нужны.</li>
+      <li><b>Готовое мыло.</b> Взвесьте массу перед разливом, введите пробу с фенолфталеином. Калькулятор посчитает КЧ, сколько жира добавить для нейтрализации и добавки.</li>
+      <li><b>Справочник</b>: титрование щёлочи (Кщ), разведение растворов, перевод KOH ↔ NaOH. <b>Себестоимость</b>: цена сырья и куска.</li>
+    </ol>
+  </div>
+  <div class="block">
+    <header><h2>Как читать экран</h2></header>
+    <ul class="howto">
+      <li><b>Серые поля</b> вписываете вы. <b>Белые</b> подставляются сами, но их можно поправить.</li>
+      <li><b>Золотые числа</b> — то, что нужно отвесить или добавить.</li>
+      <li>Значок <b>?</b> рядом с полем или словом открывает пояснение.</li>
+      <li>Строка с плитками вверху показывает главные числа рецепта на любом этапе.</li>
+      <li>Кнопка <b>Показать ▾</b> раскрывает дополнительный расчёт, который нужен не всегда.</li>
+    </ul>
+  </div>
+  <div class="block">
+    <header><h2>Термины</h2></header>
+    <dl class="gloss" id="gloss"></dl>
+  </div>
+</section>
+
 </div>
 
 <div class="sheet" id="sheet" role="dialog" aria-modal="false" aria-labelledby="sheet-t" hidden>
