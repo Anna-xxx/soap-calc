@@ -322,6 +322,15 @@ details.more summary .note{white-space:normal}
 #sol td input{width:60px!important;padding:6px 6px}
 @media (max-width:760px){#costs td:first-child{min-width:190px}#costs td:first-child input{width:100%}}
 details.more summary h2::after,details.more[open] summary h2::after{content:none}
+@media (min-width:761px){table.oils tfoot td{padding-left:9px;font-weight:600}table.oils tfoot td#t-p,table.oils tfoot td#t-naoh,table.oils tfoot td#t-koh{padding-left:6px}table.oils tfoot td:first-child{font-weight:700}}
+.legend{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 20px;font-size:.8rem;color:var(--muted)}
+.legend li{display:flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:4px;flex:none}
+.sw-in{background:var(--sunk)}.sw-db{background:var(--surface);border:1px solid var(--line)}
+.sw-mu{background:var(--muted)}.sw-ly{background:var(--lye)}
+.lg-mu{color:var(--muted);font-weight:600}.lg-ly{color:var(--lye);font-weight:600}
+table.oils tfoot #t-naoh,table.oils tfoot #t-koh{color:var(--lye)}
+table.oils tfoot #t-p{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -403,7 +412,13 @@ details.more summary h2::after,details.more[open] summary h2::after{content:none
       </table>
     </div>
     <div class="row"><button class="btn" id="add-oil" type="button">+ Добавить масло</button>
-      <span class="note">Серые поля вписываете вы, белые подставляются из базы, но их можно поправить.</span></div>
+      </div>
+    <ul class="legend">
+      <li><i class="sw sw-in"></i><span>Серое поле: вписываете вы (вес масла).</span></li>
+      <li><i class="sw sw-db"></i><span>Белое поле: подставляется из базы, можно поправить.</span></li>
+      <li><i class="sw sw-mu"></i><span><span class="lg-mu">Серое число</span>: справка, доля масла в смеси.</span></li>
+      <li><i class="sw sw-ly"></i><span><span class="lg-ly">Золотое число</span>: сколько щёлочи нужно на это масло, то, что отвешивают.</span></li>
+    </ul>
     <datalist id="oil-names"></datalist>
     <div class="warnbox" id="oil-warn"></div>
   </div>

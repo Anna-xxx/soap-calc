@@ -317,4 +317,13 @@ details.more summary .note{white-space:normal}
 #sol td input{width:60px!important;padding:6px 6px}
 @media (max-width:760px){#costs td:first-child{min-width:190px}#costs td:first-child input{width:100%}}
 details.more summary h2::after,details.more[open] summary h2::after{content:none}
+@media (min-width:761px){table.oils tfoot td{padding-left:9px;font-weight:600}table.oils tfoot td#t-p,table.oils tfoot td#t-naoh,table.oils tfoot td#t-koh{padding-left:6px}table.oils tfoot td:first-child{font-weight:700}}
+.legend{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 20px;font-size:.8rem;color:var(--muted)}
+.legend li{display:flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:4px;flex:none}
+.sw-in{background:var(--sunk)}.sw-db{background:var(--surface);border:1px solid var(--line)}
+.sw-mu{background:var(--muted)}.sw-ly{background:var(--lye)}
+.lg-mu{color:var(--muted);font-weight:600}.lg-ly{color:var(--lye);font-weight:600}
+table.oils tfoot #t-naoh,table.oils tfoot #t-koh{color:var(--lye)}
+table.oils tfoot #t-p{color:var(--muted)}
 </style>
