@@ -46,7 +46,7 @@ function renderOils(){
     <td class="name" data-label="Сырьё"><input list="oil-names" data-k="n" value="${o.n.replace(/"/g,'&quot;')}" placeholder="Выберите масло" aria-label="Сырьё"></td>
     <td data-label="Фаза"><select data-k="ph" aria-label="Фаза"><option value="core"${o.ph==='core'?' selected':''}>ядровая</option><option value="glue"${o.ph==='glue'?' selected':''}>клеевая</option></select></td>
     <td class="w" data-label="Вес, ${S.unit==='p'?'%':'г'}"><input class="n manual" type="number" step="any" data-k="wt" value="${disp(o.fa+o.mzs)}" aria-label="Вес"></td>
-    <td data-label="Тип"><select data-k="kind" aria-label="Тип сырья"><option value="mzs"${kindOf(o)==='mzs'?' selected':''}>масло</option><option value="fa"${kindOf(o)==='fa'?' selected':''}>кислота</option></select></td>
+    <td data-label="Тип"><select data-k="kind" aria-label="Тип сырья"><option value="mzs"${kindOf(o)==='mzs'?' selected':''}>масло или жир</option><option value="fa"${kindOf(o)==='fa'?' selected':''}>жирная кислота</option></select></td>
     <td class="p" data-label="ЧО"><input class="n" type="number" step="any" data-k="sap" value="${o.sap}" aria-label="ЧО"></td>
     <td class="p" data-label="ПКЭ, %"><input class="n" type="number" step="any" data-k="pke" value="${o.pke}" aria-label="ПКЭ, %"></td>
     <td class="p" data-label="Й"><input class="n" type="number" step="any" data-k="iod" value="${o.iod}" aria-label="Йодное число"></td>
@@ -137,7 +137,7 @@ function calc(){
   R={FA_,MZS,O23,C2,C6,NA,K,F24,G24,K22,K23,M22,M23,sapMix,C7,C8,ind,two,A47,FA2,MZS2,O78,NA2,K2,pke2};
 
   const P_=S.unit==='p';
-  $('t-fa').textContent=FA_>0?'в т.ч. кислоты '+(P_?pc(div(FA_,S.total)||0,1):g(FA_)):'';$('t-mzs').textContent=P_?pc(div(MZS+FA_,S.total)||0,1):g(MZS+FA_);
+  $('t-fa').textContent='';$('t-mzs').textContent=P_?pc(div(MZS+FA_,S.total)||0,1):g(MZS+FA_);
   if(!P_){S.total=+O23.toFixed(2);if(document.activeElement!==$('total'))$('total').value=S.total}
   const sumP=div(O23,S.total)*100;
   $('unit-note').className='note'+(P_&&Math.abs(sumP-100)>0.05?' bad':'');
@@ -374,7 +374,7 @@ const TERMS={
   'Фаза':'Ядровые жиры (говяжий, свиной, пальмовое) дают твёрдое ядро. Клеевые (кокосовое, пальмоядровое, жидкие масла) плохо высаливаются. В прямом способе от этого зависит, сколько соли и щёлочи нужно для подвижности.',
   'ЖК':'Свободные жирные кислоты, например стеариновая или олеиновая. Омыляются сразу и целиком считаются жирными кислотами.',
   'Две щёлочи':'NaOH (каустическая сода) даёт твёрдое мыло, KOH (едкое кали) — мягкое или жидкое. Иногда их смешивают, например 80% NaOH и 20% KOH: мыло получается мягче, пена обильнее, оно лучше растворяется. Если варите только на NaOH, оставьте «Доля NaOH» 100% и этот блок не нужен; для чистого KOH поставьте 0%.',
-  'Тип':'«Масло» — обычные масла и жиры (МЖС): из 100 г получается 95 г жирных кислот, остальное уходит в глицерин. «Кислота» — чистые жирные кислоты (ЖК), например стеариновая: из 100 г получается 100 г. Тип ставится сам по названию сырья, но его можно поменять.',
+  'Тип':'«Масло или жир» — обычные масла и жиры (МЖС): из 100 г получается 95 г жирных кислот, остальное уходит в глицерин. «Жирная кислота» — чистые жирные кислоты (ЖК), например стеариновая: из 100 г получается 100 г. Тип ставится сам по названию сырья, но его можно поменять.',
   'МЖС':'Масложировая смесь: обычные (нейтральные) масла и жиры. В жирные кислоты пересчитываются с коэффициентом 0,95, потому что около 5% веса уходит в глицерин.',
   'ЧО':'Число омыления: сколько граммов KOH нужно, чтобы омылить 1 г жира. Для NaOH число делят на 1,403. Пример: говяжий жир 0,200, значит на 100 г нужно 20 г KOH или 14,3 г NaOH.',
   'ПКЭ':'Предельная концентрация электролита при 100 °С: сколько щёлочи или соли может быть в водной фазе, пока мыло ещё не высаливается. Воду считают так, чтобы раствор был на 0,5% слабее ПКЭ. Если у масла нет ПКЭ, впишите его вручную, иначе вода посчитается неверно.',
