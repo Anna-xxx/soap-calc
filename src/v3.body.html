@@ -39,8 +39,8 @@
     <header>
       <h2>Масложировая смесь</h2>
       <div class="row">
+        <select id="recipe-list" aria-label="Открыть рецепт" style="width:auto;min-width:170px;max-width:240px"></select>
         <input id="recipe-name" placeholder="Название рецепта" aria-label="Название рецепта" style="width:200px">
-        <select id="recipe-list" aria-label="Сохранённые рецепты" style="width:auto;min-width:150px;max-width:240px"></select>
         <button class="btn" id="save-recipe" type="button">Сохранить</button>
         <button class="btn ghost" id="del-recipe" type="button">Удалить</button>
       </div>
@@ -97,11 +97,11 @@
     <h2>Параметры</h2>
     <div class="fields">
       <label class="f" for="kna">Кщ NaOH <button type="button" class="q" data-t="Кщ">?</button><input class="n manual" id="kna" type="number" step="any" value="1.02"></label>
-      <label class="f" for="kk">Кщ KOH<input class="n manual" id="kk" type="number" step="any" value="1.04"></label>
+      <label class="f" for="kk">Кщ KOH <button type="button" class="q" data-t="f:kk">?</button><input class="n manual" id="kk" type="number" step="any" value="1.04"></label>
       <label class="f" for="kch">Желаемое КЧ, % <button type="button" class="q" data-t="КЧ">?</button><input class="n manual" id="kch" type="number" step="any" value="70"></label>
       <label class="f" for="share">Доля NaOH, % <button type="button" class="q" data-t="Доля">?</button><input class="n manual" id="share" type="number" step="any" value="100"></label>
       <label class="f" for="cat">Катализатор, г <button type="button" class="q" data-t="Катализатор">?</button><input class="n manual" id="cat" type="number" step="any" value="0"></label>
-      <label class="f" for="catkch">КЧ катализатора, %<input class="n manual" id="catkch" type="number" step="any" value="0"></label>
+      <label class="f" for="catkch">КЧ катализатора, % <button type="button" class="q" data-t="f:catkch">?</button><input class="n manual" id="catkch" type="number" step="any" value="0"></label>
       <label class="f check only-ind" for="two"><input type="checkbox" id="two"> Клеевые жиры ввести во 2-м омылении <button type="button" class="q" data-t="2-е омыление">?</button></label>
     </div>
     <p class="note only-two">Щёлочь и вода на этом этапе считаются только на ядровые жиры. Клеевые жиры из рецепта посчитаны во 2-м омылении на этапе «Высолка».</p>
@@ -157,9 +157,9 @@
     <div class="block">
       <h2>Взвесьте массу в котле</h2>
       <div class="fields">
-        <label class="f" for="pot">Котёл<select id="pot"></select></label>
-        <label class="f" for="tare">Вес тары, г<input class="n manual" id="tare" type="number" step="any" value="0"></label>
-        <label class="f" for="brutto">Вес с массой (брутто), г<input class="n manual" id="brutto" type="number" step="any" value="0"></label>
+        <label class="f" for="pot">Котёл <button type="button" class="q" data-t="f:pot">?</button><select id="pot"></select></label>
+        <label class="f" for="tare">Вес тары, г <button type="button" class="q" data-t="f:tare">?</button><input class="n manual" id="tare" type="number" step="any" value="0"></label>
+        <label class="f" for="brutto">Вес с массой (брутто), г <button type="button" class="q" data-t="f:brutto">?</button><input class="n manual" id="brutto" type="number" step="any" value="0"></label>
       </div>
       <div class="row">
         <input id="pot-name" placeholder="Название котла" aria-label="Название котла" style="flex:1;min-width:140px">
@@ -172,10 +172,10 @@
       <header><h2>Концентрация электролитов</h2><button type="button" class="q" data-t="КЭ">?</button></header>
       <p class="note">Впишите, сколько граммов электролита (щёлочь и соль) сейчас в водной фазе, по анализу или по вашему учёту внесённого.</p>
       <div class="fields">
-        <label class="f" for="ke-na">КЭ, г (натровое)<input class="n manual" id="ke-na" type="number" step="any" value="0"></label>
-        <label class="f" for="ke-k">КЭ, г (калийное)<input class="n manual" id="ke-k" type="number" step="any" value="0"></label>
-        <label class="f" for="ke-req-na">Нужная КЭ, % (натр.)<input class="n manual" id="ke-req-na" type="number" step="any" value="1"></label>
-        <label class="f" for="ke-req-k">Нужная КЭ, % (кали.)<input class="n manual" id="ke-req-k" type="number" step="any" value="1"></label>
+        <label class="f" for="ke-na">КЭ, г (натровое) <button type="button" class="q" data-t="f:ke-na">?</button><input class="n manual" id="ke-na" type="number" step="any" value="0"></label>
+        <label class="f" for="ke-k">КЭ, г (калийное) <button type="button" class="q" data-t="f:ke-k">?</button><input class="n manual" id="ke-k" type="number" step="any" value="0"></label>
+        <label class="f" for="ke-req-na">Нужная КЭ, % (натр.) <button type="button" class="q" data-t="f:ke-req-na">?</button><input class="n manual" id="ke-req-na" type="number" step="any" value="1"></label>
+        <label class="f" for="ke-req-k">Нужная КЭ, % (кали.) <button type="button" class="q" data-t="f:ke-req-k">?</button><input class="n manual" id="ke-req-k" type="number" step="any" value="1"></label>
       </div>
       <h3>Как ведёт себя масса</h3>
       <div class="scale" id="ke-scale"></div>
@@ -185,9 +185,9 @@
   <div class="block">
     <header><h2>Свободная щёлочь</h2><span class="note">по результатам анализа</span></header>
     <div class="fields">
-      <label class="f" for="fa-mass">Масса для анализа, г<input class="n manual" id="fa-mass" type="number" step="any" value="0"></label>
-      <label class="f" for="fa-na">Натровое, % в массе<input class="n manual" id="fa-na" type="number" step="any" value="0"></label>
-      <label class="f" for="fa-k">Калийное, % в массе<input class="n manual" id="fa-k" type="number" step="any" value="0"></label>
+      <label class="f" for="fa-mass">Масса для анализа, г <button type="button" class="q" data-t="f:fa-mass">?</button><input class="n manual" id="fa-mass" type="number" step="any" value="0"></label>
+      <label class="f" for="fa-na">Натровое, % в массе <button type="button" class="q" data-t="f:fa-na">?</button><input class="n manual" id="fa-na" type="number" step="any" value="0"></label>
+      <label class="f" for="fa-k">Калийное, % в массе <button type="button" class="q" data-t="f:fa-k">?</button><input class="n manual" id="fa-k" type="number" step="any" value="0"></label>
     </div>
     <dl class="kv" id="free"></dl>
     <p class="note">Массу не изменять после замера до следующего анализа.</p>
@@ -218,9 +218,9 @@
   <div class="block only-ind">
     <header><h2>Итог полной высолки</h2><span class="note">взвесьте ядро, клей и щёлок после отстаивания</span></header>
     <div class="fields">
-      <label class="f" for="w-core">Вес ядра, г<input class="n manual" id="w-core" type="number" step="any" value="0"></label>
-      <label class="f" for="w-glue">Вес подмыльного клея, г<input class="n manual" id="w-glue" type="number" step="any" value="0"></label>
-      <label class="f" for="w-lye">Вес 1-го подмыльного щёлока, г<input class="n manual" id="w-lye" type="number" step="any" value="0"></label>
+      <label class="f" for="w-core">Вес ядра, г <button type="button" class="q" data-t="f:w-core">?</button><input class="n manual" id="w-core" type="number" step="any" value="0"></label>
+      <label class="f" for="w-glue">Вес подмыльного клея, г <button type="button" class="q" data-t="f:w-glue">?</button><input class="n manual" id="w-glue" type="number" step="any" value="0"></label>
+      <label class="f" for="w-lye">Вес 1-го подмыльного щёлока, г <button type="button" class="q" data-t="f:w-lye">?</button><input class="n manual" id="w-lye" type="number" step="any" value="0"></label>
     </div>
     <dl class="kv" id="core1out"></dl>
     <p class="note">Высолку можно повторять сколько угодно раз: меняйте вес и КЭ, пока не получится нужное ядро. Обычно КЧ ядра 50–60%, выше 60% — отличный результат.</p>
@@ -234,8 +234,8 @@
       <div class="block">
         <header><h2>2-е омыление: клеевые жиры к ядру</h2><button type="button" class="q" data-t="2-е омыление">?</button></header>
         <div class="fields">
-          <label class="f" for="rest-na">Остаток NaOH в ядре, г<input class="n manual" id="rest-na" type="number" step="any" value="0"></label>
-          <label class="f" for="rest-k">Остаток KOH в ядре, г<input class="n manual" id="rest-k" type="number" step="any" value="0"></label>
+          <label class="f" for="rest-na">Остаток NaOH в ядре, г <button type="button" class="q" data-t="f:rest-na">?</button><input class="n manual" id="rest-na" type="number" step="any" value="0"></label>
+          <label class="f" for="rest-k">Остаток KOH в ядре, г <button type="button" class="q" data-t="f:rest-k">?</button><input class="n manual" id="rest-k" type="number" step="any" value="0"></label>
         </div>
         <dl class="kv" id="sap2"></dl>
       </div>
@@ -249,11 +249,11 @@
       <div class="block">
         <header><h2>Частичная высолка и шлифование</h2><button type="button" class="q" data-t="Шлифование">?</button></header>
         <div class="fields">
-          <label class="f" for="pot2">Котёл<select id="pot2"></select></label>
-          <label class="f" for="tare2">Вес тары, г<input class="n manual" id="tare2" type="number" step="any" value="0"></label>
-          <label class="f" for="brutto2">Вес с массой (брутто), г<input class="n manual" id="brutto2" type="number" step="any" value="0"></label>
-          <label class="f" for="ke2">КЭ натр. в водной фазе, г<input class="n manual" id="ke2" type="number" step="any" value="0"></label>
-          <label class="f" for="ke2-req">Нужная КЭ в водной фазе, %<input class="n manual" id="ke2-req" type="number" step="any" value="2.2"></label>
+          <label class="f" for="pot2">Котёл <button type="button" class="q" data-t="f:pot2">?</button><select id="pot2"></select></label>
+          <label class="f" for="tare2">Вес тары, г <button type="button" class="q" data-t="f:tare2">?</button><input class="n manual" id="tare2" type="number" step="any" value="0"></label>
+          <label class="f" for="brutto2">Вес с массой (брутто), г <button type="button" class="q" data-t="f:brutto2">?</button><input class="n manual" id="brutto2" type="number" step="any" value="0"></label>
+          <label class="f" for="ke2">КЭ натр. в водной фазе, г <button type="button" class="q" data-t="f:ke2">?</button><input class="n manual" id="ke2" type="number" step="any" value="0"></label>
+          <label class="f" for="ke2-req">Нужная КЭ в водной фазе, % <button type="button" class="q" data-t="f:ke2-req">?</button><input class="n manual" id="ke2-req" type="number" step="any" value="2.2"></label>
         </div>
         <dl class="kv" id="part2"></dl>
         <p class="note">Для шлифования обычно нужна КЭ 2,2–2,3% в водной фазе.</p>
@@ -287,17 +287,17 @@
         <label class="f only-two" for="w-glue2">Подмыльный клей после шлифования, г<input class="n manual" id="w-glue2" type="number" step="any" value="0"></label>
         <label class="f only-two" for="w-lye2">Подмыльный щёлок после шлифования, г<input class="n manual" id="w-lye2" type="number" step="any" value="0"></label>
         <label class="f" for="w-sf">Пережир SF, г <button type="button" class="q" data-t="SF">?</button><input class="n manual" id="w-sf" type="number" step="any" value="0"></label>
-        <label class="f" for="w-final">Вес перед разливом, г<input class="n manual" id="w-final" type="number" step="any" value="0"></label>
+        <label class="f" for="w-final">Вес перед разливом, г <button type="button" class="q" data-t="f:w-final">?</button><input class="n manual" id="w-final" type="number" step="any" value="0"></label>
       </div>
       <dl class="kv" id="kchout"></dl>
     </div>
     <div class="block">
       <header><h2>Нейтрализация избытка щёлочи</h2><button type="button" class="q" data-t="ФФ">?</button></header>
       <div class="fields">
-        <label class="f" for="ff-na">Проба ФФ, % NaOH<input class="n manual" id="ff-na" type="number" step="any" value="0"></label>
-        <label class="f" for="ff-k">Проба ФФ, % KOH<input class="n manual" id="ff-k" type="number" step="any" value="0"></label>
-        <label class="f" for="neut-oil">Чем нейтрализовать<input id="neut-oil" list="oil-names" placeholder="смесь рецепта"></label>
-        <label class="f" for="neut-w">Вес этого жира, г<input class="n manual" id="neut-w" type="number" step="any" value="0"></label>
+        <label class="f" for="ff-na">Проба ФФ, % NaOH <button type="button" class="q" data-t="f:ff-na">?</button><input class="n manual" id="ff-na" type="number" step="any" value="0"></label>
+        <label class="f" for="ff-k">Проба ФФ, % KOH <button type="button" class="q" data-t="f:ff-k">?</button><input class="n manual" id="ff-k" type="number" step="any" value="0"></label>
+        <label class="f" for="neut-oil">Чем нейтрализовать <button type="button" class="q" data-t="f:neut-oil">?</button><input id="neut-oil" list="oil-names" placeholder="смесь рецепта"></label>
+        <label class="f" for="neut-w">Вес этого жира, г <button type="button" class="q" data-t="f:neut-w">?</button><input class="n manual" id="neut-w" type="number" step="any" value="0"></label>
       </div>
       <dl class="kv" id="neut"></dl>
       <p class="note">Масса берётся из этапа 3. Ориентиры пробы: более 0,3%, 0,2%, 0,1%, менее 0,1%.</p>
@@ -331,11 +331,11 @@
       <header><h2>Проверка щёлочи на карбонизацию</h2><button type="button" class="q" data-t="Кщ">?</button></header>
       <p class="note">В 30 мл воды растворить 0,25–0,50 г щёлочи, добавить 10% раствор хлорида бария (2 г на 18 мл воды), фенолфталеин и титровать 0,5Н HCl.</p>
       <div class="fields">
-        <label class="f" for="cb-na-w">Навеска NaOH, г<input class="n manual" id="cb-na-w" type="number" step="any" value="0"></label>
-        <label class="f" for="cb-na-v">Расход 0,5Н HCl, мл<input class="n manual" id="cb-na-v" type="number" step="any" value="0"></label>
-        <label class="f" for="cb-k-w">Навеска KOH, г<input class="n manual" id="cb-k-w" type="number" step="any" value="0"></label>
-        <label class="f" for="cb-k-v">Расход 0,5Н HCl, мл<input class="n manual" id="cb-k-v" type="number" step="any" value="0"></label>
-        <label class="f" for="cb-kt">Коэфф. «К» титранта<input class="n manual" id="cb-kt" type="number" step="any" value="1"></label>
+        <label class="f" for="cb-na-w">Навеска NaOH, г <button type="button" class="q" data-t="f:cb-na-w">?</button><input class="n manual" id="cb-na-w" type="number" step="any" value="0"></label>
+        <label class="f" for="cb-na-v">Расход 0,5Н HCl, мл <button type="button" class="q" data-t="f:cb-na-v">?</button><input class="n manual" id="cb-na-v" type="number" step="any" value="0"></label>
+        <label class="f" for="cb-k-w">Навеска KOH, г <button type="button" class="q" data-t="f:cb-k-w">?</button><input class="n manual" id="cb-k-w" type="number" step="any" value="0"></label>
+        <label class="f" for="cb-k-v">Расход 0,5Н HCl, мл <button type="button" class="q" data-t="f:cb-k-v">?</button><input class="n manual" id="cb-k-v" type="number" step="any" value="0"></label>
+        <label class="f" for="cb-kt">Коэфф. «К» титранта <button type="button" class="q" data-t="f:cb-kt">?</button><input class="n manual" id="cb-kt" type="number" step="any" value="1"></label>
       </div>
       <dl class="kv" id="carbcheck"></dl>
       <div class="row"><button class="btn" id="apply-k" type="button">Подставить Кщ в расчёт</button></div>
@@ -346,9 +346,9 @@
       <p class="note">Предельные растворы: NaOH и KOH 50%, NaCl 20%.</p>
       <h3>Разбавление, понижение КЭ или КЧ</h3>
       <div class="fields">
-        <label class="f" for="dil-m">Исходная масса, г<input class="n manual" id="dil-m" type="number" step="any" value="0"></label>
-        <label class="f" for="dil-a">Исходный %<input class="n manual" id="dil-a" type="number" step="any" value="0"></label>
-        <label class="f" for="dil-b">Целевой %<input class="n manual" id="dil-b" type="number" step="any" value="0"></label>
+        <label class="f" for="dil-m">Исходная масса, г <button type="button" class="q" data-t="f:dil-m">?</button><input class="n manual" id="dil-m" type="number" step="any" value="0"></label>
+        <label class="f" for="dil-a">Исходный % <button type="button" class="q" data-t="f:dil-a">?</button><input class="n manual" id="dil-a" type="number" step="any" value="0"></label>
+        <label class="f" for="dil-b">Целевой % <button type="button" class="q" data-t="f:dil-b">?</button><input class="n manual" id="dil-b" type="number" step="any" value="0"></label>
       </div>
       <dl class="kv" id="dil"></dl>
     </div>
@@ -364,15 +364,15 @@
     <div class="block">
       <header><h2>Соли кислот</h2></header>
       <div class="fields">
-        <label class="f" for="acid">Кислота<select id="acid"></select></label>
-        <label class="f" for="acid-w">Вес кислоты, г<input class="n manual" id="acid-w" type="number" step="any" value="0"></label>
+        <label class="f" for="acid">Кислота <button type="button" class="q" data-t="f:acid">?</button><select id="acid"></select></label>
+        <label class="f" for="acid-w">Вес кислоты, г <button type="button" class="q" data-t="f:acid-w">?</button><input class="n manual" id="acid-w" type="number" step="any" value="0"></label>
       </div>
       <dl class="kv" id="acidout"></dl>
       <p class="note">Кислоту растворить в воде в отдельной посуде и нейтрализовать щёлочью, раствор влить в мыльную массу. В шлифованное ядро вводить готовый раствор соли при разогреве.</p>
       <h3>Пересчёт щелочей</h3>
       <div class="fields">
-        <label class="f" for="cv-k">KOH, г → NaOH<input class="n manual" id="cv-k" type="number" step="any" value="0"></label>
-        <label class="f" for="cv-na">NaOH, г → KOH<input class="n manual" id="cv-na" type="number" step="any" value="0"></label>
+        <label class="f" for="cv-k">KOH, г → NaOH <button type="button" class="q" data-t="f:cv-k">?</button><input class="n manual" id="cv-k" type="number" step="any" value="0"></label>
+        <label class="f" for="cv-na">NaOH, г → KOH <button type="button" class="q" data-t="f:cv-na">?</button><input class="n manual" id="cv-na" type="number" step="any" value="0"></label>
       </div>
       <dl class="kv" id="cv"></dl>
     </div>
@@ -394,9 +394,9 @@
   <div class="grid2">
     <div class="block">
       <div class="fields">
-        <label class="f" for="cost-k">Коэфф. неучтённых расходов<input class="n manual" id="cost-k" type="number" step="any" value="1.25"></label>
-        <label class="f" for="cost-kg">Готовое мыло, кг<input class="n manual" id="cost-kg" type="number" step="any" value="0"></label>
-        <label class="f" for="cost-packs">Количество упаковок<input class="n manual" id="cost-packs" type="number" step="any" value="0"></label>
+        <label class="f" for="cost-k">Коэфф. неучтённых расходов <button type="button" class="q" data-t="f:cost-k">?</button><input class="n manual" id="cost-k" type="number" step="any" value="1.25"></label>
+        <label class="f" for="cost-kg">Готовое мыло, кг <button type="button" class="q" data-t="f:cost-kg">?</button><input class="n manual" id="cost-kg" type="number" step="any" value="0"></label>
+        <label class="f" for="cost-packs">Количество упаковок <button type="button" class="q" data-t="f:cost-packs">?</button><input class="n manual" id="cost-packs" type="number" step="any" value="0"></label>
       </div>
       <dl class="kv" id="costout"></dl>
     </div>

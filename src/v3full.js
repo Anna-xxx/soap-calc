@@ -350,12 +350,16 @@ $('add-cost').onclick=()=>{COST.push(['',0,0,0]);renderCost();calcCost()};
 ['cost-k','cost-kg','cost-packs'].forEach(id=>$(id).addEventListener('input',calcCost));
 
 // ---------- saved recipes ----------
-function renderSaved(){const s=saved();$('recipe-list').innerHTML='<option value="">Мои рецепты</option>'+Object.keys(s).map(k=>`<option>${k.replace(/</g,'&lt;')}</option>`).join('')}
+function renderSaved(){const s=saved(),cur=s[S.name]?S.name:'';
+  $('recipe-list').innerHTML='<option value="">'+(Object.keys(s).length?'Открыть сохранённый…':'Сохранённых пока нет')+'</option>'+Object.keys(s).map(k=>`<option>${k.replace(/</g,'&lt;')}</option>`).join('')+'<option value="__new">+ Новый рецепт</option>';
+  $('recipe-list').value=cur;$('del-recipe').hidden=!cur;$('save-recipe').textContent=cur?'Сохранить изменения':'Сохранить'}
 $('save-recipe').onclick=()=>{const n=$('recipe-name').value.trim();if(!n){toast('Впишите название рецепта');$('recipe-name').focus();return}
-  const s=saved();S.name=n;S.sample=false;s[n]=JSON.parse(JSON.stringify(S));try{localStorage.setItem('soap.saved',JSON.stringify(s));toast('Сохранено в этом браузере')}catch(e){toast('Браузер не дал сохранить')}renderSaved();$('recipe-list').value=n;calc();updSample()};
-$('recipe-list').onchange=()=>{const n=$('recipe-list').value;if(!n)return;const r=saved()[n];if(!r)return;S=JSON.parse(JSON.stringify(r));boot()};
-$('del-recipe').onclick=()=>{const n=$('recipe-list').value;if(!n){toast('Выберите рецепт в списке');return}const s=saved();delete s[n];try{localStorage.setItem('soap.saved',JSON.stringify(s))}catch(e){}renderSaved();toast('Удалено')};
-$('recipe-name').addEventListener('input',e=>{S.name=e.target.value;persist()});
+  const s=saved();S.name=n;S.sample=false;s[n]=JSON.parse(JSON.stringify(S));try{localStorage.setItem('soap.saved',JSON.stringify(s));toast('Рецепт «'+n+'» сохранён в этом браузере')}catch(e){toast('Браузер не дал сохранить')}renderSaved();calc();updSample()};
+$('recipe-list').onchange=()=>{const n=$('recipe-list').value;if(!n)return;
+  if(n==='__new'){S=JSON.parse(JSON.stringify(SAMPLE));S.sample=false;S.name='';S.oils=[{n:'',ph:'core',fa:0,mzs:0}];boot();$('recipe-name').focus();return}
+  const r=saved()[n];if(!r)return;S=JSON.parse(JSON.stringify(r));boot()};
+$('del-recipe').onclick=()=>{const n=S.name;const s=saved();if(!s[n])return;delete s[n];try{localStorage.setItem('soap.saved',JSON.stringify(s))}catch(e){}renderSaved();toast('Рецепт «'+n+'» удалён')};
+$('recipe-name').addEventListener('input',e=>{S.name=e.target.value;persist();renderSaved()});
 function updSample(){$('sample-note').textContent=S.sample?'Сейчас открыт пример рецепта. Замените масла и веса на свои. ЧО, ПКЭ, Й и титр подставляются из базы, их можно поправить вручную.':'ЧО, ПКЭ, Й и титр подставляются из базы, их можно поправить вручную. Рецепт запоминается в этом браузере.'}
 
 // ---------- steps ----------
@@ -369,6 +373,7 @@ document.querySelectorAll('.steps button').forEach(b=>b.onclick=()=>go(b.dataset
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{go(b.dataset.go);document.querySelector('.wrap').scrollIntoView({block:'start'})});
 
 // ---------- glossary ----------
+const FIELD_HELP={"kk": "Коэффициент щёлочи для KOH: поправка на то, что часть едкого кали при хранении стала карбонатом. Определяется титрованием во вкладке «Справочник». Если не титровали, оставьте 1,04.", "catkch": "Качественное число катализатора, %: сколько жирных кислот в подмыльном клее, который вы вносите. Для спирта оставьте 0.", "pot": "Выберите сохранённый котёл, и его вес подставится в «Вес тары». Если котла нет в списке, выберите «Ввести вес тары вручную».", "tare": "Вес пустого котла без массы, г. Нужен, чтобы из общего веса вычесть посуду.", "brutto": "Вес котла вместе с массой, г. Взвесьте котёл на весах прямо с мыльной массой.", "ke-na": "Сколько граммов электролита (щёлочь и соль) сейчас в массе натрового мыла: по анализу или по вашему учёту всего внесённого.", "ke-k": "То же для калийного мыла: граммы щёлочи и соли в массе по анализу или по учёту внесённого.", "ke-req-na": "Какую концентрацию электролита вы хотите получить в водной фазе натрового мыла, %. Например 1% для однородной подвижной массы.", "ke-req-k": "Желаемая концентрация электролита в водной фазе калийного мыла, %.", "fa-mass": "Вес пробы массы, которую вы отдали на анализ свободной щёлочи, г.", "fa-na": "Результат анализа: сколько процентов свободной NaOH в пробе натрового мыла.", "fa-k": "Результат анализа: сколько процентов свободной KOH в пробе калийного мыла.", "w-core": "Вес ядра после высолки, г: мыло, которое осталось в котле после слива щёлока.", "w-glue": "Вес подмыльного клея, г, если он отделился при шлифовании.", "w-lye": "Вес слитого подмыльного щёлока после первой высолки, г.", "rest-na": "Сколько NaOH осталось в ядре, г, по анализу. Учтётся при втором омылении.", "rest-k": "Сколько KOH осталось в ядре, г, по анализу.", "pot2": "Котёл для второго омыления: вес подставится в «Вес тары».", "tare2": "Вес пустого котла, г.", "brutto2": "Вес котла с массой, г.", "ke2": "Сколько граммов электролита сейчас в водной фазе натрового мыла.", "ke2-req": "Какую концентрацию электролита нужно получить, %, например для шлифования.", "w-final": "Вес массы в котле перед разливом в формы, г (без посуды).", "ff-na": "Проба с фенолфталеином показала избыток NaOH: впишите его процент. По нему считается, сколько жира добавить для нейтрализации.", "ff-k": "Избыток KOH по пробе с фенолфталеином, %.", "neut-oil": "Каким жиром гасить избыток щёлочи. По умолчанию смесь рецепта, можно выбрать одно масло.", "neut-w": "Сколько граммов этого жира нужно добавить. Считается само, можно поправить.", "cb-na-w": "Сколько граммов NaOH вы взяли для титрования.", "cb-na-v": "Сколько миллилитров 0,5 Н соляной кислоты ушло на титрование NaOH.", "cb-k-w": "Сколько граммов KOH вы взяли для титрования.", "cb-k-v": "Сколько миллилитров 0,5 Н соляной кислоты ушло на титрование KOH.", "cb-kt": "Поправочный коэффициент раствора кислоты, указан на фиксанале или в паспорте. Обычно 1.", "dil-m": "Вес раствора, который хотите развести, г.", "dil-a": "Крепость раствора сейчас, %.", "dil-b": "Какая крепость нужна, %.", "acid": "Жирная кислота, которую вносите в рецепт.", "acid-w": "Сколько граммов этой кислоты.", "cv-k": "Впишите граммы KOH, чтобы узнать, сколько это NaOH.", "cv-na": "Впишите граммы NaOH, чтобы узнать, сколько это KOH.", "cost-k": "Наценка на мелкие расходы, которые не посчитаны отдельно: электричество, упаковка, брак. 1,1 значит +10%.", "cost-kg": "Сколько килограммов готового мыла получилось.", "cost-packs": "Сколько кусков или упаковок получилось. Нужно для цены за штуку."};
 const TERMS={
   'Способ':'Прямой способ: все жиры омыляются вместе, высаливания нет, мыло после омыления разливают в формы. Косвенный: сначала омыляют ядровые жиры, делают высолку, отделяют ядро от щёлока, затем при необходимости второе омыление и шлифование.',
   'Фаза':'Ядровые жиры (говяжий, свиной, пальмовое) дают твёрдое ядро. Клеевые (кокосовое, пальмоядровое, жидкие масла) плохо высаливаются. В прямом способе от этого зависит, сколько соли и щёлочи нужно для подвижности.',
@@ -393,7 +398,7 @@ const TERMS={
   'SF':'Пережир: масло, которое вносят в конце и которое остаётся неомылённым. Учитывается в КЧ готового мыла с коэффициентом 0,95.',
   'ФФ':'Фенолфталеин: проба на свободную щёлочь. Малиновый цвет значит избыток щёлочи. По проценту избытка калькулятор считает, сколько жира добавить для нейтрализации.'
 };
-function openTerm(t){const s=$('sheet');$('sheet-t').textContent=t==='Способ'?'Способ варки':t;$('sheet-b').textContent=TERMS[t]||'';s.hidden=false;$('sheet-x').focus()}
+function openTerm(t){const s=$('sheet');if(t.startsWith('f:')){const id=t.slice(2),l=document.querySelector(`label[for="${id}"]`);$('sheet-t').textContent=l?l.firstChild.textContent.trim():'';$('sheet-b').textContent=FIELD_HELP[id]||''}else{$('sheet-t').textContent=t==='Способ'?'Способ варки':t;$('sheet-b').textContent=TERMS[t]||''}s.hidden=false;$('sheet-x').focus()}
 document.addEventListener('click',e=>{const q=e.target.closest('button.q');if(q&&q.dataset.t){e.preventDefault();openTerm(q.dataset.t)}});
 $('sheet-x').onclick=()=>$('sheet').hidden=true;
 document.addEventListener('keydown',e=>{if(e.key==='Escape')$('sheet').hidden=true});
@@ -426,7 +431,7 @@ $('total').addEventListener('change',()=>{const t=v('total');if(!(t>0)){$('total
 function boot(){
   S.oils=S.oils.map(oilRow);S.adds=S.adds||[];S.params=Object.assign({},SAMPLE.params,S.params||{});
   $('recipe-name').value=S.sample?'':(S.name||'');
-  S.unit=S.unit||'g';S.total=S.total||S.oils.reduce((a,o)=>a+o.fa+o.mzs,0);setUnit(S.unit);renderAdds();setParams();setMode(S.mode||'direct',false);updSample();
+  S.unit=S.unit||'g';S.total=S.total||S.oils.reduce((a,o)=>a+o.fa+o.mzs,0);setUnit(S.unit);renderAdds();setParams();setMode(S.mode||'direct',false);updSample();renderSaved();
 }
 S=load();boot();renderSaved();calcRef();renderCost();calcCost();
 try{const t=localStorage.getItem('soap.step');go(t&&document.getElementById('step-'+t)?t:'1')}catch(e){go('1')}
