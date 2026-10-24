@@ -35,13 +35,16 @@ function saved(){try{return JSON.parse(localStorage.getItem('soap.saved'))||{}}c
 
 // ---------- oils table ----------
 $('oil-names').innerHTML=OILS.map(o=>`<option value="${o.n}">${o.fav?'★ избранное':''}</option>`).join('');
+function kindOf(o){return o.fa>0&&!o.mzs?'fa':(o.kind||'mzs')}
+function autoKind(n){return /кислот/i.test(n)?'fa':'mzs'}
+function setKind(o,k){const w=o.fa+o.mzs;o.kind=k;o.fa=k==='fa'?w:0;o.mzs=k==='fa'?0:w}
 function renderOils(){
   const tb=document.querySelector('#oils tbody');
   tb.innerHTML=S.oils.map((o,i)=>`<tr data-i="${i}">
     <td class="name" data-label="Сырьё"><input list="oil-names" data-k="n" value="${o.n.replace(/"/g,'&quot;')}" placeholder="Выберите масло" aria-label="Сырьё"></td>
     <td data-label="Фаза"><select data-k="ph" aria-label="Фаза"><option value="core"${o.ph==='core'?' selected':''}>ядровая</option><option value="glue"${o.ph==='glue'?' selected':''}>клеевая</option></select></td>
-    <td class="w" data-label="ЖК, ${S.unit==='p'?'%':'г'}"><input class="n manual" type="number" step="any" data-k="fa" value="${disp(o.fa)}" aria-label="ЖК"></td>
-    <td class="w" data-label="МЖС, ${S.unit==='p'?'%':'г'}"><input class="n manual" type="number" step="any" data-k="mzs" value="${disp(o.mzs)}" aria-label="МЖС"></td>
+    <td class="w" data-label="Вес, ${S.unit==='p'?'%':'г'}"><input class="n manual" type="number" step="any" data-k="wt" value="${disp(o.fa+o.mzs)}" aria-label="Вес"></td>
+    <td data-label="Тип"><select data-k="kind" aria-label="Тип сырья"><option value="mzs"${kindOf(o)==='mzs'?' selected':''}>масло</option><option value="fa"${kindOf(o)==='fa'?' selected':''}>кислота</option></select></td>
     <td class="p" data-label="ЧО"><input class="n" type="number" step="any" data-k="sap" value="${o.sap}" aria-label="ЧО"></td>
     <td class="p" data-label="ПКЭ, %"><input class="n" type="number" step="any" data-k="pke" value="${o.pke}" aria-label="ПКЭ, %"></td>
     <td class="p" data-label="Й"><input class="n" type="number" step="any" data-k="iod" value="${o.iod}" aria-label="Йодное число"></td>
@@ -52,10 +55,12 @@ function renderOils(){
 document.querySelector('#oils tbody').addEventListener('input',e=>{
   const tr=e.target.closest('tr');if(!tr)return;const i=+tr.dataset.i,k=e.target.dataset.k;const o=S.oils[i];
   if(k==='n'){o.n=e.target.value;const d=byName[o.n];if(d){o.sap=d.sapK??0;o.pke=d.pke!=null?+(d.pke*100).toFixed(3):0;o.iod=d.iod??0;o.titr=d.titr??'';
-      tr.querySelector('[data-k=sap]').value=o.sap;tr.querySelector('[data-k=pke]').value=o.pke;tr.querySelector('[data-k=iod]').value=o.iod;tr.querySelector('[data-k=titr]').value=o.titr;}}
+      tr.querySelector('[data-k=sap]').value=o.sap;tr.querySelector('[data-k=pke]').value=o.pke;tr.querySelector('[data-k=iod]').value=o.iod;tr.querySelector('[data-k=titr]').value=o.titr;}
+      setKind(o,autoKind(o.n));tr.querySelector('[data-k=kind]').value=o.kind;}
   else if(k==='ph')o.ph=e.target.value;
   else if(k==='titr')o.titr=e.target.value;
-  else if(k==='fa'||k==='mzs'){const x=parseFloat(e.target.value)||0;o[k]=S.unit==='p'?S.total*x/100:x}
+  else if(k==='wt'){const x=parseFloat(e.target.value)||0,w=S.unit==='p'?S.total*x/100:x,kd=kindOf(o);o.fa=kd==='fa'?w:0;o.mzs=kd==='fa'?0:w}
+  else if(k==='kind'){setKind(o,e.target.value)}
   else o[k]=parseFloat(e.target.value)||0;
   S.sample=false;updSample();calc();
 });
@@ -130,7 +135,7 @@ function calc(){
   R={FA_,MZS,O23,C2,C6,NA,K,F24,G24,K22,K23,M22,M23,sapMix,C7,C8,ind,two,A47,FA2,MZS2,O78,NA2,K2,pke2};
 
   const P_=S.unit==='p';
-  $('t-fa').textContent=P_?pc(div(FA_,S.total)||0,1):g(FA_);$('t-mzs').textContent=P_?pc(div(MZS,S.total)||0,1):g(MZS);
+  $('t-fa').textContent=FA_>0?'в т.ч. кислоты '+(P_?pc(div(FA_,S.total)||0,1):g(FA_)):'';$('t-mzs').textContent=P_?pc(div(MZS+FA_,S.total)||0,1):g(MZS+FA_);
   if(!P_){S.total=+O23.toFixed(2);if(document.activeElement!==$('total'))$('total').value=S.total}
   const sumP=div(O23,S.total)*100;
   $('unit-note').className='note'+(P_&&Math.abs(sumP-100)>0.05?' bad':'');
@@ -349,7 +354,7 @@ $('save-recipe').onclick=()=>{const n=$('recipe-name').value.trim();if(!n){toast
 $('recipe-list').onchange=()=>{const n=$('recipe-list').value;if(!n)return;const r=saved()[n];if(!r)return;S=JSON.parse(JSON.stringify(r));boot()};
 $('del-recipe').onclick=()=>{const n=$('recipe-list').value;if(!n){toast('Выберите рецепт в списке');return}const s=saved();delete s[n];try{localStorage.setItem('soap.saved',JSON.stringify(s))}catch(e){}renderSaved();toast('Удалено')};
 $('recipe-name').addEventListener('input',e=>{S.name=e.target.value;persist()});
-function updSample(){$('sample-note').textContent=S.sample?'Сейчас открыт пример рецепта. Замените масла и веса на свои. ЖК — свободные жирные кислоты, МЖС — нейтральные жиры. ЧО, ПКЭ, Й и титр подставляются из базы, их можно поправить вручную.':'ЖК — свободные жирные кислоты, МЖС — нейтральные жиры. ЧО, ПКЭ, Й и титр подставляются из базы, их можно поправить вручную. Рецепт запоминается в этом браузере.'}
+function updSample(){$('sample-note').textContent=S.sample?'Сейчас открыт пример рецепта. Замените масла и веса на свои. ЧО, ПКЭ, Й и титр подставляются из базы, их можно поправить вручную.':'ЧО, ПКЭ, Й и титр подставляются из базы, их можно поправить вручную. Рецепт запоминается в этом браузере.'}
 
 // ---------- steps ----------
 function go(step){
@@ -366,6 +371,7 @@ const TERMS={
   'Способ':'Прямой способ: все жиры омыляются вместе, высаливания нет, мыло после омыления разливают в формы. Косвенный: сначала омыляют ядровые жиры, делают высолку, отделяют ядро от щёлока, затем при необходимости второе омыление и шлифование.',
   'Фаза':'Ядровые жиры (говяжий, свиной, пальмовое) дают твёрдое ядро. Клеевые (кокосовое, пальмоядровое, жидкие масла) плохо высаливаются. В прямом способе от этого зависит, сколько соли и щёлочи нужно для подвижности.',
   'ЖК':'Свободные жирные кислоты, например стеариновая или олеиновая. Омыляются сразу и целиком считаются жирными кислотами.',
+  'Тип':'«Масло» — обычные масла и жиры (МЖС): из 100 г получается 95 г жирных кислот, остальное уходит в глицерин. «Кислота» — чистые жирные кислоты (ЖК), например стеариновая: из 100 г получается 100 г. Тип ставится сам по названию сырья, но его можно поменять.',
   'МЖС':'Масложировая смесь: обычные (нейтральные) масла и жиры. В жирные кислоты пересчитываются с коэффициентом 0,95, потому что около 5% веса уходит в глицерин.',
   'ЧО':'Число омыления: сколько граммов KOH нужно, чтобы омылить 1 г жира. Для NaOH число делят на 1,403. Пример: говяжий жир 0,200, значит на 100 г нужно 20 г KOH или 14,3 г NaOH.',
   'ПКЭ':'Предельная концентрация электролита при 100 °С: сколько щёлочи или соли может быть в водной фазе, пока мыло ещё не высаливается. Воду считают так, чтобы раствор был на 0,5% слабее ПКЭ. Если у масла нет ПКЭ, впишите его вручную, иначе вода посчитается неверно.',
@@ -406,7 +412,7 @@ function disp(x){return S.unit==='p'?(S.total?+(x/S.total*100).toFixed(2):0):x}
 function setUnit(u){
   if(u==='p'){const s=S.oils.reduce((a,o)=>a+o.fa+o.mzs,0);if(s>0)S.total=+s.toFixed(2);}
   S.unit=u;$('u-g').setAttribute('aria-pressed',u==='g');$('u-p').setAttribute('aria-pressed',u==='p');
-  document.querySelectorAll('#oils .u-lab').forEach((e,i)=>e.textContent=(i?'МЖС':'ЖК')+(u==='p'?', %':', г'));
+  document.querySelectorAll('#oils .u-lab').forEach((e,i)=>e.textContent='Вес'+(u==='p'?', %':', г'));
   $('total').value=S.total||0;renderOils();calc();
 }
 $('u-g').onclick=()=>setUnit('g');$('u-p').onclick=()=>setUnit('p');

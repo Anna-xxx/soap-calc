@@ -58,8 +58,8 @@
       <table class="oils" id="oils">
         <thead><tr>
           <th>Сырьё</th><th>Фаза <button type="button" class="q" data-t="Фаза">?</button></th>
-          <th class="n"><span class="u-lab">ЖК, г</span> <button type="button" class="q" data-t="ЖК">?</button></th>
-          <th class="n"><span class="u-lab">МЖС, г</span> <button type="button" class="q" data-t="МЖС">?</button></th>
+          <th class="n"><span class="u-lab">Вес, г</span></th>
+          <th>Тип <button type="button" class="q" data-t="Тип">?</button></th>
           <th class="n">ЧО <button type="button" class="q" data-t="ЧО">?</button></th>
           <th class="n">ПКЭ, % <button type="button" class="q" data-t="ПКЭ">?</button></th>
           <th class="n">Й <button type="button" class="q" data-t="Й">?</button></th>
@@ -68,7 +68,7 @@
         </tr></thead>
         <tbody></tbody>
         <tfoot><tr>
-          <td colspan="2">Итого</td><td class="n" id="t-fa" data-label="ЖК, г"></td><td class="n" id="t-mzs" data-label="МЖС, г"></td>
+          <td colspan="2">Итого</td><td class="n" id="t-mzs" data-label="Вес, г"></td><td class="n" id="t-fa" data-label="Кислоты"></td>
           <td class="n" id="t-sap" data-label="ЧО смеси"></td><td class="n" id="t-pke" data-label="ПКЭ"></td><td class="n" id="t-iod" data-label="Й"></td><td class="n" id="t-titr" data-label="Титр"></td>
           <td class="n" id="t-p" data-label="Доля"></td><td class="n" id="t-naoh" data-label="NaOH, г"></td><td class="n" id="t-koh" data-label="KOH, г"></td><td></td>
         </tr></tfoot>
@@ -122,6 +122,7 @@
     </div>
     <div class="vpane" data-v="frac" hidden>
       <p class="note">Щёлочь частями. Следующую порцию вносите, когда предыдущая омылилась.</p>
+      <p class="note"><b>Как понять, что порция омылилась:</b> масса стала однородной и прозрачной, без жирных пятен на поверхности. Капля массы на стекле застывает прозрачной, без жирного ободка. Проба с фенолфталеином бледно-розовая или бесцветная: щёлочь израсходована. Если проба ярко-малиновая, щёлочь ещё не прореагировала, варите дальше.</p>
       <dl class="kv" id="frac"></dl>
     </div>
   </div>

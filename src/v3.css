@@ -266,4 +266,8 @@ details.more summary .note{grid-column:1/-1;grid-row:2}
 details.more summary::after{grid-column:2;grid-row:1}
 label.f{white-space:nowrap}
 .fields{grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr))}
+@media (min-width:761px){table.oils th:first-child{width:19%}table.oils th:nth-child(4){width:10.5%}table.oils th:nth-child(3){width:8%}}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+table.oils th{white-space:nowrap}
 </style>
