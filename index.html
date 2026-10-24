@@ -261,6 +261,14 @@ table.oils input,table.oils select{height:38px;min-height:38px}
 table.oils .btn.ghost{border-color:transparent;min-height:32px;padding:4px 8px}
 table.oils input,table.oils select{font-size:.85rem}
 table.oils td input{padding:4px 4px;font-size:.82rem}
+/* одно правило для элементов управления: радиус как у полей, высота 42 */
+.btn,.seg,.vtabs,details.more summary::after{border-radius:var(--r-s)}
+.seg button,.vtabs button{border-radius:calc(var(--r-s) - 3px);min-height:36px}
+.vtabs button{font-weight:600;font-size:.9rem}
+details.more summary::after{font-weight:600;font-size:.9rem;padding:9px 16px;border-color:var(--line);color:var(--ink)}
+details.more summary{display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 12px}
+details.more summary .note{grid-column:1/-1;grid-row:2}
+details.more summary::after{grid-column:2;grid-row:1}
 </style>
 </head>
 <body>
