@@ -22,7 +22,7 @@ function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout
 const SAMPLE={name:'Пример: хозяйственное',mode:'direct',oils:[
   {n:'Говяжий жир',ph:'core',fa:0,mzs:450},{n:'Свиное сало',ph:'core',fa:0,mzs:200},
   {n:'Кокосовое масло',ph:'glue',fa:0,mzs:250},{n:'Подсолнечное масло',ph:'glue',fa:0,mzs:100}],
-  adds:[{n:'Отдушка',p:1.5}],params:{cat:0,catkch:0,kch:70,kna:1.02,kk:1.04,share:100},sample:true};
+  adds:[{n:'Отдушка',p:1.5}],params:{cat:0,catkch:0,kch:70,kna:1.02,kk:1.04,share:100,two:false},sample:true};
 let S;
 function oilRow(o){const d=byName[o.n]||{};return {n:o.n||'',ph:o.ph||'core',fa:o.fa||0,mzs:o.mzs||0,
   sap:o.sap??d.sapK??0,pke:o.pke??(d.pke!=null?d.pke*100:0),iod:o.iod??d.iod??0,titr:o.titr??d.titr??''}}
@@ -76,13 +76,15 @@ $('add-add').onclick=()=>{S.adds.push({n:'',p:0});renderAdds();calc()};
 
 // ---------- params ----------
 const PARAMS=['cat','catkch','kch','kna','kk','share'];
-function setParams(){PARAMS.forEach(p=>$(p).value=S.params[p])}
+function setParams(){PARAMS.forEach(p=>$(p).value=S.params[p]);$('two').checked=!!S.params.two}
+$('two').onchange=()=>{S.params.two=$('two').checked;vis();modeTexts();calc()};
+function vis(){const ind=S.mode==='indirect',two=ind&&!!S.params.two;
+  document.querySelectorAll('.only-ind').forEach(e=>e.hidden=!ind);document.querySelectorAll('.only-two').forEach(e=>e.hidden=!two)}
 PARAMS.forEach(p=>$(p).addEventListener('input',()=>{S.params[p]=v(p);calc()}));
 function setMode(m,resetDefaults){
   S.mode=m;$('m-direct').setAttribute('aria-pressed',m==='direct');$('m-indirect').setAttribute('aria-pressed',m==='indirect');
   if(resetDefaults){Object.assign(S.params,m==='direct'?{kch:70,kna:1.02,kk:1.04}:{kch:60,kna:1.02,kk:1.111});setParams()}
-  document.querySelectorAll('#kch-fields .ind').forEach(e=>e.hidden=m!=='indirect');
-  document.querySelectorAll('#kch-fields .dir').forEach(e=>e.hidden=m!=='direct');
+  vis();
   modeTexts();calc();
 }
 $('m-direct').onclick=()=>setMode('direct',true);
@@ -91,20 +93,26 @@ $('m-indirect').onclick=()=>setMode('indirect',true);
 // ---------- calc ----------
 let R={};
 function calc(){
-  const P=S.params, ind=S.mode==='indirect';
-  let FA_=0,MZS=0,NA=0,K=0,core=0,glue=0;
-  S.oils.forEach(o=>{FA_+=o.fa;MZS+=o.mzs;const w=o.fa+o.mzs;NA+=o.sap/1.403*w;K+=o.sap*w;if(o.ph==='glue')glue+=w;else core+=w});
-  const O23=FA_+MZS;
+  const P=S.params, ind=S.mode==='indirect', two=ind&&!!P.two;
+  // two: клеевые жиры уходят во 2-е омыление, в 1-м считаются только ядровые
+  const in2=o=>two&&o.ph==='glue';
+  let FA_=0,MZS=0,NA=0,K=0,core=0,glue=0,FA2=0,MZS2=0,NA2=0,K2=0,ALL=0;
+  S.oils.forEach(o=>{const w=o.fa+o.mzs;ALL+=w;
+    if(in2(o)){FA2+=o.fa;MZS2+=o.mzs;NA2+=o.sap/1.403*w;K2+=o.sap*w;return}
+    FA_+=o.fa;MZS+=o.mzs;NA+=o.sap/1.403*w;K+=o.sap*w;if(o.ph==='glue')glue+=w;else core+=w});
+  const O23=FA_+MZS, O78=FA2+MZS2;
+  let pke2=0;
   let sapMix=0,pke=0,pkeNacl=0,iod=0,titr=0,titrW=0;
   const props={hard:[0,0],clean:[0,0],cond:[0,0],bub:[0,0],cream:[0,0]};
   const rows=document.querySelectorAll('#oils tbody tr');
   const warns=[];
-  S.oils.forEach((o,i)=>{const w=o.fa+o.mzs,p=div(w,O23)||0;
-    sapMix+=o.sap*p;pke+=o.pke/100*p;pkeNacl+=o.pke/100*1.15*p;iod+=o.iod*p;
-    const t=parseFloat(o.titr);if(ok(t)){titr+=t*p;titrW+=p}
-    const d=byName[o.n];if(d)for(const k in props)if(d[k]!=null){props[k][0]+=d[k]*p;props[k][1]+=p}
+  S.oils.forEach((o,i)=>{const w=o.fa+o.mzs,s2=in2(o),p=div(w,s2?O78:O23)||0,pa=div(w,ALL)||0;
+    if(s2)pke2+=o.pke/100*p;else{sapMix+=o.sap*p;pke+=o.pke/100*p;pkeNacl+=o.pke/100*1.15*p}
+    iod+=o.iod*pa;
+    const t=parseFloat(o.titr);if(ok(t)){titr+=t*pa;titrW+=pa}
+    const d=byName[o.n];if(d)for(const k in props)if(d[k]!=null){props[k][0]+=d[k]*pa;props[k][1]+=pa}
     if(w>0&&!o.pke)warns.push(o.n||'строка '+(i+1));
-    const tr=rows[i];if(tr){tr.querySelector('[data-o=p]').textContent=pc(p,1);tr.querySelector('[data-o=na]').textContent=g(o.sap/1.403*w);tr.querySelector('[data-o=k]').textContent=g(o.sap*w)}
+    const tr=rows[i];if(tr){tr.querySelector('[data-o=p]').textContent=pc(p,1)+(s2?' 2-е':'');tr.querySelector('[data-o=na]').textContent=g(o.sap/1.403*w);tr.querySelector('[data-o=k]').textContent=g(o.sap*w)}
   });
   $('oil-warn').textContent=warns.length?`Нет ПКЭ для: ${warns.join(', ')}. ПКЭ смеси занижена, вода по ПКЭ и размер дозы считаются неверно. Впишите ПКЭ вручную.`:'';
   const C2=O23+P.cat;
@@ -119,7 +127,7 @@ function calc(){
   const D16=C16?F24/C16/2:NaN, D17=C17?G24/C17/2:NaN;
   const D20=C16>1?(F24-D16)/(C16-1):NaN, D21=C17>1?(G24-D17)/(C17-1):NaN;
   const A48=A47-F24-C2, A49=A47-G24-C2;
-  R={FA_,MZS,O23,C2,C6,NA,K,F24,G24,K22,K23,M22,M23,sapMix,C7,C8,ind};
+  R={FA_,MZS,O23,C2,C6,NA,K,F24,G24,K22,K23,M22,M23,sapMix,C7,C8,ind,two,A47,FA2,MZS2,O78,NA2,K2,pke2};
 
   const P_=S.unit==='p';
   $('t-fa').textContent=P_?pc(div(FA_,S.total)||0,1):g(FA_);$('t-mzs').textContent=P_?pc(div(MZS,S.total)||0,1):g(MZS);
@@ -128,10 +136,10 @@ function calc(){
   $('unit-note').className='note'+(P_&&Math.abs(sumP-100)>0.05?' bad':'');
   $('unit-note').textContent=P_?(Math.abs(sumP-100)>0.05?`Сумма процентов ${nf2.format(sumP)}%, должна быть 100%.`:'Сумма 100%. Измените общий вес, и граммы пересчитаются.'):'Впишите другой общий вес, и все масла пересчитаются в той же пропорции.';$('t-sap').textContent=nf3.format(sapMix);
   $('t-pke').textContent=pc(K22);$('t-iod').textContent=g(iod);$('t-titr').textContent=titrW?g(titr/titrW):'—';
-  $('t-p').textContent=pc(div(O23,O23)||0,0);$('t-naoh').textContent=g(NA);$('t-koh').textContent=g(K);
+  $('t-p').textContent=two?'1-е':pc(div(O23,O23)||0,0);$('t-naoh').textContent=g(NA);$('t-koh').textContent=g(K);
 
   const tiles=[['Смесь, г',g(C2),'с катализатором'],['Жирн. кислот, г',g(C6),'МЖС × 0,95 + ЖК'],
-    ['NaOH, г',g(F24),'с Кщ и избытком','lye'],['KOH, г',g(G24),'с Кщ и избытком','lye'],
+    ['NaOH, г',g(F24),two?'1-е омыление':'с Кщ и избытком','lye'],['KOH, г',g(G24),two?'1-е омыление':'с Кщ и избытком','lye'],
     ['ПКЭ NaOH',pc(K22),'при 100 °С'],['Йодное число',g(iod),iod>55?'выше 55':'норма до 55']];
   $('tiles').innerHTML=tiles.map(([l,val,u,c])=>`<div class="tile ${c||''}"><span class="l">${l}</span><span class="v">${val}</span><span class="u">${u}</span></div>`).join('');
 
@@ -186,7 +194,9 @@ function calcSalt(){
   const keNa=div(v('ke-na'),wfNa), keK=div(v('ke-k'),wfK);
   kv('mass',[['Вес массы в котле (нетто)',g(mass)+' г'],['Безводное мыло натровое',g(anNa)+' г','ЖК × 1,08'],['Безводное мыло калийное',g(anK)+' г','ЖК × 1,14'],
     ['Водная фаза натровое',g(wfNa)+' г','масса в котле − безводное мыло'],['Водная фаза калийное',g(wfK)+' г'],
-    ['КЧ при варке (фактическое)',pc(div(C6,mass))]]);
+    ['КЧ при варке (фактическое)',pc(div(C6,mass))],
+    ['Расчётный вес при желаемом КЧ',g(R.A47)+' г',`КЧ ${g(P.kch)}%`],
+    mass>0&&ok(R.A47)?['Разница с расчётом',(mass>=R.A47?'+':'−')+g(Math.abs(mass-R.A47))+' г',mass>R.A47?'тяжелее расчётного: в массе больше воды':'легче расчётного: воды меньше, чем нужно для желаемого КЧ']:null]);
   const reqNa=v('ke-req-na')/100, reqK=v('ke-req-k')/100;
   kv('ke',[['КЭ в водной фазе натр. (факт)',pc(keNa)],['КЭ в водной фазе кали. (факт)',pc(keK)],
     ['Понижение КЭ: долить воды, натр.',g(v('ke-na')/(reqNa*100)*100-wfNa)+' мл',`до ${pc(reqNa)}`,1],
@@ -202,12 +212,25 @@ function calcSalt(){
     ['NaOH 20% р-р для калийного мыла',g(((keK*wfK-K23*wfK)/(K23-0.2))/1.403*Kna)+' г',null,1],
     ['NaCl для натрового мыла, сухое в-во',g(wfNa/(100-(M22*100))*100-wfNa-v('ke-na'))+' г']]);
 
+  const core=v('w-core'),glue1=v('w-glue'),lye1=v('w-lye');
+  const kchCore=div(C6-lye1*0.01-glue1*0.3,core), kc=ok(kchCore)?kchCore:0, wcore=core-core*kc*1.03;
+  if(ind)kv('core1out',[['КЧ ядра (основы)',pc(kchCore),'(ЖК − щёлок × 1% − клей × 30%) / вес ядра',1],
+    ['Вода в ядре',core?g(wcore)+' г':'—','вес ядра − ЖК ядра × 1,03'],
+    ['Соль при растапливании ядра',core?g(core*0.004)+'–'+g(core*0.005)+' г':'—','0,4–0,5% от массы, если соли в ядре нет']]);
+  if(R.two)calcSap2(core,kc,wcore);
+  const chip=k=>ok(k)?` <span class="chip ${k>=0.74?'ok':k>=0.64?'warn':'bad'}">${k>=0.74?'туалетное по ГОСТ':k>=0.64?'хозяйственное по ГОСТ':'ниже ГОСТ'}</span>`:'';
+  const fin=v('w-final'),sf=v('w-sf');
   if(ind){
-    const core=v('w-core');
-    kv('kchout',[['Качественное число основы (итог.)',pc(div(C6-v('w-lye')*0.01-v('w-glue')*0.3,core)),'(ЖК − щёлок × 1% − клей × 30%) / вес ядра'],['Соль при растапливании ядра',core?g(core*0.004)+'–'+g(core*0.005)+' г':'—','0,4–0,5% от массы, если соли в ядре нет']]);
+    // КЧ основы и готового мыла по шаблону: ЖК 1-го омыления (+ клеевая МЖС 2-го) минус потери с клеем и щёлоком
+    const base=C6-glue1*0.3-lye1*0.01+(R.two?R.MZS2*0.95+R.FA2-v('w-glue2')*0.3:0);
+    const coreF=R.two?v('w-core2'):core, kchF=div(base+sf*0.95,fin);
+    kv('kchout',[[R.two?'КЧ шлифованного ядра':'Качественное число основы (итог.)',pc(div(base,coreF)),R.two?'по весу шлифованного ядра':'из итога полной высолки'],
+      R.two&&v('w-lye2')>0?['<span class="chip bad">Шлифование не удалось</span>','','после шлифования не должно быть подмыльного щёлока, только ядро и клей; массу нужно переделывать']:null,
+      ['Качественное число готового мыла',pc(kchF)+chip(kchF),'(ЖК + SF × 0,95) / вес перед разливом',1],
+      ['Доля безводного мыла NaOH',fin?g(fin*kchF*1.08)+' г':'—'],['Водная фаза и неомыленное, NaOH',fin?g(fin-fin*kchF*1.08-(R.MZS+R.MZS2)*0.05)+' г':'—']]);
   }else{
-    const fin=v('w-final'),kch=div(C6+v('w-sf')*0.95,fin);
-    kv('kchout',[['Качественное число готового мыла',pc(kch)+(ok(kch)?` <span class="chip ${kch>=0.74?'ok':kch>=0.64?'warn':'bad'}">${kch>=0.74?'туалетное по ГОСТ':kch>=0.64?'хозяйственное по ГОСТ':'ниже ГОСТ'}</span>`:''),'(ЖК + SF × 0,95) / вес перед разливом'],
+    const kch=div(C6+sf*0.95,fin);
+    kv('kchout',[['Качественное число готового мыла',pc(kch)+chip(kch),'(ЖК + SF × 0,95) / вес перед разливом'],
       ['Соль при растапливании ядра',fin?g(fin*0.004)+'–'+g(fin*0.005)+' г':'—','0,4–0,5% от массы, если соли в ядре нет'],
       ['Доля безводного мыла NaOH',g(C6*1.08)+' г'],['Доля безводного мыла KOH',g(C6*1.14)+' г'],
       ['Водная фаза и неомыленное, NaOH',g(fin-C6*1.08)+' г'],['Водная фаза и неомыленное, KOH',g(fin-C6*1.14)+' г']]);
@@ -215,12 +238,58 @@ function calcSalt(){
   const fm=v('fa-mass');const iNa=fm*v('fa-na')/100,iK=fm*v('fa-k')/100;
   kv('free',[['Натровое: щёлочи в массе',g(iNa)+' г'],['Натровое: % в водной фазе',pc(div(iNa,wfNa),3)],['Калийное: щёлочи в массе',g(iK)+' г'],['Калийное: % в водной фазе',pc(div(iK,wfK),3)]]);
   const exNa=mass*v('ff-na')/100, exK=mass*v('ff-k')/100;
-  kv('neut',[['Избыток NaOH',g(exNa)+' г'],['МЖС для нейтрализации NaOH',g(div(exNa,R.sapMix/1.403))+' г','избыток / (ЧО смеси / 1,403)',1],
-    ['Избыток KOH',g(exK)+' г'],['МЖС для нейтрализации KOH',g(div(exK,R.sapMix))+' г','избыток / ЧО смеси',1]]);
+  const nOil=byName[$('neut-oil').value], sapN=nOil&&nOil.sapK?nOil.sapK:R.sapMix, nName=nOil&&nOil.sapK?nOil.n:'смеси', nw=v('neut-w');
+  kv('neut',[['Избыток NaOH',g(exNa)+' г'],['Жира для нейтрализации NaOH',g(div(exNa,sapN/1.403))+' г',`избыток / (ЧО ${nName} / 1,403)`,1],
+    ['Избыток KOH',g(exK)+' г'],['Жира для нейтрализации KOH',g(div(exK,sapN))+' г',`избыток / ЧО ${nName}`,1],
+    nw?['Этот жир погасит',`${g(nw*sapN/1.403)} г NaOH или ${g(nw*sapN)} г KOH`,`${g(nw)} г, ЧО ${nf3.format(sapN)}`]:null]);
 }
-['brutto','tare','ke-na','ke-k','ke-req-na','ke-req-k','w-core','w-glue','w-lye','w-sf','w-final','fa-mass','fa-na','fa-k','ff-na','ff-k'].forEach(id=>$(id).addEventListener('input',calcSalt));
-$('pot').innerHTML=POTS.map((p,i)=>`<option value="${i}">${p[0]}${p[1]?' — '+nf0.format(p[1])+' г':''}</option>`).join('');
-$('pot').onchange=()=>{const p=POTS[+$('pot').value];if(p[1])$('tare').value=p[1];calcSalt()};
+// 2-е омыление косвенного способа (лист «Косвенный», строки 56–112)
+function calcSap2(core,kc,wcore){
+  const {K22,MZS2,FA2,O78,NA2,K2,pke2}=R;const P=S.params;
+  const fa2=MZS2*0.95+core*kc+FA2;
+  const F77=NA2*P.kna, G77=K2*P.kk;
+  const F79=F77-v('rest-na')+F77*0.02, G79=G77-v('rest-k')+G77*0.05;
+  // ПКЭ с учётом ядра: ядро (ПКЭ 1-го омыления − 0,5% на глицерин) и клеевая МЖС по долям
+  const I82=core*kc, I84=I82+O78, M82=div(I82,I84)||0, M83=div(O78,I84)||0;
+  const J84=((K22*100)-0.5)/100*M82+pke2*M83, K84=J84*1.71, L84=J84*1.15;
+  const A99=J84?F79/((J84*100)-0.5)*100-F79-O78-wcore:NaN, A100=K84?G79/((K84*100)-0.5)*100-G79-O78-wcore:NaN;
+  const wNa=A99<F79?F79:A99, wK=A100<G79?G79:A100, m70=core+O78+F79, m71=core+O78+G79;
+  kv('sap2',[['Клеевая МЖС',g(O78)+' г','клеевые жиры из рецепта'],['Ядро из 1-го омыления',g(core)+' г',`КЧ ядра ${pc(kc)}`],['Вода в ядре',g(wcore)+' г'],
+    ['Жирных кислот всего',g(fa2)+' г','МЖС × 0,95 + ядро × КЧ + ЖК'],
+    ['NaOH итого',g(F79)+' г','× Кщ − остаток в ядре + 2%',1],['KOH итого',g(G79)+' г','× Кщ − остаток в ядре + 5%',1],
+    ['ПКЭ клеевой МЖС NaOH / KOH',`${pc(pke2)} / ${pc(pke2*1.403)}`],
+    ['ПКЭ с учётом ядра NaOH / KOH / NaCl',`${pc(J84)} / ${pc(K84)} / ${pc(L84)}`,'по долям ядра и МЖС, −0,5% на глицерин'],
+    ['Вода при омылении NaOH',g(wNa)+' г','при полном внесении щёлочи',1],['Вода при омылении KOH',g(wK)+' г',null,1],
+    ['Вес массы в котле (расчёт.) NaOH / KOH',`${g(m70)} / ${g(m71)} г`],['КЧ расчётное',pc(div(fa2,m70))]]);
+  const salt=core*0.01+O78*0.04, alk=core*0.008+O78*0.032;
+  kv('mob2',[['NaCl 20% р-р: соль',g(salt)+' г','1% от ядра + 4% от клеевой МЖС',1],['NaCl 20% р-р: вода',g(salt*4)+' г'],
+    ['NaOH/KOH 50% р-р: щёлочь',g(alk)+' г','0,8% от ядра + 3,2% от клеевой МЖС',1],['NaOH/KOH 50% р-р: вода',g(alk)+' г'],
+    ['40% р-р NaOH: вода',g(F77/40*100-F77)+' г',`на ${g(F77)} г NaOH`],['40% р-р KOH: вода',g(G77/40*100-G77)+' г',`на ${g(G77)} г KOH`]]);
+  const m2=v('brutto2')-v('tare2'), wf2=m2-fa2*1.08, ke2=v('ke2'), req=v('ke2-req')/100, k87=div(ke2,wf2);
+  kv('part2',[['Вес массы в котле (нетто)',g(m2)+' г'],['КЧ фактическое',pc(div(fa2,m2))],['Безводное мыло (натровое)',g(fa2*1.08)+' г','ЖК × 1,08'],
+    ['Водная фаза',g(wf2)+' г','масса − безводное мыло'],['КЭ в водной фазе (факт)',pc(k87)],
+    ['NaCl 20% р-р',g(((k87*1.15)*m2-(req*1.15)*m2)/(req-0.2))+' г',`чтобы довести КЭ до ${pc(req)}`,1],
+    ['или NaOH 50% р-р',g(((k87*m2-req*m2)/(req-0.5))*P.kna)+' г',null,1],
+    ['Понижение КЭ: долить воды',ke2/(req*100)*100-wf2>0?g(ke2/(req*100)*100-wf2)+' мл':'не нужно','если КЭ выше нужной']]);
+  kv('full2',[['ПКЭ для высолки',pc(J84)],['NaCl 20% р-р для натрового мыла',g(((k87*1.15)*wf2-(J84*1.15)*wf2)/(J84-0.2))+' г',null,1],
+    ['NaOH 20% р-р для натрового мыла',g(((k87*wf2-J84*wf2)/(J84-0.2))*P.kna)+' г',null,1]]);
+}
+['brutto','tare','ke-na','ke-k','ke-req-na','ke-req-k','w-core','w-glue','w-lye','w-sf','w-final','fa-mass','fa-na','fa-k','ff-na','ff-k',
+ 'rest-na','rest-k','brutto2','tare2','ke2','ke2-req','w-core2','w-glue2','w-lye2','neut-oil','neut-w'].forEach(id=>$(id).addEventListener('input',calcSalt));
+// котлы: встроенные из шаблона + свои, сохранённые в браузере
+function myPots(){try{return JSON.parse(localStorage.getItem('soap.pots'))||[]}catch(e){return[]}}
+function allPots(){return POTS.concat(myPots().map(p=>[p[0],p[1],1]))}
+function renderPots(){const L=allPots();['pot','pot2'].forEach(id=>{const s=$(id),cur=s.value;
+  s.innerHTML=L.map((p,i)=>`<option value="${i}">${p[2]?'★ ':''}${String(p[0]).replace(/</g,'&lt;')}${p[1]?' — '+nf0.format(p[1])+' г':''}</option>`).join('');
+  if(cur&&+cur<L.length)s.value=cur})}
+[['pot','tare'],['pot2','tare2']].forEach(([s,t])=>$(s).onchange=()=>{const p=allPots()[+$(s).value];if(p&&p[1])$(t).value=p[1];calcSalt()});
+$('pot-save').onclick=()=>{const n=$('pot-name').value.trim(),w=v('tare');
+  if(!n){toast('Впишите название котла');$('pot-name').focus();return}if(!(w>0)){toast('Сначала впишите вес тары');return}
+  const L=myPots().filter(p=>p[0]!==n);L.push([n,w]);try{localStorage.setItem('soap.pots',JSON.stringify(L))}catch(e){}
+  renderPots();$('pot').value=POTS.length+L.length-1;$('pot-name').value='';toast('Котёл запомнен в этом браузере')};
+$('pot-del').onclick=()=>{const i=+$('pot').value-POTS.length;if(i<0){toast('Удалить можно только свой котёл, отмеченный ★');return}
+  const L=myPots();L.splice(i,1);try{localStorage.setItem('soap.pots',JSON.stringify(L))}catch(e){}$('pot').value='0';renderPots();toast('Удалено')};
+renderPots();
 
 // ---------- reference ----------
 function calcRef(){
@@ -311,6 +380,7 @@ const TERMS={
   'КЭ':'Концентрация электролитов: сколько щёлочи и соли растворено в водной фазе, %. Водная фаза = масса в котле минус безводное мыло. По КЭ видно, как ведёт себя масса: от «стоит колом» до разделения на ядро и щёлок.',
   'Высолка':'Полная высолка: в массу добавляют соль или щёлочь, пока она не разделится на ядро (мыло сверху) и подмыльный щёлок (снизу). Отстаивать до затвердения ядра или 2–4 часа, щёлок слить через нижний кран.',
   'Шлифование':'КЭ доводят до уровня, при котором масса делится на клей и ядро. Отстаивать при 80–99 °С от 12 до 36 часов. Удачно, если деление произошло, а проба ядра с фенолфталеином бесцветная или чуть розовая.',
+  '2-е омыление':'В косвенном способе ядро после полной высолки смешивают с клеевыми жирами (кокосовое, пальмоядровое, жидкие масла) и омыляют ещё раз. Щёлочь считается только на новые жиры, минус остаток щёлочи в ядре, если его определили титрованием. Затем частичная высолка (шлифование) при КЭ около 2,2% в водной фазе: масса делится на туалетное ядро и подмыльный клей.',
   'SF':'Пережир: масло, которое вносят в конце и которое остаётся неомылённым. Учитывается в КЧ готового мыла с коэффициентом 0,95.',
   'ФФ':'Фенолфталеин: проба на свободную щёлочь. Малиновый цвет значит избыток щёлочи. По проценту избытка калькулятор считает, сколько жира добавить для нейтрализации.'
 };
@@ -328,6 +398,7 @@ function modeTexts(){
     :'Заложите в котёл все жиры по рецепту сразу, ядровые и клеевые. Влейте воду и щёлочь по расчёту, варите до полного омыления. Взвесьте массу и проверьте концентрацию электролитов: масса должна быть однородной и подвижной.';
   $('todo-4').innerHTML=ind
     ?'<p>Полная высолка: добавьте соль или щёлочь по расчёту ниже, пока масса не разделится на ядро и подмыльный щёлок. Отстаивайте до затвердения ядра или 2–4 часа и слейте щёлок через нижний кран.</p><p>При гарантированно чистом сырье для хозяйственного мыла можно сразу высолить на 2 фазы, клей и ядро (по сути шлифование). Тогда после удачного деления варка окончена.</p>'
+    +(S.params.two?'<p>Затем 2-е омыление: к ядру добавляют клеевые жиры, омыляют и шлифуют. Расчёт ниже, после итога высолки.</p>':'')
     :'<p>В прямом способе высолки нет: после омыления мыло разливают в формы. Этот этап пропускайте.</p><p>Расчёты ниже нужны для мраморного (эшвегерского) мыла, где перед разливом ставят такую концентрацию электролитов, чтобы мыло в форме само разделилось на ядро и клей.</p>';
 }
 

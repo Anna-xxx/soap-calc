@@ -102,7 +102,9 @@
       <label class="f" for="share">Доля NaOH в смеси щелочей, % <button type="button" class="q" data-t="Доля">?</button><input class="n manual" id="share" type="number" step="any" value="100"></label>
       <label class="f" for="cat">Катализатор, г <button type="button" class="q" data-t="Катализатор">?</button><input class="n manual" id="cat" type="number" step="any" value="0"></label>
       <label class="f" for="catkch">КЧ катализатора, %<input class="n manual" id="catkch" type="number" step="any" value="0"></label>
+      <label class="f check only-ind" for="two"><input type="checkbox" id="two"> Клеевые жиры ввести во 2-м омылении <button type="button" class="q" data-t="2-е омыление">?</button></label>
     </div>
+    <p class="note only-two">Щёлочь и вода на этом этапе считаются только на ядровые жиры. Клеевые жиры из рецепта посчитаны во 2-м омылении на этапе «Высолка».</p>
   </div>
   <div class="block">
     <header><h2>Что отвесить</h2><span class="note">для полного внесения щелочей; для дробного смотрите вариант Б ниже</span></header>
@@ -155,6 +157,11 @@
         <label class="f" for="tare">Вес тары, г<input class="n manual" id="tare" type="number" step="any" value="0"></label>
         <label class="f" for="brutto">Вес с массой (брутто), г<input class="n manual" id="brutto" type="number" step="any" value="0"></label>
       </div>
+      <div class="row">
+        <input id="pot-name" placeholder="Название котла" aria-label="Название котла" style="flex:1;min-width:140px">
+        <button class="btn" id="pot-save" type="button">Запомнить котёл</button>
+        <button class="btn ghost" id="pot-del" type="button">Удалить из списка</button>
+      </div>
       <dl class="kv" id="mass"></dl>
     </div>
     <div class="block">
@@ -204,6 +211,56 @@
       <tbody><tr><td>52–54%</td><td class="n">1,30%</td><td class="n">2,80%</td></tr><tr><td>54–56%</td><td class="n">1,00%</td><td class="n">2,20%</td></tr><tr><td>56–58%</td><td class="n">0,80%</td><td class="n">1,90%</td></tr></tbody></table></div>
     </div>
   </div>
+  <div class="block only-ind">
+    <header><h2>Итог полной высолки</h2><span class="note">взвесьте ядро, клей и щёлок после отстаивания</span></header>
+    <div class="fields">
+      <label class="f" for="w-core">Вес ядра, г<input class="n manual" id="w-core" type="number" step="any" value="0"></label>
+      <label class="f" for="w-glue">Вес подмыльного клея, г<input class="n manual" id="w-glue" type="number" step="any" value="0"></label>
+      <label class="f" for="w-lye">Вес 1-го подмыльного щёлока, г<input class="n manual" id="w-lye" type="number" step="any" value="0"></label>
+    </div>
+    <dl class="kv" id="core1out"></dl>
+    <p class="note">Высолку можно повторять сколько угодно раз: меняйте вес и КЭ, пока не получится нужное ядро. Обычно КЧ ядра 50–60%, выше 60% — отличный результат.</p>
+  </div>
+  <div class="only-two">
+    <div class="todo">
+      <span class="big">2</span><h3>2-е омыление · что сделать</h3>
+      <p>Смешайте ядро с клеевыми жирами из рецепта и омыляйте снова. Если титровали ядро, впишите остаток щёлочи в нём: он вычтется из расчёта. Не титровали — оставьте ноль.</p>
+    </div>
+    <div class="grid2">
+      <div class="block">
+        <header><h2>2-е омыление: клеевые жиры к ядру</h2><button type="button" class="q" data-t="2-е омыление">?</button></header>
+        <div class="fields">
+          <label class="f" for="rest-na">Остаток NaOH в ядре, г<input class="n manual" id="rest-na" type="number" step="any" value="0"></label>
+          <label class="f" for="rest-k">Остаток KOH в ядре, г<input class="n manual" id="rest-k" type="number" step="any" value="0"></label>
+        </div>
+        <dl class="kv" id="sap2"></dl>
+      </div>
+      <div class="block">
+        <header><h2>Подвижность и растворы</h2><button type="button" class="q" data-t="Подвижность">?</button></header>
+        <dl class="kv" id="mob2"></dl>
+        <p class="note">Если во 2-м омылении только клеевая МЖС, щёлочь можно вносить 40%-м раствором.</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="block">
+        <header><h2>Частичная высолка и шлифование</h2><button type="button" class="q" data-t="Шлифование">?</button></header>
+        <div class="fields">
+          <label class="f" for="pot2">Котёл<select id="pot2"></select></label>
+          <label class="f" for="tare2">Вес тары, г<input class="n manual" id="tare2" type="number" step="any" value="0"></label>
+          <label class="f" for="brutto2">Вес с массой (брутто), г<input class="n manual" id="brutto2" type="number" step="any" value="0"></label>
+          <label class="f" for="ke2">КЭ натр. в водной фазе, г<input class="n manual" id="ke2" type="number" step="any" value="0"></label>
+          <label class="f" for="ke2-req">Нужная КЭ в водной фазе, %<input class="n manual" id="ke2-req" type="number" step="any" value="2.2"></label>
+        </div>
+        <dl class="kv" id="part2"></dl>
+        <p class="note">Для шлифования обычно нужна КЭ 2,2–2,3% в водной фазе.</p>
+      </div>
+      <div class="block">
+        <header><h2>Полная высолка после 2-го омыления</h2><span class="note">если понадобится</span></header>
+        <dl class="kv" id="full2"></dl>
+        <p class="note">ПКЭ взята с учётом ядра. КЭ берётся из блока слева.</p>
+      </div>
+    </div>
+  </div>
   <details class="block more">
     <summary><h2>Если нужно: преснение и повторная высолка</h2></summary>
     <p>Повторная полная или трёхфазная высолка делается после охлаждения и разогрева ядра, если ядро многоводное или в нём избыток электролитов. Трёхфазная лучше чистит от примесей и электролитов, но потери ЖК выше.</p>
@@ -222,11 +279,11 @@
     <div class="block">
       <header><h2>Качественное число</h2><button type="button" class="q" data-t="КЧ">?</button></header>
       <div class="fields" id="kch-fields">
-        <label class="f ind" for="w-core">Вес ядра, г<input class="n manual" id="w-core" type="number" step="any" value="0"></label>
-        <label class="f ind" for="w-glue">Вес подмыльного клея, г<input class="n manual" id="w-glue" type="number" step="any" value="0"></label>
-        <label class="f ind" for="w-lye">Вес 1-го подмыльного щёлока, г<input class="n manual" id="w-lye" type="number" step="any" value="0"></label>
-        <label class="f dir" for="w-sf">Пережир SF, г <button type="button" class="q" data-t="SF">?</button><input class="n manual" id="w-sf" type="number" step="any" value="0"></label>
-        <label class="f dir" for="w-final">Вес перед разливом, г<input class="n manual" id="w-final" type="number" step="any" value="0"></label>
+        <label class="f only-two" for="w-core2">Вес шлифованного ядра, г<input class="n manual" id="w-core2" type="number" step="any" value="0"></label>
+        <label class="f only-two" for="w-glue2">Подмыльный клей после шлифования, г<input class="n manual" id="w-glue2" type="number" step="any" value="0"></label>
+        <label class="f only-two" for="w-lye2">Подмыльный щёлок после шлифования, г<input class="n manual" id="w-lye2" type="number" step="any" value="0"></label>
+        <label class="f" for="w-sf">Пережир SF, г <button type="button" class="q" data-t="SF">?</button><input class="n manual" id="w-sf" type="number" step="any" value="0"></label>
+        <label class="f" for="w-final">Вес перед разливом, г<input class="n manual" id="w-final" type="number" step="any" value="0"></label>
       </div>
       <dl class="kv" id="kchout"></dl>
     </div>
@@ -235,6 +292,8 @@
       <div class="fields">
         <label class="f" for="ff-na">Проба ФФ, % NaOH<input class="n manual" id="ff-na" type="number" step="any" value="0"></label>
         <label class="f" for="ff-k">Проба ФФ, % KOH<input class="n manual" id="ff-k" type="number" step="any" value="0"></label>
+        <label class="f" for="neut-oil">Чем нейтрализовать<input id="neut-oil" list="oil-names" placeholder="смесь рецепта"></label>
+        <label class="f" for="neut-w">Вес этого жира, г<input class="n manual" id="neut-w" type="number" step="any" value="0"></label>
       </div>
       <dl class="kv" id="neut"></dl>
       <p class="note">Масса берётся из этапа 3. Ориентиры пробы: более 0,3%, 0,2%, 0,1%, менее 0,1%.</p>
