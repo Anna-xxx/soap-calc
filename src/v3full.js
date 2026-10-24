@@ -16,7 +16,7 @@ const div=(a,b)=>b?a/b:NaN;
 function onlyLye(rows){const sh=+S.params.share;return rows.filter(r=>{if(!r)return 0;const a=/NaOH/.test(r[0]),b=/KOH/.test(r[0]);if(a&&!b&&sh<=0)return 0;if(b&&!a&&sh>=100)return 0;return 1}).map(r=>sh>=100||sh<=0?[r[0].replace(/ NaOH \/ KOH| NaOH| KOH|, NaOH|, KOH/g,'').replace(/^(ПКЭ)$/,'ПКЭ щёлочи').replace(/^ПКЭ NaCl \/ на$/,'ПКЭ NaCl'),...r.slice(1)].map((x,i)=>i===1&&/ \/ /.test(x)?x.split(' / ')[sh>=100?0:1].replace(/^(?!.* г$)(.*\d)$/,'$1')+(/ г$/.test(x)&&!/ г$/.test(x.split(' / ')[sh>=100?0:1])?' г':''):x):r)}
 function LYE(){const sh=+S.params.share;return sh>=100?'NaOH':sh<=0?'KOH':'NaOH/KOH'}
 function kv(el,rows){
-  $(el).innerHTML=rows.filter(Boolean).map(([k,val,sub,hl])=>`<div class="${hl?'hl':''}"><dt>${k}${sub?`<small>${sub}</small>`:''}</dt><dd>${val}</dd></div>`).join('');
+  $(el).innerHTML=rows.filter(Boolean).map(([k,val,sub,hl])=>(val=typeof val==='string'&&/^-\d/.test(val)?'—'+(val.match(/ (г|мл)$/)?' '+val.match(/ (г|мл)$/)[1]:''):val,0)||`<div class="${hl?'hl':''}"><dt>${k}${sub?`<small>${sub}</small>`:''}</dt><dd>${val}</dd></div>`).join('');
 }
 function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,1800)}
 
@@ -198,16 +198,16 @@ function calcSalt(){
   const {C6,K22,K23,M22,M23,ind}=R;const P=S.params;
   const mass=v('brutto')-v('tare');
   const anNa=C6*1.08, anK=C6*1.14, wfNa=mass-anNa, wfK=mass-anK;
-  const keNa=div(v('ke-na'),wfNa), keK=div(v('ke-k'),wfK);
+  const M=mass>0,D=(x,u)=>M?x+u:'— '+u.trim();const keNa=M?div(v('ke-na'),wfNa):NaN, keK=M?div(v('ke-k'),wfK):NaN;
   kv('mass',[['Вес массы в котле (нетто)',g(mass)+' г'],['Безводное мыло натровое',g(anNa)+' г','ЖК × 1,08'],['Безводное мыло калийное',g(anK)+' г','ЖК × 1,14'],
-    ['Водная фаза натровое',g(wfNa)+' г','масса в котле − безводное мыло'],['Водная фаза калийное',g(wfK)+' г'],
+    ['Водная фаза натровое',D(g(wfNa),' г'),'масса в котле − безводное мыло'],['Водная фаза калийное',D(g(wfK),' г')],
     ['КЧ при варке (фактическое)',pc(div(C6,mass))],
     ['Расчётный вес при желаемом КЧ',g(R.A47)+' г',`КЧ ${g(P.kch)}%`],
     mass>0&&ok(R.A47)?['Разница с расчётом',(mass>=R.A47?'+':'−')+g(Math.abs(mass-R.A47))+' г',mass>R.A47?'тяжелее расчётного: в массе больше воды':'легче расчётного: воды меньше, чем нужно для желаемого КЧ']:null]);
   const reqNa=v('ke-req-na')/100, reqK=v('ke-req-k')/100;
   kv('ke',[['КЭ в водной фазе натр. (факт)',pc(keNa)],['КЭ в водной фазе кали. (факт)',pc(keK)],
-    ['Понижение КЭ: долить воды, натр.',g(v('ke-na')/(reqNa*100)*100-wfNa)+' мл',`до ${pc(reqNa)}`,1],
-    ['Понижение КЭ: долить воды, кали.',g(v('ke-k')/(reqK*100)*100-wfK)+' мл',`до ${pc(reqK)}`,1]]);
+    ['Понижение КЭ: долить воды, натр.',D(g(v('ke-na')/(reqNa*100)*100-wfNa),' мл'),`до ${pc(reqNa)}`,1],
+    ['Понижение КЭ: долить воды, кали.',D(g(v('ke-k')/(reqK*100)*100-wfK),' мл'),`до ${pc(reqK)}`,1]]);
   const sc=[['< 0,5%','стоит колом',0,.005],['0,5%','густая, как студень',.005,.0051],['0,5–1,0%','однородная подвижная',.0051,.01],['1,0–3,0%','мутнеет, клей и ядро',.01,.03],['3,0–3,5%','щёлок/клей/ядро',.03,.035],['3,5% – ПКЭ','высаливание щёлок/ядро',.035,9]];
   $('ke-scale').innerHTML=sc.map(s=>`<div class="${ok(keNa)&&v('ke-na')>0&&keNa>=s[2]&&keNa<s[3]?'on':''}"><b>${s[0]}</b>${s[1]}</div>`).join('');
 
@@ -243,7 +243,7 @@ function calcSalt(){
       ['Водная фаза и неомыленное, NaOH',g(fin-C6*1.08)+' г'],['Водная фаза и неомыленное, KOH',g(fin-C6*1.14)+' г']]);
   }
   const fm=v('fa-mass');const iNa=fm*v('fa-na')/100,iK=fm*v('fa-k')/100;
-  kv('free',[['Натровое: щёлочи в массе',g(iNa)+' г'],['Натровое: % в водной фазе',pc(div(iNa,wfNa),3)],['Калийное: щёлочи в массе',g(iK)+' г'],['Калийное: % в водной фазе',pc(div(iK,wfK),3)]]);
+  kv('free',[['Натровое: щёлочи в массе',g(iNa)+' г'],['Натровое: % в водной фазе',M?pc(div(iNa,wfNa),3):'—'],['Калийное: щёлочи в массе',g(iK)+' г'],['Калийное: % в водной фазе',M?pc(div(iK,wfK),3):'—']]);
   const exNa=mass*v('ff-na')/100, exK=mass*v('ff-k')/100;
   const nOil=byName[$('neut-oil').value], sapN=nOil&&nOil.sapK?nOil.sapK:R.sapMix, nName=nOil&&nOil.sapK?nOil.n:'смеси', nw=v('neut-w');
   kv('neut',[['Избыток NaOH',g(exNa)+' г'],['Жира для нейтрализации NaOH',g(div(exNa,sapN/1.403))+' г',`избыток / (ЧО ${nName} / 1,403)`,1],

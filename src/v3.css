@@ -283,4 +283,21 @@ label.f.check,.fields label.f.check{display:flex;flex-wrap:nowrap;align-items:ce
 label.f.check>input{order:-1}
 .fields label.f.check{grid-column:1/-1;justify-content:start;white-space:nowrap}
 .kv .hl dt{font-weight:400}
+/* единая шкала: текст 15 / строки и числа 14.4 / подписи 12.8 / мелкое 12 / заголовки таблиц 11.2 */
+.todo p,#step-help .block p,.howto li{font-size:15px}
+.kv dt{font-size:.9rem}
+.kv dd{font-size:.9rem;font-weight:600}
+.kv dt small,.tile .u,small{font-size:.75rem}
+label.f,.weigh .l,#weigh .l,.tile .l,.sticky .tile .l{font-size:.8rem;font-weight:500;color:var(--muted)}
+.note,span.note,p.note{font-size:.86rem}
+th,th.n,table.oils th,table.oils th.kind,.u-lab{font-family:var(--f-ui)!important;font-size:.7rem!important;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+td.n,table.oils td[data-o]{font-family:var(--f-num);font-size:.86rem;font-weight:400}
+tfoot td,tfoot td.n{font-weight:700}
+table.oils td[data-o="na"],table.oils td[data-o="k"]{font-weight:600}
+.gloss dt{font-size:15px}
+.scale b{font-size:.75rem}
+.gloss dd,#step-help .block p.note{font-size:.86rem}
+.scale div{font-size:.8rem}
+.steps button,.alert{font-size:.9rem}
+h3,.todo h3{font-size:.7rem}
 </style>
