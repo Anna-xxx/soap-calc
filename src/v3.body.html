@@ -158,13 +158,13 @@
     <div class="block">
       <h2>Взвесьте массу в котле</h2>
       <div class="fields">
-        <label class="f" for="pot">Котёл <button type="button" class="q" data-t="f:pot">?</button><select id="pot"></select></label>
+        <label class="f" for="pot">Посуда <button type="button" class="q" data-t="f:pot">?</button><select id="pot"></select></label>
         <label class="f" for="tare">Вес тары, г <button type="button" class="q" data-t="f:tare">?</button><input class="n manual" id="tare" type="number" step="any" value="0"></label>
         <label class="f" for="brutto">Вес с массой (брутто), г <button type="button" class="q" data-t="f:brutto">?</button><input class="n manual" id="brutto" type="number" step="any" value="0"></label>
       </div>
       <div class="row">
-        <input id="pot-name" placeholder="Название котла" aria-label="Название котла" style="flex:1;min-width:140px">
-        <button class="btn" id="pot-save" type="button">Запомнить котёл</button>
+        <input id="pot-name" placeholder="Название посуды" aria-label="Название посуды" style="flex:1;min-width:140px">
+        <button class="btn" id="pot-save" type="button">Запомнить посуду</button>
         <button class="btn ghost" id="pot-del" type="button">Удалить из списка</button>
       </div>
       <dl class="kv" id="mass"></dl>
@@ -250,7 +250,7 @@
       <div class="block">
         <header><h2>Частичная высолка и шлифование</h2><button type="button" class="q" data-t="Шлифование">?</button></header>
         <div class="fields">
-          <label class="f" for="pot2">Котёл <button type="button" class="q" data-t="f:pot2">?</button><select id="pot2"></select></label>
+          <label class="f" for="pot2">Посуда <button type="button" class="q" data-t="f:pot2">?</button><select id="pot2"></select></label>
           <label class="f" for="tare2">Вес тары, г <button type="button" class="q" data-t="f:tare2">?</button><input class="n manual" id="tare2" type="number" step="any" value="0"></label>
           <label class="f" for="brutto2">Вес с массой (брутто), г <button type="button" class="q" data-t="f:brutto2">?</button><input class="n manual" id="brutto2" type="number" step="any" value="0"></label>
           <label class="f" for="ke2">КЭ натр. в водной фазе, г <button type="button" class="q" data-t="f:ke2">?</button><input class="n manual" id="ke2" type="number" step="any" value="0"></label>
@@ -417,7 +417,7 @@
       <li><b>Выберите способ варки</b> вверху справа. <i>Прямой</i>: все жиры омыляются вместе, высолки нет, мыло сразу разливают. <i>Косвенный</i>: варка на ядро с высолкой.</li>
       <li><b>Рецепт.</b> Добавьте масла и жиры, впишите вес каждого. Можно вводить в граммах или процентах от общего веса. Числа омыления, ПКЭ, йодное число и титр подставятся из базы. Сохраните рецепт, если будете варить его снова.</li>
       <li><b>Щёлочь и вода.</b> Проверьте параметры: коэффициент щёлочи (Кщ), желаемое качественное число (КЧ), какой щёлочью варите. Вверху блок «Что отвесить»: сколько щёлочи, воды и соли приготовить. Ниже выберите, вносите щёлочь сразу (вкладка А) или порциями (вкладка Б).</li>
-      <li><b>Омыление.</b> Варите, взвесьте котёл с массой. Впишите вес котла и брутто, калькулятор посчитает вес массы, концентрацию электролитов и подскажет, сколько воды долить.</li>
+      <li><b>Омыление.</b> Варите, взвесьте посуду с массой. Впишите вес посуды и брутто, калькулятор посчитает вес массы, концентрацию электролитов и подскажет, сколько воды долить.</li>
       <li><b>Высолка</b> (только косвенный способ). Сколько соли или щёлочи добавить, чтобы масса разделилась на ядро и щёлок. Внизу второе омыление и шлифование, если нужны.</li>
       <li><b>Готовое мыло.</b> Взвесьте массу перед разливом, введите пробу с фенолфталеином. Калькулятор посчитает КЧ, сколько жира добавить для нейтрализации и добавки.</li>
       <li><b>Справочник</b>: титрование щёлочи (Кщ), разведение растворов, перевод KOH ↔ NaOH. <b>Себестоимость</b>: цена сырья и куска.</li>
