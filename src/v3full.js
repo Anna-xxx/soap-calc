@@ -343,7 +343,7 @@ $('add-cost').onclick=()=>{COST.push(['',0,0,0]);renderCost();calcCost()};
 ['cost-k','cost-kg','cost-packs'].forEach(id=>$(id).addEventListener('input',calcCost));
 
 // ---------- saved recipes ----------
-function renderSaved(){const s=saved();$('recipe-list').innerHTML='<option value="">Сохранённые рецепты…</option>'+Object.keys(s).map(k=>`<option>${k.replace(/</g,'&lt;')}</option>`).join('')}
+function renderSaved(){const s=saved();$('recipe-list').innerHTML='<option value="">Мои рецепты</option>'+Object.keys(s).map(k=>`<option>${k.replace(/</g,'&lt;')}</option>`).join('')}
 $('save-recipe').onclick=()=>{const n=$('recipe-name').value.trim();if(!n){toast('Впишите название рецепта');$('recipe-name').focus();return}
   const s=saved();S.name=n;S.sample=false;s[n]=JSON.parse(JSON.stringify(S));try{localStorage.setItem('soap.saved',JSON.stringify(s));toast('Сохранено в этом браузере')}catch(e){toast('Браузер не дал сохранить')}renderSaved();$('recipe-list').value=n;calc();updSample()};
 $('recipe-list').onchange=()=>{const n=$('recipe-list').value;if(!n)return;const r=saved()[n];if(!r)return;S=JSON.parse(JSON.stringify(r));boot()};
