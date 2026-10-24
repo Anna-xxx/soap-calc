@@ -240,6 +240,27 @@ details.more summary::after{content:"Показать ▾";flex:none;margin-left
 details.more[open] summary::after{content:"Скрыть ▴"}
 details.more summary:hover::after{background:var(--accent-soft)}
 @media (max-width:760px){details.more summary{flex-wrap:wrap}}
+/* консистентность */
+.block>header .note,details.more summary .note{flex-basis:100%;margin:0;text-align:left}
+details.more summary{flex-wrap:wrap}
+details.more summary h2{flex:1}
+details.more summary::after{order:2}
+details.more summary .note{order:3}
+.kv{column-gap:0}
+.kv dd{padding-left:16px}
+input,select,input.n{min-height:42px;height:42px;font-size:.95rem}
+table.oils input,table.oils select{height:38px;min-height:38px}
+.btn,.btn.ghost{min-height:42px;padding:9px 16px}
+.btn.ghost{border-color:var(--line);background:none;color:var(--muted)}
+.btn.ghost:hover{border-color:var(--bad);color:var(--bad)}
+.fields{grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr))}
+@media (min-width:761px){table.oils th:nth-child(2){width:11%}}
+.kv dd{align-self:stretch}
+.block>header{display:grid;grid-template-columns:1fr auto;align-items:center}
+.block>header>.note{grid-column:1/-1}
+table.oils .btn.ghost{border-color:transparent;min-height:32px;padding:4px 8px}
+table.oils input,table.oils select{font-size:.85rem}
+table.oils td input{padding:4px 4px;font-size:.82rem}
 </style>
 </head>
 <body>
