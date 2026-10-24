@@ -217,6 +217,29 @@ details.more p+p{margin-top:8px}
   table.oils tfoot td:first-child,table.oils tfoot td:empty{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.vtabs{display:inline-flex;justify-self:start;width:max-content;gap:2px;background:var(--sunk);border-radius:999px;padding:3px;margin-bottom:12px}
+.vtabs button{font:inherit;font-weight:500;border:0;background:none;color:var(--muted);padding:7px 16px;border-radius:999px;cursor:pointer}
+.vtabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+label.f{align-content:end}
+.fields label.f{align-items:end}
+@media (min-width:761px){
+  table.oils{table-layout:fixed;width:100%}
+  .scroll:has(#oils){overflow-x:visible}
+  table.oils th,table.oils td{white-space:normal;padding:6px 4px}
+  table.oils th{font-size:.62rem;letter-spacing:.03em}
+  table.oils td.name,table.oils select{min-width:0}
+  table.oils th:first-child{width:22%}
+  table.oils td input,table.oils td select,table.oils td.w input,table.oils td.p input{width:100%;padding:6px 5px;font-size:.85rem}
+  table.oils th:last-child{width:34px}
+  table.oils td[data-o]{font-size:.8rem}
+}
+details.more summary{align-items:center;flex-wrap:nowrap}
+details.more summary .note{flex:1}
+details.more summary h2::after{content:none}
+details.more summary::after{content:"Показать ▾";flex:none;margin-left:auto;font:500 .85rem var(--f-ui);color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:5px 14px}
+details.more[open] summary::after{content:"Скрыть ▴"}
+details.more summary:hover::after{background:var(--accent-soft)}
+@media (max-width:760px){details.more summary{flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -329,17 +352,20 @@ details.more p+p{margin-top:8px}
     <p class="note only-two">Щёлочь и вода на этом этапе считаются только на ядровые жиры. Клеевые жиры из рецепта посчитаны во 2-м омылении на этапе «Высолка».</p>
   </div>
   <div class="block">
-    <header><h2>Что отвесить</h2><span class="note">для полного внесения щелочей; для дробного смотрите вариант Б ниже</span></header>
+    <header><h2>Что отвесить</h2><span class="note">если вносите щёлочь за один раз; порциями смотрите вкладку «Б» ниже</span></header>
     <div class="weigh" id="weigh"></div>
   </div>
-  <div class="grid2">
-    <div class="block">
-      <header><h2>Вариант А · Полное внесение</h2></header>
+  <div class="block">
+    <header><h2>Как вносить щёлочь</h2><button type="button" class="q" data-t="Дробное">?</button></header>
+    <div class="vtabs" role="tablist">
+      <button type="button" role="tab" data-v="full" aria-selected="true">А · Всё сразу</button>
+      <button type="button" role="tab" data-v="frac" aria-selected="false">Б · Порциями</button>
+    </div>
+    <div class="vpane" data-v="full">
       <p class="note">Вся щёлочь сразу, воды столько, чтобы раствор был на 0,5% слабее ПКЭ и масса не высолилась раньше времени.</p>
       <dl class="kv" id="full"></dl>
     </div>
-    <div class="block">
-      <header><h2>Вариант Б · Дробное внесение</h2><button type="button" class="q" data-t="Дробное">?</button></header>
+    <div class="vpane" data-v="frac" hidden>
       <p class="note">Щёлочь частями. Следующую порцию вносите, когда предыдущая омылилась.</p>
       <dl class="kv" id="frac"></dl>
     </div>
@@ -1058,6 +1084,7 @@ function boot(){
 }
 S=load();boot();renderSaved();calcRef();renderCost();calcCost();
 try{const t=localStorage.getItem('soap.step');go(t&&document.getElementById('step-'+t)?t:'1')}catch(e){go('1')}
+document.querySelectorAll('.vtabs button').forEach(b=>b.onclick=()=>{const v=b.dataset.v;b.parentNode.querySelectorAll('button').forEach(x=>x.setAttribute('aria-selected',x===b));b.closest('.block').querySelectorAll('.vpane').forEach(p=>p.hidden=p.dataset.v!==v)});
 </script>
 
 </body>

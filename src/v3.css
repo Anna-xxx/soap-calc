@@ -212,4 +212,27 @@ details.more p+p{margin-top:8px}
   table.oils tfoot td:first-child,table.oils tfoot td:empty{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.vtabs{display:inline-flex;justify-self:start;width:max-content;gap:2px;background:var(--sunk);border-radius:999px;padding:3px;margin-bottom:12px}
+.vtabs button{font:inherit;font-weight:500;border:0;background:none;color:var(--muted);padding:7px 16px;border-radius:999px;cursor:pointer}
+.vtabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+label.f{align-content:end}
+.fields label.f{align-items:end}
+@media (min-width:761px){
+  table.oils{table-layout:fixed;width:100%}
+  .scroll:has(#oils){overflow-x:visible}
+  table.oils th,table.oils td{white-space:normal;padding:6px 4px}
+  table.oils th{font-size:.62rem;letter-spacing:.03em}
+  table.oils td.name,table.oils select{min-width:0}
+  table.oils th:first-child{width:22%}
+  table.oils td input,table.oils td select,table.oils td.w input,table.oils td.p input{width:100%;padding:6px 5px;font-size:.85rem}
+  table.oils th:last-child{width:34px}
+  table.oils td[data-o]{font-size:.8rem}
+}
+details.more summary{align-items:center;flex-wrap:nowrap}
+details.more summary .note{flex:1}
+details.more summary h2::after{content:none}
+details.more summary::after{content:"Показать ▾";flex:none;margin-left:auto;font:500 .85rem var(--f-ui);color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:5px 14px}
+details.more[open] summary::after{content:"Скрыть ▴"}
+details.more summary:hover::after{background:var(--accent-soft)}
+@media (max-width:760px){details.more summary{flex-wrap:wrap}}
 </style>

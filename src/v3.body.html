@@ -107,17 +107,20 @@
     <p class="note only-two">Щёлочь и вода на этом этапе считаются только на ядровые жиры. Клеевые жиры из рецепта посчитаны во 2-м омылении на этапе «Высолка».</p>
   </div>
   <div class="block">
-    <header><h2>Что отвесить</h2><span class="note">для полного внесения щелочей; для дробного смотрите вариант Б ниже</span></header>
+    <header><h2>Что отвесить</h2><span class="note">если вносите щёлочь за один раз; порциями смотрите вкладку «Б» ниже</span></header>
     <div class="weigh" id="weigh"></div>
   </div>
-  <div class="grid2">
-    <div class="block">
-      <header><h2>Вариант А · Полное внесение</h2></header>
+  <div class="block">
+    <header><h2>Как вносить щёлочь</h2><button type="button" class="q" data-t="Дробное">?</button></header>
+    <div class="vtabs" role="tablist">
+      <button type="button" role="tab" data-v="full" aria-selected="true">А · Всё сразу</button>
+      <button type="button" role="tab" data-v="frac" aria-selected="false">Б · Порциями</button>
+    </div>
+    <div class="vpane" data-v="full">
       <p class="note">Вся щёлочь сразу, воды столько, чтобы раствор был на 0,5% слабее ПКЭ и масса не высолилась раньше времени.</p>
       <dl class="kv" id="full"></dl>
     </div>
-    <div class="block">
-      <header><h2>Вариант Б · Дробное внесение</h2><button type="button" class="q" data-t="Дробное">?</button></header>
+    <div class="vpane" data-v="frac" hidden>
       <p class="note">Щёлочь частями. Следующую порцию вносите, когда предыдущая омылилась.</p>
       <dl class="kv" id="frac"></dl>
     </div>

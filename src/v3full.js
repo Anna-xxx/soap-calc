@@ -421,4 +421,5 @@ function boot(){
 }
 S=load();boot();renderSaved();calcRef();renderCost();calcCost();
 try{const t=localStorage.getItem('soap.step');go(t&&document.getElementById('step-'+t)?t:'1')}catch(e){go('1')}
+document.querySelectorAll('.vtabs button').forEach(b=>b.onclick=()=>{const v=b.dataset.v;b.parentNode.querySelectorAll('button').forEach(x=>x.setAttribute('aria-selected',x===b));b.closest('.block').querySelectorAll('.vpane').forEach(p=>p.hidden=p.dataset.v!==v)});
 </script>
