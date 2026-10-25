@@ -360,7 +360,7 @@ table.oils tfoot #t-p{color:var(--muted)}
 .stepnav button[aria-current="step"]{font-weight:700}
 @media (max-width:760px){.tabs button{font-size:.9rem;padding:10px 10px 12px}}
 @media (max-width:760px){.tabs{flex-wrap:wrap;overflow:visible}.tabs button{padding:8px 10px 10px}}
-select:disabled{opacity:1;color:var(--muted,inherit);background:var(--bg-soft,transparent);cursor:default;-webkit-appearance:none;appearance:none}
+select:disabled{opacity:1;color:var(--ink);background:transparent;border-color:transparent;box-shadow:none;padding-left:0;cursor:default;-webkit-appearance:none;appearance:none;font-weight:600}
 #tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);padding-top:10px}
 .sticky{top:calc(env(safe-area-inset-top,0px) + var(--tabh,48px))}
 body:not([data-view="calc"]) .mode,body:not([data-view="calc"]) .sticky{display:none}
@@ -815,10 +815,10 @@ body:not([data-view="calc"]) .mode,body:not([data-view="calc"]) .sticky{display:
     <header><h2>Параметры</h2><button type="button" class="btn" id="beg-reset">Сбросить</button></header>
     <p class="note">Значения подставились типовые для выбранного мыла. Меняйте под себя: расчёт ниже обновится сразу. При смене способа значения снова станут типовыми. У «Твёрдого» и «Жидкого» значения свои и не путаются.</p>
     <div class="fields">
-      <label class="f" for="beg-alk">Щёлочь <button type="button" class="q" data-t="f:beg-alk">?</button><select id="beg-alk" disabled><option value="NaOH">NaOH (твёрдое мыло)</option><option value="KOH">KOH (жидкое мыло)</option></select></label>
+      <label class="f" for="beg-alk">Щёлочь <button type="button" class="q" data-t="f:beg-alk">?</button><select id="beg-alk" disabled><option value="NaOH">NaOH, по типу мыла</option><option value="KOH">KOH, по типу мыла</option></select></label>
       <label class="f" for="beg-sf">Пережир, % <button type="button" class="q" data-t="f:beg-sf">?</button><input class="n manual" id="beg-sf" type="number" step="any" value="5"></label>
       <label class="f" for="beg-pur">Чистота щёлочи, % <button type="button" class="q" data-t="f:beg-pur">?</button><input class="n manual" id="beg-pur" type="number" step="any" value="100"></label>
-      <label class="f" for="beg-conc">Концентрация щёлочи в растворе, % <button type="button" class="q" data-t="f:beg-conc">?</button><input class="n manual" id="beg-conc" type="number" step="any" value="33"></label>
+      <label class="f" for="beg-conc">Концентрация щёлочи, % <button type="button" class="q" data-t="f:beg-conc">?</button><input class="n manual" id="beg-conc" type="number" step="any" value="33"></label>
       <label class="f only-liq" for="beg-dil">Вода на разведение, % <button type="button" class="q" data-t="f:beg-dil">?</button><input class="n manual" id="beg-dil" type="number" step="any" value="100"></label>
     </div>
     <p class="note" id="beg-conc-hint"></p>
