@@ -818,7 +818,7 @@ body:not([data-view="calc"]) .mode,body:not([data-view="calc"]) .sticky{display:
       <label class="f" for="beg-alk">Щёлочь <button type="button" class="q" data-t="f:beg-alk">?</button><select id="beg-alk" disabled><option value="NaOH">NaOH (твёрдое мыло)</option><option value="KOH">KOH (жидкое мыло)</option></select></label>
       <label class="f" for="beg-sf">Пережир, % <button type="button" class="q" data-t="f:beg-sf">?</button><input class="n manual" id="beg-sf" type="number" step="any" value="5"></label>
       <label class="f" for="beg-pur">Чистота щёлочи, % <button type="button" class="q" data-t="f:beg-pur">?</button><input class="n manual" id="beg-pur" type="number" step="any" value="100"></label>
-      <label class="f" for="beg-conc">Крепость раствора, % <button type="button" class="q" data-t="f:beg-conc">?</button><input class="n manual" id="beg-conc" type="number" step="any" value="33"></label>
+      <label class="f" for="beg-conc">Концентрация щёлочи в растворе, % <button type="button" class="q" data-t="f:beg-conc">?</button><input class="n manual" id="beg-conc" type="number" step="any" value="33"></label>
       <label class="f only-liq" for="beg-dil">Вода на разведение, % <button type="button" class="q" data-t="f:beg-dil">?</button><input class="n manual" id="beg-dil" type="number" step="any" value="100"></label>
     </div>
     <p class="note" id="beg-conc-hint"></p>
@@ -1465,7 +1465,7 @@ function begRender(){
   const sf=b.sf,pur=b.pur,c=b.conc;
   const L1=L0*(1-sf/100),L2=pur>0?L1/(pur/100):NaN,Wt=c>0&&c<100?L2*(100-c)/c:NaN,sol=L2+Wt,tot=W+sol,dilW=tot*b.dil/100;
   const f=x=>String(+x.toFixed(2)).replace('.',',');
-  $('beg-conc-hint').textContent=c>0&&c<100?`Крепость ${f(c)}%: на каждые 100 г щёлочи берут ${f(100*(100-c)/c)} г воды.`:'';
+  $('beg-conc-hint').textContent=c>0&&c<100?`Концентрация ${f(c)}%: на каждые 100 г щёлочи берут ${f(100*(100-c)/c)} г воды.`:'';
   const st=[
    ['Масса масел','сумма весов всех масел',g(W)+' г'],
    ['Щёлочь на полное омыление',na?'Σ (вес × ЧО ÷ 1,403) для каждого масла (ЧО даётся для KOH, для NaOH делим на 1,403)':'Σ (вес × ЧО) для каждого масла',g(L0)+' г'],
@@ -1487,9 +1487,9 @@ function begRender(){
    $('beg-recipe').querySelector('tfoot').innerHTML=`<tr><td>Всего</td><td class="n">${g(T)}</td><td class="n"></td></tr>`;}
   {let ap=0;const trs=$('beg-adds').querySelectorAll('tbody tr[data-i]');(b.adds||[]).forEach((a,i)=>{ap+=a.p||0;if(trs[i])trs[i].querySelector('[data-o=g]').textContent=g(W*(a.p||0)/100)});$('beg-adds-p').textContent=nf2.format(ap)+'%';$('beg-adds-g').textContent=g(W*ap/100);$('beg-adds-note').textContent=BEG_ADD_WHEN[b.type+'.'+b.method]+(ap>5?' Сейчас добавок больше 5%: проверьте, не много ли.':'');}
   $('beg-steps').querySelector('tbody').innerHTML=st.map((r,i)=>`<tr class="${r[3]?'hl':''}"><td>${i+1}</td><td>${r[0]}</td><td class="how">${r[1]}</td><td class="n">${r[2]}</td></tr>`).join('');
-  const w=[];if(!(pur>0))w.push('Чистота щёлочи должна быть больше 0.');if(!(c>0&&c<100))w.push('Крепость раствора укажите от 1 до 99%.');
+  const w=[];if(!(pur>0))w.push('Чистота щёлочи должна быть больше 0.');if(!(c>0&&c<100))w.push('Концентрацию щёлочи укажите от 1 до 99%.');
   if(sf<0||sf>20)w.push('Пережир обычно от 0 до 10%, проверьте значение.');
-  if(ok(Wt)&&c>0)w.push(`Вода к щёлочи как ${nf2.format((100-c)/c)} к 1. Чем крепче раствор, тем меньше воды и быстрее схватывается мыло.`);
+  if(ok(Wt)&&c>0)w.push(`Вода к щёлочи как ${nf2.format((100-c)/c)} к 1. Чем выше концентрация, тем меньше воды и быстрее схватывается мыло.`);
   $('beg-warn').textContent=w.join(' ')}
 
 S=load();boot();begFill();renderSaved();calcRef();renderCost();calcCost();
