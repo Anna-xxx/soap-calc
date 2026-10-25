@@ -804,12 +804,13 @@ body:not([data-view="calc"]) .mode,body:not([data-view="calc"]) .sticky{display:
       <label class="f" for="beg-alk">Щёлочь <button type="button" class="q" data-t="f:beg-alk">?</button><select id="beg-alk" disabled><option value="NaOH">NaOH (твёрдое мыло)</option><option value="KOH">KOH (жидкое мыло)</option></select></label>
       <label class="f" for="beg-sf">Пережир, % <button type="button" class="q" data-t="f:beg-sf">?</button><input class="n manual" id="beg-sf" type="number" step="any" value="5"></label>
       <label class="f" for="beg-pur">Чистота щёлочи, % <button type="button" class="q" data-t="f:beg-pur">?</button><input class="n manual" id="beg-pur" type="number" step="any" value="100"></label>
-      <label class="f" for="beg-conc">Крепость раствора, % <button type="button" class="q" data-t="f:beg-conc">?</button><input class="n manual" id="beg-conc" type="number" step="any" value="33"><span class="note" id="beg-conc-hint"></span></label>
+      <label class="f" for="beg-conc">Крепость раствора, % <button type="button" class="q" data-t="f:beg-conc">?</button><input class="n manual" id="beg-conc" type="number" step="any" value="33"></label>
       <label class="f only-liq" for="beg-dil">Вода на разведение, % <button type="button" class="q" data-t="f:beg-dil">?</button><input class="n manual" id="beg-dil" type="number" step="any" value="100"></label>
     </div>
+    <p class="note" id="beg-conc-hint"></p>
   </div>
   <div class="block">
-    <header><h2>Ваши масла</h2><button type="button" class="btn" data-go="1">Изменить рецепт на шаге 1</button></header>
+    <header><h2>Ваши масла</h2><button type="button" class="btn" data-go="1">Изменить рецепт в «Ядровом»</button></header>
     <div class="scroll"><table id="beg-oils"><thead><tr><th>Сырьё</th><th class="n">Вес, г</th><th class="n">ЧО</th><th class="n">Щёлочь на полное омыление, г</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
   </div>
   <div class="block">
@@ -1382,7 +1383,7 @@ function begFill(){const b=S.beg;b.alk=b.type==='liquid'?'KOH':'NaOH';
   if(curStep!==b.type&&(curStep==='hard'||curStep==='liquid'))go(b.type);
   document.querySelectorAll('[data-bm]').forEach(e=>e.setAttribute('aria-pressed',e.dataset.bm===b.method));
   $('beg-alk').value=b.alk;$('beg-sf').value=b.sf;$('beg-pur').value=b.pur;$('beg-conc').value=b.conc;$('beg-dil').value=b.dil;
-  $('beg-title').textContent=b.type==='liquid'?'Жидкое мыло':'Твёрдое мыло';$('beg-intro').textContent=BEG_INTRO[b.type];
+  $('beg-intro').textContent=BEG_INTRO[b.type];
   $('beg-note').textContent=BEG_NOTE[b.type+'.'+b.method];
   document.querySelectorAll('.only-liq').forEach(e=>e.hidden=b.type!=='liquid');
   $('beg-todo').innerHTML=BEG_TODO[b.type+'.'+b.method].map(t=>`<li>${t}</li>`).join('');
@@ -1400,7 +1401,7 @@ function begRender(){
   const sf=b.sf,pur=b.pur,c=b.conc;
   const L1=L0*(1-sf/100),L2=pur>0?L1/(pur/100):NaN,Wt=c>0&&c<100?L2*(100-c)/c:NaN,sol=L2+Wt,tot=W+sol,dilW=tot*b.dil/100;
   const f=x=>String(+x.toFixed(2)).replace('.',',');
-  $('beg-conc-hint').textContent=c>0&&c<100?`Воды: ${f(100*(100-c)/c)} г на каждые 100 г щёлочи`:'';
+  $('beg-conc-hint').textContent=c>0&&c<100?`Крепость ${f(c)}%: на каждые 100 г щёлочи берут ${f(100*(100-c)/c)} г воды.`:'';
   const st=[
    ['Масса масел','сумма весов всех масел',g(W)+' г'],
    ['Щёлочь на полное омыление',na?'Σ (вес × ЧО ÷ 1,403) для каждого масла (ЧО даётся для KOH, для NaOH делим на 1,403)':'Σ (вес × ЧО) для каждого масла',g(L0)+' г'],

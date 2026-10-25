@@ -502,7 +502,7 @@ function begFill(){const b=S.beg;b.alk=b.type==='liquid'?'KOH':'NaOH';
   if(curStep!==b.type&&(curStep==='hard'||curStep==='liquid'))go(b.type);
   document.querySelectorAll('[data-bm]').forEach(e=>e.setAttribute('aria-pressed',e.dataset.bm===b.method));
   $('beg-alk').value=b.alk;$('beg-sf').value=b.sf;$('beg-pur').value=b.pur;$('beg-conc').value=b.conc;$('beg-dil').value=b.dil;
-  $('beg-title').textContent=b.type==='liquid'?'Жидкое мыло':'Твёрдое мыло';$('beg-intro').textContent=BEG_INTRO[b.type];
+  $('beg-intro').textContent=BEG_INTRO[b.type];
   $('beg-note').textContent=BEG_NOTE[b.type+'.'+b.method];
   document.querySelectorAll('.only-liq').forEach(e=>e.hidden=b.type!=='liquid');
   $('beg-todo').innerHTML=BEG_TODO[b.type+'.'+b.method].map(t=>`<li>${t}</li>`).join('');
@@ -520,7 +520,7 @@ function begRender(){
   const sf=b.sf,pur=b.pur,c=b.conc;
   const L1=L0*(1-sf/100),L2=pur>0?L1/(pur/100):NaN,Wt=c>0&&c<100?L2*(100-c)/c:NaN,sol=L2+Wt,tot=W+sol,dilW=tot*b.dil/100;
   const f=x=>String(+x.toFixed(2)).replace('.',',');
-  $('beg-conc-hint').textContent=c>0&&c<100?`Воды: ${f(100*(100-c)/c)} г на каждые 100 г щёлочи`:'';
+  $('beg-conc-hint').textContent=c>0&&c<100?`Крепость ${f(c)}%: на каждые 100 г щёлочи берут ${f(100*(100-c)/c)} г воды.`:'';
   const st=[
    ['Масса масел','сумма весов всех масел',g(W)+' г'],
    ['Щёлочь на полное омыление',na?'Σ (вес × ЧО ÷ 1,403) для каждого масла (ЧО даётся для KOH, для NaOH делим на 1,403)':'Σ (вес × ЧО) для каждого масла',g(L0)+' г'],
