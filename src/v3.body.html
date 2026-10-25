@@ -25,6 +25,7 @@
     <span class="sep" aria-hidden="true"></span>
     <button type="button" data-step="ref" class="tool">Справочник</button>
     <button type="button" data-step="cost" class="tool">Себестоимость</button>
+    <button type="button" data-step="beg" class="tool">Новичку</button>
     <button type="button" data-step="help" class="tool">Пояснения</button>
   </nav>
 </div>
@@ -410,6 +411,49 @@
   </div>
 </section>
 
+<!-- ============ НОВИЧКУ ============ -->
+<section class="panel" id="step-beg" hidden>
+  <div class="todo">
+    <h3>Для начинающих</h3>
+    <p>Выберите, какое мыло хотите сварить и каким способом. Калькулятор возьмёт ваши масла с шага 1 и покажет каждый расчёт по порядку с формулой. Любое число можно поменять самим.</p>
+  </div>
+  <div class="block">
+    <header><h2>Что варим</h2></header>
+    <div class="beg-pick">
+      <div><span class="pick-l">Мыло</span>
+        <div class="seg" role="group" aria-label="Тип мыла"><button type="button" data-bt="hard" aria-pressed="true">Твёрдое</button><button type="button" data-bt="liquid" aria-pressed="false">Жидкое</button></div></div>
+      <div><span class="pick-l">Способ</span>
+        <div class="seg" role="group" aria-label="Способ варки"><button type="button" data-bm="cold" aria-pressed="true">Холодный</button><button type="button" data-bm="hot" aria-pressed="false">Горячий</button></div></div>
+    </div>
+    <p class="note" id="beg-note"></p>
+  </div>
+  <div class="block">
+    <header><h2>Параметры</h2><button type="button" class="btn" id="beg-reset">Вернуть типовые</button></header>
+    <p class="note">Значения подставились типовые для выбранного мыла. Меняйте под себя: расчёт ниже обновится сразу. При смене мыла или способа значения снова станут типовыми.</p>
+    <div class="fields">
+      <label class="f" for="beg-alk">Щёлочь <button type="button" class="q" data-t="f:beg-alk">?</button><select id="beg-alk"><option value="NaOH">NaOH (твёрдое мыло)</option><option value="KOH">KOH (жидкое мыло)</option></select></label>
+      <label class="f" for="beg-sf">Пережир, % <button type="button" class="q" data-t="f:beg-sf">?</button><input class="n manual" id="beg-sf" type="number" step="any" value="5"></label>
+      <label class="f" for="beg-pur">Чистота щёлочи, % <button type="button" class="q" data-t="f:beg-pur">?</button><input class="n manual" id="beg-pur" type="number" step="any" value="100"></label>
+      <label class="f" for="beg-conc">Крепость раствора, % <button type="button" class="q" data-t="f:beg-conc">?</button><input class="n manual" id="beg-conc" type="number" step="any" value="33"></label>
+      <label class="f only-liq" for="beg-dil">Вода на разведение, % <button type="button" class="q" data-t="f:beg-dil">?</button><input class="n manual" id="beg-dil" type="number" step="any" value="100"></label>
+    </div>
+  </div>
+  <div class="block">
+    <header><h2>Ваши масла</h2><button type="button" class="btn" data-go="1">Изменить рецепт на шаге 1</button></header>
+    <div class="scroll"><table id="beg-oils"><thead><tr><th>Сырьё</th><th class="n">Вес, г</th><th class="n">ЧО</th><th class="n">Щёлочь на полное омыление, г</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
+  </div>
+  <div class="block">
+    <header><h2>Расчёт по порядку</h2></header>
+    <div class="scroll"><table id="beg-steps"><thead><tr><th>№</th><th>Что считаем</th><th>Как считается</th><th class="n">Получилось</th></tr></thead><tbody></tbody></table></div>
+    <p class="note" id="beg-warn"></p>
+  </div>
+  <div class="block">
+    <header><h2>Что делать</h2></header>
+    <div class="note-safe alert">Работайте в перчатках, очках и закрытой одежде, в проветриваемом месте. Щёлочь всегда засыпают в воду, а не воду в щёлочь. Посуда только нержавеющая, термостойкий пластик или стекло, не алюминий. Держите детей и животных подальше.</div>
+    <ol class="howto" id="beg-todo"></ol>
+  </div>
+</section>
+
 <!-- ============ ПОЯСНЕНИЯ ============ -->
 <section class="panel" id="step-help" hidden>
   <div class="block">
@@ -426,6 +470,7 @@
       <li><b>Омыление.</b> Варите, взвесьте посуду с массой. Впишите вес посуды и брутто, калькулятор посчитает вес массы, концентрацию электролитов и подскажет, сколько воды долить.</li>
       <li><b>Высолка</b> (только косвенный способ). Сколько соли или щёлочи добавить, чтобы масса разделилась на ядро и щёлок. Внизу второе омыление и шлифование, если нужны.</li>
       <li><b>Готовое мыло.</b> Взвесьте массу перед разливом, введите пробу с фенолфталеином. Калькулятор посчитает КЧ, сколько жира добавить для нейтрализации и добавки.</li>
+      <li><b>Новичку</b>: выберите твёрдое или жидкое мыло и способ, и калькулятор покажет все расчёты по порядку и что делать. Параметры меняются вручную.</li>
       <li><b>Справочник</b>: титрование щёлочи (Кщ), разведение растворов, перевод KOH ↔ NaOH. <b>Себестоимость</b>: цена сырья и куска.</li>
     </ol>
   </div>

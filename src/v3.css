@@ -326,4 +326,24 @@ details.more summary h2::after,details.more[open] summary h2::after{content:none
 .lg-mu{color:var(--muted);font-weight:600}.lg-ly{color:var(--lye);font-weight:600}
 table.oils tfoot #t-naoh,table.oils tfoot #t-koh{color:var(--lye)}
 table.oils tfoot #t-p{color:var(--muted)}
+.beg-pick{display:flex;flex-wrap:wrap;gap:12px 32px;margin:8px 0}
+.beg-pick>div{display:grid;gap:4px;justify-items:start}
+.pick-l{font-size:.8rem;font-weight:500;color:var(--muted)}
+#beg-steps td.how{color:var(--muted);font-size:.86rem;white-space:normal;min-width:200px}
+#beg-steps td,#beg-steps th,#beg-oils td,#beg-oils th{white-space:normal}
+#beg-steps td:first-child{width:32px;color:var(--muted)}
+#beg-steps tr.hl td{font-weight:600}
+#beg-steps tr.hl td.n{color:var(--lye)}
+#beg-oils tfoot td{font-weight:700;border-top:1.5px solid var(--line)}
+#beg-todo{margin-top:12px}
+.note-safe{margin-bottom:6px}
+@media (max-width:760px){
+  #beg-steps thead{display:none}
+  #beg-steps,#beg-steps tbody{display:block}
+  #beg-steps tr{display:grid;grid-template-columns:24px 1fr auto;gap:2px 8px;padding:10px 0;border-bottom:1px solid var(--line-soft)}
+  #beg-steps td{border:0;padding:0}
+  #beg-steps td.how{grid-column:2/-1;min-width:0}
+  #beg-oils td,#beg-oils th{padding:8px 4px;font-size:.8rem}
+}
+@media (max-width:760px){#beg-steps td.n{grid-column:3;grid-row:1;white-space:nowrap;text-align:right}#beg-steps td.how{grid-row:2}}
 </style>
