@@ -542,7 +542,7 @@ function begOilsRender(){const L=begOils();
   if(k==='n'){o.n=e.target.value;const d=byName[o.n];if(d&&d.sapK!=null){o.sap=d.sapK;tr.querySelector('[data-k=sap]').value=o.sap}}else o[k]=parseFloat(e.target.value)||0;begRender();persist()});
  tb.addEventListener('click',e=>{const d=e.target.dataset.del;if(d!=null){begOils().splice(+d,1);begOilsRender();begRender();persist()}});
  $('beg-add-oil').onclick=()=>{begOils().push({n:'',w:0,sap:0});begOilsRender();begRender();persist()};
- $('beg-copy-oils').onclick=()=>{S.beg.oils[S.beg.type]=null;begOilsRender();begRender();persist();toast('Масла взяты из «Ядрового»')};}
+}
 function begRender(){
   if(!S||!S.beg||!$('beg-oils'))return;const b=S.beg,na=b.alk==='NaOH';
   const L=begOils(),rows=L.filter(r=>r.w>0);
