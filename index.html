@@ -492,6 +492,7 @@ body:not([data-view="calc"]) #calc-intro{display:none}
 
   <div class="block">
     <header><h2>Каким получится мыло</h2><span class="note">ориентировочно, по базе масел из шаблона</span></header>
+    <div class="beg-props-head"><span>норма</span><span>получится</span><span>оценка</span></div>
     <dl class="kv" id="props"></dl>
   </div>
   <div class="nextrow"><span></span><button class="btn primary" type="button" data-go="2">Дальше: щёлочь и вода →</button></div>
@@ -998,6 +999,13 @@ document.querySelector('#oils tbody').addEventListener('change',e=>{if(e.target.
 document.querySelector('#oils tbody').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!=null){S.oils.splice(+d,1);renderOils();calc()}});
 $('add-oil').onclick=()=>{S.oils.push(oilRow({}));renderOils();calc();document.querySelector('#oils tbody tr:last-child input').focus()};
 
+function propRow(k,l,lo,hi,x,skip){
+  const MSG={hard:['мыло мягкое, дольше сохнет и быстрее размокает','мыло может крошиться при нарезке'],clean:['мыло моет мягче','мыло может сушить кожу'],cond:['мыло меньше смягчает кожу','мыло может быть мягким и липким'],bub:['пены будет мало','пена крупная и быстро оседает'],cream:['пена будет жидковатой','пена очень густая'],iod:['','мыло быстрее прогоркает и желтеет']};
+  const bar=`<span class="row" style="justify-content:flex-end;flex-wrap:nowrap"><span class="bar" style="width:90px"><i style="width:${Math.min(100,x)}%"></i></span>${nf0.format(x)}</span>`;
+  const chip='<span style="display:inline-flex;justify-content:flex-end;min-width:96px">'+(!ok(x)||skip?'':lo!=null&&x<lo?'<span class="chip warn">ниже нормы</span>':x>hi?'<span class="chip warn">выше нормы</span>':'<span class="chip ok">в норме</span>')+'</span>';
+  const nrm=`<span class="note" style="display:inline-block;min-width:64px;text-align:right;white-space:nowrap">${skip?'':lo!=null?lo+'–'+hi:'до '+hi}</span>`;
+  const val=!ok(x)?'—':`<span class="row" style="justify-content:flex-end;flex-wrap:nowrap;gap:12px">${nrm}<span style="display:inline-flex;justify-content:flex-end;min-width:120px">${k==='iod'?g(x):bar}</span>${chip}</span>`;
+  return [l,val,skip?'для жидкого мыла не важно':(ok(x)&&lo!=null&&x<lo&&MSG[k][0]?MSG[k][0]:ok(x)&&x>hi?MSG[k][1]:'')]}
 // ---------- additives ----------
 function renderAdds(){
   document.querySelector('#adds tbody').innerHTML=S.adds.map((a,i)=>`<tr data-i="${i}">
@@ -1080,8 +1088,8 @@ function calc(){
 
   const pr=k=>props[k][1]?props[k][0]/props[k][1]:NaN;
   const bar=x=>ok(x)?`<span class="row" style="justify-content:flex-end;flex-wrap:nowrap"><span class="bar" style="width:90px"><i style="width:${Math.min(100,x)}%"></i></span>${nf0.format(x)}</span>`:'—';
-  kv('props',[['Твёрдость',bar(pr('hard'))],['Очищающие качества',bar(pr('clean'))],['Смягчающие качества',bar(pr('cond'))],['Пузыристость пены',bar(pr('bub'))],['Кремовость пены',bar(pr('cream'))],
-    ['Йодное число (устойчивость к прогорканию)',`${g(iod)} <span class="chip ${iod>55?'warn':'ok'}">${iod>55?'> 55':'≤ 55'}</span>`],
+  kv('props',[propRow('hard','Твёрдость',29,54,pr('hard')),propRow('clean','Очищающие качества',12,22,pr('clean')),propRow('cond','Смягчающие качества',44,69,pr('cond')),propRow('bub','Пузыристость пены',14,46,pr('bub')),propRow('cream','Кремовость пены',16,48,pr('cream')),
+    propRow('iod','Йодное число (устойчивость к прогорканию)',null,55,iod),
     ['Титр жиров',titrW?g(titr/titrW)+' °С':'—','по маслам с известным титром'],
     ['ЧО смеси жиров (KOH)',nf3.format(sapMix)]]);
 
