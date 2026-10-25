@@ -2,8 +2,8 @@
 <header class="top">
   <div style="display:grid;gap:8px">
     <span class="eyebrow">Варка на ядро · по шаблону «Рассчёт варки»</span>
-    <h1>Расчёт варки мыла</h1>
-    <p class="sub">Пять этапов от рецепта до разлива в формы. На каждом этапе написано, что делать, а значок <span class="q static">?</span> объясняет термин. Все веса в граммах.</p>
+    <h1>Ядровое мыло: расчёт варки</h1>
+    <p class="sub">Ядровое мыло: пять этапов от рецепта до разлива в формы. На каждом этапе написано, что делать, а значок <span class="q static">?</span> объясняет термин. Все веса в граммах.</p>
   </div>
   <div class="mode">
     <span class="note">Способ варки <button type="button" class="q" data-t="Способ">?</button></span>
@@ -17,7 +17,7 @@
 <div class="sticky">
   <div class="tiles" id="tiles"></div>
   <nav class="steps tabs" aria-label="Разделы">
-    <button type="button" data-tab="calc" aria-current="page">Расчёт варки</button>
+    <button type="button" data-tab="calc" aria-current="page">Ядровое мыло</button>
     <button type="button" data-tab="beg">Новичку</button>
     <button type="button" data-tab="ref">Справочник</button>
     <button type="button" data-tab="cost">Себестоимость</button>
@@ -433,10 +433,10 @@
     <header><h2>Параметры</h2><button type="button" class="btn" id="beg-reset">Вернуть типовые</button></header>
     <p class="note">Значения подставились типовые для выбранного мыла. Меняйте под себя: расчёт ниже обновится сразу. При смене мыла или способа значения снова станут типовыми.</p>
     <div class="fields">
-      <label class="f" for="beg-alk">Щёлочь <button type="button" class="q" data-t="f:beg-alk">?</button><select id="beg-alk"><option value="NaOH">NaOH (твёрдое мыло)</option><option value="KOH">KOH (жидкое мыло)</option></select></label>
+      <label class="f" for="beg-alk">Щёлочь <button type="button" class="q" data-t="f:beg-alk">?</button><select id="beg-alk" disabled><option value="NaOH">NaOH (твёрдое мыло)</option><option value="KOH">KOH (жидкое мыло)</option></select></label>
       <label class="f" for="beg-sf">Пережир, % <button type="button" class="q" data-t="f:beg-sf">?</button><input class="n manual" id="beg-sf" type="number" step="any" value="5"></label>
       <label class="f" for="beg-pur">Чистота щёлочи, % <button type="button" class="q" data-t="f:beg-pur">?</button><input class="n manual" id="beg-pur" type="number" step="any" value="100"></label>
-      <label class="f" for="beg-conc">Крепость раствора, % <button type="button" class="q" data-t="f:beg-conc">?</button><input class="n manual" id="beg-conc" type="number" step="any" value="33"></label>
+      <label class="f" for="beg-conc">Крепость раствора, % <button type="button" class="q" data-t="f:beg-conc">?</button><input class="n manual" id="beg-conc" type="number" step="any" value="33"><span class="note" id="beg-conc-hint"></span></label>
       <label class="f only-liq" for="beg-dil">Вода на разведение, % <button type="button" class="q" data-t="f:beg-dil">?</button><input class="n manual" id="beg-dil" type="number" step="any" value="100"></label>
     </div>
   </div>

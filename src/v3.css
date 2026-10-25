@@ -355,4 +355,5 @@ table.oils tfoot #t-p{color:var(--muted)}
 .stepnav button[aria-current="step"]{font-weight:700}
 @media (max-width:760px){.tabs button{font-size:.9rem;padding:10px 10px 12px}}
 @media (max-width:760px){.tabs{flex-wrap:wrap;overflow:visible}.tabs button{padding:8px 10px 10px}}
+select:disabled{opacity:1;color:var(--muted,inherit);background:var(--bg-soft,transparent);cursor:default;-webkit-appearance:none;appearance:none}
 </style>
