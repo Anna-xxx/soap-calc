@@ -351,6 +351,15 @@ table.oils tfoot #t-p{color:var(--muted)}
   #beg-oils td,#beg-oils th{padding:8px 4px;font-size:.8rem}
 }
 @media (max-width:760px){#beg-steps td.n{grid-column:3;grid-row:1;white-space:nowrap;text-align:right}#beg-steps td.how{grid-row:2}}
+.tabs{border-bottom:0}
+.tabs button{font-size:1rem;font-weight:700;color:var(--muted)}
+.tabs button[aria-current="page"]{color:var(--ink)}
+.tabs button[aria-current="page"]::after{content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:var(--accent)}
+.stepnav{border-bottom:1px solid var(--line)}
+.stepnav button{font-size:.88rem;font-weight:500}
+.stepnav button[aria-current="step"]{font-weight:700}
+@media (max-width:760px){.tabs button{font-size:.9rem;padding:10px 10px 12px}}
+@media (max-width:760px){.tabs{flex-wrap:wrap;overflow:visible}.tabs button{padding:8px 10px 10px}}
 </style>
 </head>
 <body>
@@ -372,17 +381,19 @@ table.oils tfoot #t-p{color:var(--muted)}
 
 <div class="sticky">
   <div class="tiles" id="tiles"></div>
-  <nav class="steps" aria-label="Этапы">
+  <nav class="steps tabs" aria-label="Разделы">
+    <button type="button" data-tab="calc" aria-current="page">Расчёт варки</button>
+    <button type="button" data-tab="beg">Новичку</button>
+    <button type="button" data-tab="ref">Справочник</button>
+    <button type="button" data-tab="cost">Себестоимость</button>
+    <button type="button" data-tab="help">Пояснения</button>
+  </nav>
+  <nav class="steps stepnav" id="stepnav" aria-label="Этапы расчёта">
     <button type="button" data-step="1" aria-current="step"><b><span>1</span></b>Рецепт</button>
     <button type="button" data-step="2"><b><span>2</span></b>Щёлочь и вода</button>
     <button type="button" data-step="3"><b><span>3</span></b>Омыление</button>
     <button type="button" data-step="4"><b><span>4</span></b>Высолка</button>
     <button type="button" data-step="5"><b><span>5</span></b>Готовое мыло</button>
-    <span class="sep" aria-hidden="true"></span>
-    <button type="button" data-step="ref" class="tool">Справочник</button>
-    <button type="button" data-step="cost" class="tool">Себестоимость</button>
-    <button type="button" data-step="beg" class="tool">Новичку</button>
-    <button type="button" data-step="help" class="tool">Пояснения</button>
   </nav>
 </div>
 
@@ -1223,12 +1234,16 @@ function updSample(){$('sample-note').textContent=S.sample?'Сейчас отк�
 
 // ---------- steps ----------
 function go(step){
-  document.querySelectorAll('.steps button').forEach(b=>{b.toggleAttribute('aria-current',b.dataset.step===step);if(b.dataset.step===step)b.setAttribute('aria-current','step')});
-  const n=+step;document.querySelectorAll('.steps button').forEach(b=>b.classList.toggle('done',n&&+b.dataset.step<n));
+  const calc=/^[1-5]$/.test(step),tab=calc?'calc':step;
+  document.querySelectorAll('.tabs button').forEach(b=>{if(b.dataset.tab===tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+  $('stepnav').hidden=!calc;
+  document.querySelectorAll('.stepnav button').forEach(b=>{b.toggleAttribute('aria-current',b.dataset.step===step);if(b.dataset.step===step)b.setAttribute('aria-current','step')});
+  const n=calc?+step:0;document.querySelectorAll('.stepnav button').forEach(b=>b.classList.toggle('done',n&&+b.dataset.step<n));
   document.querySelectorAll('section.panel').forEach(s=>s.hidden=s.id!=='step-'+step);
-  try{localStorage.setItem('soap.step',step)}catch(e){}
+  try{localStorage.setItem('soap.step',step);if(calc)localStorage.setItem('soap.calcstep',step)}catch(e){}
 }
-document.querySelectorAll('.steps button').forEach(b=>b.onclick=()=>go(b.dataset.step));
+document.querySelectorAll('.stepnav button').forEach(b=>b.onclick=()=>go(b.dataset.step));
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{let t=b.dataset.tab;if(t==='calc'){try{t=localStorage.getItem('soap.calcstep')||'1'}catch(e){t='1'}}go(t)});
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{go(b.dataset.go);document.querySelector('.wrap').scrollIntoView({block:'start'})});
 
 // ---------- glossary ----------

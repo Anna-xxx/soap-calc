@@ -16,17 +16,19 @@
 
 <div class="sticky">
   <div class="tiles" id="tiles"></div>
-  <nav class="steps" aria-label="Этапы">
+  <nav class="steps tabs" aria-label="Разделы">
+    <button type="button" data-tab="calc" aria-current="page">Расчёт варки</button>
+    <button type="button" data-tab="beg">Новичку</button>
+    <button type="button" data-tab="ref">Справочник</button>
+    <button type="button" data-tab="cost">Себестоимость</button>
+    <button type="button" data-tab="help">Пояснения</button>
+  </nav>
+  <nav class="steps stepnav" id="stepnav" aria-label="Этапы расчёта">
     <button type="button" data-step="1" aria-current="step"><b><span>1</span></b>Рецепт</button>
     <button type="button" data-step="2"><b><span>2</span></b>Щёлочь и вода</button>
     <button type="button" data-step="3"><b><span>3</span></b>Омыление</button>
     <button type="button" data-step="4"><b><span>4</span></b>Высолка</button>
     <button type="button" data-step="5"><b><span>5</span></b>Готовое мыло</button>
-    <span class="sep" aria-hidden="true"></span>
-    <button type="button" data-step="ref" class="tool">Справочник</button>
-    <button type="button" data-step="cost" class="tool">Себестоимость</button>
-    <button type="button" data-step="beg" class="tool">Новичку</button>
-    <button type="button" data-step="help" class="tool">Пояснения</button>
   </nav>
 </div>
 

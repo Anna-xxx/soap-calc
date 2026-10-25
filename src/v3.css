@@ -346,4 +346,13 @@ table.oils tfoot #t-p{color:var(--muted)}
   #beg-oils td,#beg-oils th{padding:8px 4px;font-size:.8rem}
 }
 @media (max-width:760px){#beg-steps td.n{grid-column:3;grid-row:1;white-space:nowrap;text-align:right}#beg-steps td.how{grid-row:2}}
+.tabs{border-bottom:0}
+.tabs button{font-size:1rem;font-weight:700;color:var(--muted)}
+.tabs button[aria-current="page"]{color:var(--ink)}
+.tabs button[aria-current="page"]::after{content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:var(--accent)}
+.stepnav{border-bottom:1px solid var(--line)}
+.stepnav button{font-size:.88rem;font-weight:500}
+.stepnav button[aria-current="step"]{font-weight:700}
+@media (max-width:760px){.tabs button{font-size:.9rem;padding:10px 10px 12px}}
+@media (max-width:760px){.tabs{flex-wrap:wrap;overflow:visible}.tabs button{padding:8px 10px 10px}}
 </style>

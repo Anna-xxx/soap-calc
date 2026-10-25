@@ -364,12 +364,16 @@ function updSample(){$('sample-note').textContent=S.sample?'Сейчас отк�
 
 // ---------- steps ----------
 function go(step){
-  document.querySelectorAll('.steps button').forEach(b=>{b.toggleAttribute('aria-current',b.dataset.step===step);if(b.dataset.step===step)b.setAttribute('aria-current','step')});
-  const n=+step;document.querySelectorAll('.steps button').forEach(b=>b.classList.toggle('done',n&&+b.dataset.step<n));
+  const calc=/^[1-5]$/.test(step),tab=calc?'calc':step;
+  document.querySelectorAll('.tabs button').forEach(b=>{if(b.dataset.tab===tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+  $('stepnav').hidden=!calc;
+  document.querySelectorAll('.stepnav button').forEach(b=>{b.toggleAttribute('aria-current',b.dataset.step===step);if(b.dataset.step===step)b.setAttribute('aria-current','step')});
+  const n=calc?+step:0;document.querySelectorAll('.stepnav button').forEach(b=>b.classList.toggle('done',n&&+b.dataset.step<n));
   document.querySelectorAll('section.panel').forEach(s=>s.hidden=s.id!=='step-'+step);
-  try{localStorage.setItem('soap.step',step)}catch(e){}
+  try{localStorage.setItem('soap.step',step);if(calc)localStorage.setItem('soap.calcstep',step)}catch(e){}
 }
-document.querySelectorAll('.steps button').forEach(b=>b.onclick=()=>go(b.dataset.step));
+document.querySelectorAll('.stepnav button').forEach(b=>b.onclick=()=>go(b.dataset.step));
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{let t=b.dataset.tab;if(t==='calc'){try{t=localStorage.getItem('soap.calcstep')||'1'}catch(e){t='1'}}go(t)});
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{go(b.dataset.go);document.querySelector('.wrap').scrollIntoView({block:'start'})});
 
 // ---------- glossary ----------
