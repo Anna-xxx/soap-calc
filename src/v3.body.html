@@ -418,7 +418,7 @@
 <section class="panel" id="step-beg" hidden>
   <div class="todo">
     <h3 id="beg-title">Как варят</h3>
-    <p><span id="beg-intro"></span> Выберите способ ниже: калькулятор возьмёт ваши масла с вкладки «Ядровое» и покажет каждый расчёт по порядку с формулой. Любое число можно поменять самим.</p>
+    <p><span id="beg-intro"></span> Выберите способ и впишите масла ниже: калькулятор покажет каждый расчёт по порядку с формулой. Любое число можно поменять самим.</p>
   </div>
   <div class="block">
     <header><h2>Способ варки</h2></header>
@@ -429,7 +429,7 @@
     <p class="note" id="beg-note"></p>
   </div>
   <div class="block">
-    <header><h2>Параметры</h2><button type="button" class="btn" id="beg-reset">Вернуть типовые</button></header>
+    <header><h2>Параметры</h2><button type="button" class="btn" id="beg-reset">Сбросить</button></header>
     <p class="note">Значения подставились типовые для выбранного мыла. Меняйте под себя: расчёт ниже обновится сразу. При смене вкладки или способа значения снова станут типовыми.</p>
     <div class="fields">
       <label class="f" for="beg-alk">Щёлочь <button type="button" class="q" data-t="f:beg-alk">?</button><select id="beg-alk" disabled><option value="NaOH">NaOH (твёрдое мыло)</option><option value="KOH">KOH (жидкое мыло)</option></select></label>
@@ -441,13 +441,26 @@
     <p class="note" id="beg-conc-hint"></p>
   </div>
   <div class="block">
-    <header><h2>Ваши масла</h2><button type="button" class="btn" data-go="1">Изменить рецепт в «Ядровом»</button></header>
-    <div class="scroll"><table id="beg-oils"><thead><tr><th>Сырьё</th><th class="n">Вес, г</th><th class="n">ЧО</th><th class="n">Щёлочь на полное омыление, г</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
+    <header><h2>Масла</h2><span class="note">Выберите масло из списка или впишите своё. ЧО подставится из базы, его можно поправить</span></header>
+    <div class="scroll"><table id="beg-oils"><thead><tr><th>Сырьё</th><th class="n">Вес, г</th><th class="n">ЧО (KOH)</th><th class="n">Щёлочь на полное омыление, г</th><th></th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
+    <div class="row"><button class="btn" id="beg-add-oil" type="button">+ Добавить масло</button><button class="btn ghost" id="beg-copy-oils" type="button">Взять масла из «Ядрового»</button></div>
+  </div>
+  <div class="block">
+    <header><h2>Каким получится мыло</h2><span class="note">ориентировочно, по базе масел</span></header>
+    <div class="scroll"><table id="beg-props"><thead><tr><th>Свойство</th><th class="n">Получится</th><th class="n">Обычно</th><th>Оценка</th></tr></thead><tbody></tbody></table></div>
+    <p class="note" id="beg-props-note"></p>
   </div>
   <div class="block">
     <header><h2>Расчёт по порядку</h2></header>
     <div class="scroll"><table id="beg-steps"><thead><tr><th>№</th><th>Что считаем</th><th>Как считается</th><th class="n">Получилось</th></tr></thead><tbody></tbody></table></div>
     <p class="note" id="beg-warn"></p>
+  </div>
+  <div class="block">
+    <header><h2>Добавки и эфирные масла</h2><span class="note">% от веса масел. Пережир сюда не вписывать: он уже учтён в параметрах</span></header>
+    <div class="scroll"><table id="beg-adds"><thead><tr><th>Что добавляете</th><th class="n">%</th><th class="n">Вес, г</th><th></th></tr></thead><tbody></tbody>
+      <tfoot><tr><td>Итого</td><td class="n" id="beg-adds-p"></td><td class="n" id="beg-adds-g"></td><td></td></tr></tfoot></table></div>
+    <div class="row"><button class="btn" id="beg-add-eo" type="button">+ Эфирное масло</button><button class="btn" id="beg-add-x" type="button">+ Другая добавка</button></div>
+    <p class="note" id="beg-adds-note"></p>
   </div>
   <div class="block">
     <header><h2>Что делать</h2></header>
@@ -466,8 +479,8 @@
   <div class="block">
     <header><h2>Как пользоваться</h2></header>
     <ol class="howto">
-      <li><b>Ядровое</b>: масла вносят на этапе 1, а все остальные вкладки берут рецепт оттуда. Пять этапов идут по порядку: рецепт, щёлочь и вода, омыление, высолка, готовое мыло.</li>
-      <li><b>Твёрдое</b>: мыло на NaOH. Выберите способ, холодный (смешали, дали созреть 4–6 недель) или горячий (после смешивания проварили, готово через 1–2 недели). Калькулятор покажет все расчёты по порядку и что делать. Параметры можно менять.</li>
+      <li><b>Ядровое</b>: масла вносят на этапе 1. Пять этапов идут по порядку: рецепт, щёлочь и вода, омыление, высолка, готовое мыло.</li>
+      <li><b>Твёрдое</b>: мыло на NaOH. Выберите способ, холодный (смешали, дали созреть 4–6 недель) или горячий (после смешивания проварили, готово через 1–2 недели). Масла и их ЧО вписываете прямо на вкладке, параметры можно менять, кнопка «Сбросить» возвращает типовые. Калькулятор покажет все расчёты по порядку и что делать.</li>
       <li><b>Жидкое</b>: мыло на KOH. Способ тоже холодный или горячий, основной для жидкого мыла горячий. Добавляется расчёт воды на разведение пасты.</li>
       <li><b>Справочник</b>: титрование щёлочи (Кщ), разведение растворов, перевод KOH ↔ NaOH. <b>Себестоимость</b>: цена сырья и куска.</li>
     </ol>

@@ -359,4 +359,16 @@ select:disabled{opacity:1;color:var(--muted,inherit);background:var(--bg-soft,tr
 #tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);padding-top:10px}
 .sticky{top:calc(env(safe-area-inset-top,0px) + var(--tabh,48px))}
 body:not([data-view="calc"]) .mode,body:not([data-view="calc"]) .sticky{display:none}
+@media (max-width:600px){
+#beg-oils thead{display:none}
+#beg-oils,#beg-oils tbody,#beg-oils tfoot{display:block;width:100%}
+#beg-oils tfoot tr{display:flex;justify-content:space-between;gap:12px}
+#beg-oils tbody tr[data-i]{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:4px 8px;align-items:end;padding:10px 0;border-bottom:1px solid var(--line)}
+#beg-oils tbody td{border:0;padding:0}
+#beg-oils tbody td:first-child{grid-column:1/-1}
+#beg-oils tbody td[data-label]::before{content:attr(data-label);display:block;font-size:.8rem;font-weight:500;color:var(--muted);text-align:left;margin-bottom:4px;font-family:var(--f-ui);white-space:nowrap}
+#beg-oils tbody input{width:100%!important}
+#beg-oils tbody td[data-o]{align-self:end;padding-bottom:12px}
+#beg-props th,#beg-props td{padding-inline:4px;font-size:.82rem}
+}
 </style>

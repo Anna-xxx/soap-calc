@@ -365,8 +365,8 @@ function updSample(){$('sample-note').textContent=S.sample?'Сейчас отк�
 // ---------- steps ----------
 const HEAD={
   calc:['Варка на ядро · по шаблону «Рассчёт варки»','Ядровое мыло: расчёт варки','Ядровое мыло: пять этапов от рецепта до разлива в формы. На каждом этапе написано, что делать, а значок <span class="q static">?</span> объясняет термин. Все веса в граммах.'],
-  hard:['Твёрдое мыло · на NaOH','Твёрдое мыло','Холодный и горячий способ: все расчёты по порядку с формулами. Масла берутся с вкладки «Ядровое». Все веса в граммах.'],
-  liquid:['Жидкое мыло · на KOH','Жидкое мыло','Холодный и горячий способ: все расчёты по порядку с формулами. Масла берутся с вкладки «Ядровое». Все веса в граммах.'],
+  hard:['Твёрдое мыло · на NaOH','Твёрдое мыло','Холодный и горячий способ: все расчёты по порядку с формулами. Масла вводятся здесь же. Все веса в граммах.'],
+  liquid:['Жидкое мыло · на KOH','Жидкое мыло','Холодный и горячий способ: все расчёты по порядку с формулами. Масла вводятся здесь же. Все веса в граммах.'],
   ref:['Справочник','Справочные расчёты','Титрование щёлочи, разведение растворов, перевод KOH и NaOH.'],
   cost:['Себестоимость','Себестоимость мыла','Цена сырья и куска готового мыла.'],
   help:['Пояснения','Как пользоваться','Для чего калькулятор, что делать на каждой вкладке и что значат термины.']};
@@ -452,7 +452,12 @@ function boot(){
   S.unit=S.unit||'g';S.total=S.total||S.oils.reduce((a,o)=>a+o.fa+o.mzs,0);setUnit(S.unit);renderAdds();setParams();setMode(S.mode||'direct',false);updSample();renderSaved();
 }
 // ---------- новичку ----------
-const BEG_DEF={type:'hard',method:'cold',alk:'NaOH',sf:5,pur:100,conc:33,dil:100};
+const BEG_DEF={type:'hard',method:'cold',alk:'NaOH',sf:5,pur:100,conc:33,dil:100,adds:[]};
+const BEG_ADD_WHEN={
+  'hard.cold':'Когда вводить: эфирные масла и отдушку в конце, когда масса загустела до следа. Глину, травы, мёд можно раньше. Эфирных масел обычно 1–3% от масел, сильных (корица, гвоздика, мята) меньше.',
+  'hard.hot':'Когда вводить: после проварки, когда масса остынет примерно до 80 °C, иначе эфирные масла выветрятся. Эфирных масел обычно 1–3% от масел.',
+  'liquid.cold':'Когда вводить: в готовое разведённое мыло после отстаивания. Эфирных масел обычно 1–3% от масел; консервант по инструкции производителя.',
+  'liquid.hot':'Когда вводить: в разведённое и отстоявшееся мыло, не в горячую пасту. Эфирных масел обычно 1–3% от масел; консервант по инструкции производителя.'};
 const BEG_PRE={
   hard:{cold:{alk:'NaOH',sf:5,pur:100,conc:33,dil:0},hot:{alk:'NaOH',sf:5,pur:100,conc:30,dil:0}},
   liquid:{cold:{alk:'KOH',sf:3,pur:90,conc:33,dil:100},hot:{alk:'KOH',sf:3,pur:90,conc:30,dil:100}}};
@@ -498,7 +503,7 @@ const BEG_TODO={
   'Растворите пасту в горячей воде по расчёту (см. «Вода на разведение»). Оставьте на сутки-двое до полного растворения.',
   'Дайте мылу отстояться 1–2 недели, при необходимости отфильтруйте. Затем добавьте отдушку и консервант.']};
 function begApply(){const b=S.beg,pr=BEG_PRE[b.type][b.method];Object.assign(b,pr);begFill()}
-function begFill(){const b=S.beg;b.alk=b.type==='liquid'?'KOH':'NaOH';
+function begFill(){const b=S.beg;b.adds=b.adds||[];begAddsRender();begOilsRender();b.alk=b.type==='liquid'?'KOH':'NaOH';
   if(curStep!==b.type&&(curStep==='hard'||curStep==='liquid'))go(b.type);
   document.querySelectorAll('[data-bm]').forEach(e=>e.setAttribute('aria-pressed',e.dataset.bm===b.method));
   $('beg-alk').value=b.alk;$('beg-sf').value=b.sf;$('beg-pur').value=b.pur;$('beg-conc').value=b.conc;$('beg-dil').value=b.dil;
@@ -508,15 +513,43 @@ function begFill(){const b=S.beg;b.alk=b.type==='liquid'?'KOH':'NaOH';
   $('beg-todo').innerHTML=BEG_TODO[b.type+'.'+b.method].map(t=>`<li>${t}</li>`).join('');
   begRender()}
 document.querySelectorAll('[data-bm]').forEach(e=>e.onclick=()=>{S.beg.method=e.dataset.bm;begApply();persist()});
-$('beg-reset').onclick=()=>{begApply();persist();toast('Типовые значения вернулись')};
+$('beg-reset').onclick=()=>{begApply();persist();toast('Параметры сброшены к типовым')};
 [['beg-alk','alk'],['beg-sf','sf'],['beg-pur','pur'],['beg-conc','conc'],['beg-dil','dil']].forEach(([id,k])=>$(id).addEventListener('input',()=>{S.beg[k]=k==='alk'?$(id).value:v(id);begRender();persist()}));
+function begAddsRender(){
+  $('beg-adds').querySelector('tbody').innerHTML=S.beg.adds.map((a,i)=>`<tr data-i="${i}"><td><input data-k="n" value="${(a.n||'').replace(/"/g,'&quot;')}" placeholder="Название" aria-label="Добавка"></td><td class="n"><input class="n manual" style="width:80px" type="number" step="any" data-k="p" value="${a.p}" aria-label="%"></td><td class="n" data-o="g"></td><td><button class="btn ghost" type="button" data-del="${i}" aria-label="Удалить">✕</button></td></tr>`).join('')||'<tr><td colspan="4" class="note">Пока ничего. Нажмите кнопку ниже, чтобы добавить.</td></tr>'}
+$('beg-adds').querySelector('tbody').addEventListener('input',e=>{const tr=e.target.closest('tr');if(!tr||tr.dataset.i==null)return;const a=S.beg.adds[+tr.dataset.i],k=e.target.dataset.k;a[k]=k==='n'?e.target.value:(parseFloat(e.target.value)||0);begRender();persist()});
+$('beg-adds').querySelector('tbody').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!=null){S.beg.adds.splice(+d,1);begAddsRender();begRender();persist()}});
+$('beg-add-eo').onclick=()=>{S.beg.adds.push({n:'Эфирное масло',p:2});begAddsRender();begRender();persist()};
+$('beg-add-x').onclick=()=>{S.beg.adds.push({n:'',p:1});begAddsRender();begRender();persist()};
+const BEG_PROPS=[['hard','Твёрдость',29,54],['clean','Очищающие качества',12,22],['cond','Смягчающие качества',44,69],['bub','Пузыристость пены',14,46],['cream','Кремовость пены',16,48],['iod','Йодное число',41,70]];
+function begProps(){const liq=S.beg.type==='liquid',acc={};BEG_PROPS.forEach(p=>acc[p[0]]=[0,0]);
+  begOils().forEach(o=>{const w=o.w||0,d=byName[o.n];if(!d||!(w>0))return;BEG_PROPS.forEach(([k])=>{const val=d[k];if(val!=null){acc[k][0]+=val*w;acc[k][1]+=w}})});
+  $('beg-props').querySelector('tbody').innerHTML=BEG_PROPS.map(([k,l,lo,hi])=>{const x=acc[k][1]?acc[k][0]/acc[k][1]:NaN;
+    const skip=liq&&(k==='hard'||k==='cream');
+    const st=!ok(x)?'—':skip?'<span class="note">для жидкого не важно</span>':x<lo?'<span class="chip warn">ниже</span>':x>hi?'<span class="chip warn">выше</span>':'<span class="chip ok">в норме</span>';
+    return `<tr><td>${l}</td><td class="n">${ok(x)?nf0.format(x):'—'}</td><td class="n">${lo}–${hi}</td><td>${st}</td></tr>`}).join('');
+  const nodata=begOils().filter(o=>o.w>0&&!byName[o.n]).map(o=>o.n||'без названия');
+  const MSG={hard:['мыло мягкое, дольше сохнет и быстрее размокает','мыло может крошиться при нарезке'],clean:['мыло моет мягче','мыло может сушить кожу'],cond:['мыло меньше смягчает кожу','мыло может быть мягким и липким'],bub:['пены будет мало','пена крупная и быстро оседает'],cream:['пена будет жидковатой','пена очень густая'],iod:['','мыло быстрее прогоркает и желтеет']};
+  const msgs=[];BEG_PROPS.forEach(([k,l,lo,hi])=>{const x=acc[k][1]?acc[k][0]/acc[k][1]:NaN;if(!ok(x)||(liq&&(k==='hard'||k==='cream')))return;if(x<lo&&MSG[k][0])msgs.push(l+' ниже обычного: '+MSG[k][0]+'.');if(x>hi)msgs.push(l+' выше обычного: '+MSG[k][1]+'.')});
+  $('beg-props-note').textContent=(liq?'Жидкое мыло мягкое по природе, твёрдость и кремовость для него не важны. ':'')+(msgs.length?msgs.join(' ')+' Поменяйте доли масел выше, если хотите другой результат.':'Все свойства в обычных пределах.')+(nodata.length?' Нет данных о свойствах: '+nodata.join(', ')+'.':'')}
+function begOils(){const b=S.beg;if(!b.oils||Array.isArray(b.oils))b.oils={};
+  if(!b.oils[b.type])b.oils[b.type]=S.oils.filter(o=>o.fa+o.mzs>0).map(o=>({n:o.n,w:+(o.fa+o.mzs).toFixed(2),sap:o.sap}));
+  return b.oils[b.type]}
+function begOilsRender(){const L=begOils();
+  $('beg-oils').querySelector('tbody').innerHTML=L.map((o,i)=>`<tr data-i="${i}"><td data-label="Сырьё"><input list="oil-names" data-k="n" value="${(o.n||'').replace(/"/g,'&quot;')}" placeholder="Выберите масло" aria-label="Сырьё"></td><td class="n" data-label="Вес, г"><input class="n manual" style="width:100px" type="number" step="any" data-k="w" value="${o.w}" aria-label="Вес, г"></td><td class="n" data-label="ЧО (KOH)"><input class="n" style="width:90px" type="number" step="any" data-k="sap" value="${o.sap}" aria-label="ЧО"></td><td class="n" data-o="lye" data-label="Щёлочь, г"></td><td><button class="btn ghost" type="button" data-del="${i}" aria-label="Удалить">✕</button></td></tr>`).join('')||'<tr><td colspan="5" class="note">Добавьте масла кнопкой ниже.</td></tr>'}
+{const tb=$('beg-oils').querySelector('tbody');
+ tb.addEventListener('input',e=>{const tr=e.target.closest('tr');if(!tr||tr.dataset.i==null)return;const o=begOils()[+tr.dataset.i],k=e.target.dataset.k;
+  if(k==='n'){o.n=e.target.value;const d=byName[o.n];if(d&&d.sapK!=null){o.sap=d.sapK;tr.querySelector('[data-k=sap]').value=o.sap}}else o[k]=parseFloat(e.target.value)||0;begRender();persist()});
+ tb.addEventListener('click',e=>{const d=e.target.dataset.del;if(d!=null){begOils().splice(+d,1);begOilsRender();begRender();persist()}});
+ $('beg-add-oil').onclick=()=>{begOils().push({n:'',w:0,sap:0});begOilsRender();begRender();persist()};
+ $('beg-copy-oils').onclick=()=>{S.beg.oils[S.beg.type]=null;begOilsRender();begRender();persist();toast('Масла взяты из «Ядрового»')};}
 function begRender(){
   if(!S||!S.beg||!$('beg-oils'))return;const b=S.beg,na=b.alk==='NaOH';
-  const rows=S.oils.map(o=>({n:o.n||'без названия',w:o.fa+o.mzs,sap:o.sap})).filter(r=>r.w>0);
+  const L=begOils(),rows=L.filter(r=>r.w>0);
   const lye=r=>na?r.sap/1.403*r.w:r.sap*r.w;
   const W=rows.reduce((a,r)=>a+r.w,0),L0=rows.reduce((a,r)=>a+lye(r),0);
-  $('beg-oils').querySelector('tbody').innerHTML=rows.length?rows.map(r=>`<tr><td>${r.n.replace(/</g,'&lt;')}</td><td class="n">${g(r.w)}</td><td class="n">${r.sap}</td><td class="n">${g(lye(r))}</td></tr>`).join(''):'<tr><td colspan="4">В рецепте на шаге 1 пока нет масел с весом.</td></tr>';
-  $('beg-oils').querySelector('tfoot').innerHTML=`<tr><td>Итого</td><td class="n">${g(W)}</td><td class="n"></td><td class="n">${g(L0)}</td></tr>`;
+  {const trs=$('beg-oils').querySelectorAll('tbody tr[data-i]');L.forEach((r,k)=>{if(trs[k])trs[k].querySelector('[data-o=lye]').textContent=r.w>0?g(lye(r)):'—'})}
+  $('beg-oils').querySelector('tfoot').innerHTML=`<tr><td>Итого</td><td class="n">${g(W)}</td><td class="n"></td><td class="n">${g(L0)}</td><td></td></tr>`;
   const sf=b.sf,pur=b.pur,c=b.conc;
   const L1=L0*(1-sf/100),L2=pur>0?L1/(pur/100):NaN,Wt=c>0&&c<100?L2*(100-c)/c:NaN,sol=L2+Wt,tot=W+sol,dilW=tot*b.dil/100;
   const f=x=>String(+x.toFixed(2)).replace('.',',');
@@ -529,7 +562,10 @@ function begRender(){
    ['Воды отвесить для раствора',`щёлочь × (100 − ${f(c)}) ÷ ${f(c)}`,g(Wt)+' г',1],
    ['Вес раствора щёлочи','щёлочь + вода',g(sol)+' г'],
    ['Вес массы мыла',`масла ${g(W)} + раствор ${g(sol)}`,g(tot)+' г']];
+  {const ap=(b.adds||[]).reduce((a,x)=>a+(x.p||0),0);if(ap>0)st.push(['Добавки и эфирные масла',`масла ${g(W)} × ${f(ap)} ÷ 100`,g(W*ap/100)+' г',1])}
   if(b.type==='liquid')st.push(['Воды на разведение пасты',`вес массы × ${f(b.dil)} ÷ 100 (примерно, вес пасты после варки может быть чуть меньше)`,g(dilW)+' г',1]);
+  begProps();
+  {let ap=0;const trs=$('beg-adds').querySelectorAll('tbody tr[data-i]');(b.adds||[]).forEach((a,i)=>{ap+=a.p||0;if(trs[i])trs[i].querySelector('[data-o=g]').textContent=g(W*(a.p||0)/100)});$('beg-adds-p').textContent=nf2.format(ap)+'%';$('beg-adds-g').textContent=g(W*ap/100);$('beg-adds-note').textContent=BEG_ADD_WHEN[b.type+'.'+b.method]+(ap>5?' Сейчас добавок больше 5%: проверьте, не много ли.':'');}
   $('beg-steps').querySelector('tbody').innerHTML=st.map((r,i)=>`<tr class="${r[3]?'hl':''}"><td>${i+1}</td><td>${r[0]}</td><td class="how">${r[1]}</td><td class="n">${r[2]}</td></tr>`).join('');
   const w=[];if(!(pur>0))w.push('Чистота щёлочи должна быть больше 0.');if(!(c>0&&c<100))w.push('Крепость раствора укажите от 1 до 99%.');
   if(sf<0||sf>20)w.push('Пережир обычно от 0 до 10%, проверьте значение.');
