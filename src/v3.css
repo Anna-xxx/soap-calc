@@ -1,4 +1,4 @@
-<title>Расчёт варки мыла</title>
+<title>Калькулятор мыла</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -358,5 +358,5 @@ table.oils tfoot #t-p{color:var(--muted)}
 select:disabled{opacity:1;color:var(--muted,inherit);background:var(--bg-soft,transparent);cursor:default;-webkit-appearance:none;appearance:none}
 #tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);padding-top:10px}
 .sticky{top:calc(env(safe-area-inset-top,0px) + var(--tabh,48px))}
-body[data-view="beg"] header.top,body[data-view="beg"] .sticky{display:none}
+body:not([data-view="calc"]) .mode,body:not([data-view="calc"]) .sticky{display:none}
 </style>

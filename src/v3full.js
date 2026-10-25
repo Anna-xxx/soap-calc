@@ -363,12 +363,19 @@ $('recipe-name').addEventListener('input',e=>{S.name=e.target.value;persist();re
 function updSample(){$('sample-note').textContent=S.sample?'Сейчас открыт пример рецепта. Замените масла и веса на свои. ЧО, ПКЭ, Й и титр подставляются из базы, их можно поправить вручную.':'ЧО, ПКЭ, Й и титр подставляются из базы, их можно поправить вручную. Рецепт запоминается в этом браузере.'}
 
 // ---------- steps ----------
+const HEAD={
+  calc:['Варка на ядро · по шаблону «Рассчёт варки»','Ядровое мыло: расчёт варки','Ядровое мыло: пять этапов от рецепта до разлива в формы. На каждом этапе написано, что делать, а значок <span class="q static">?</span> объясняет термин. Все веса в граммах.'],
+  hard:['Твёрдое мыло · на NaOH','Твёрдое мыло','Холодный и горячий способ: все расчёты по порядку с формулами. Масла берутся с вкладки «Ядровое». Все веса в граммах.'],
+  liquid:['Жидкое мыло · на KOH','Жидкое мыло','Холодный и горячий способ: все расчёты по порядку с формулами. Масла берутся с вкладки «Ядровое». Все веса в граммах.'],
+  ref:['Справочник','Справочные расчёты','Титрование щёлочи, разведение растворов, перевод KOH и NaOH.'],
+  cost:['Себестоимость','Себестоимость мыла','Цена сырья и куска готового мыла.'],
+  help:['Пояснения','Как пользоваться','Для чего калькулятор, что делать на каждой вкладке и что значат термины.']};
 let curStep='1';
 (function(){const t=$('tabs'),set=()=>document.documentElement.style.setProperty('--tabh',t.offsetHeight+'px');set();addEventListener('resize',set);if(document.fonts)document.fonts.ready.then(set)})();
 function go(step){
   if(step==='beg')step=(S&&S.beg&&S.beg.type)||'hard';
   const calc=/^[1-5]$/.test(step),isBeg=step==='hard'||step==='liquid',tab=calc?'calc':step;
-  curStep=step;document.body.dataset.view=isBeg?'beg':calc?'calc':step;
+  curStep=step;document.body.dataset.view=isBeg?'beg':calc?'calc':step;{const h=HEAD[calc?'calc':step];if(h){$('hd-eyebrow').textContent=h[0];$('hd-h1').textContent=h[1];$('hd-sub').innerHTML=h[2]}}
   if(isBeg&&S&&S.beg&&S.beg.type!==step){S.beg.type=step;begApply();persist()}
   document.querySelectorAll('.tabs button').forEach(b=>{if(b.dataset.tab===tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   $('stepnav').hidden=!calc;
