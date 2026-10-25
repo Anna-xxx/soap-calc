@@ -375,4 +375,6 @@ body:not([data-view="calc"]) .mode,body:not([data-view="calc"]) .sticky{display:
 #beg-recipe tr.sep td{border-top:2px solid var(--line)}
 .beg-props-head{display:flex;justify-content:flex-end;gap:12px;font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:4px 0 -4px}
 .beg-props-head span:nth-child(1){min-width:120px;text-align:right}.beg-props-head span:nth-child(2){min-width:64px;text-align:right}.beg-props-head span:nth-child(3){min-width:96px;text-align:right}
+#step-beg .fields{grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))}
+#step-beg .fields label.f{white-space:nowrap}
 </style>
