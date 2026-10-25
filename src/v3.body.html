@@ -82,8 +82,8 @@
     <div class="row"><button class="btn" id="add-oil" type="button">+ Добавить масло</button>
       </div>
     <ul class="legend">
-      <li><i class="sw sw-in"></i><span>Серое поле: вписываете вы (вес масла).</span></li>
-      <li><i class="sw sw-db"></i><span>Белое поле: подставляется из базы, можно поправить.</span></li>
+      <li><i class="sw sw-in"></i><span>Белое поле: вписываете вы (вес масла).</span></li>
+      <li><i class="sw sw-db"></i><span>Серое поле: подставляется из базы, можно поправить.</span></li>
       <li><i class="sw sw-mu"></i><span><span class="lg-mu">Серое число</span>: справка, доля масла в смеси.</span></li>
       <li><i class="sw sw-ly"></i><span><span class="lg-ly">Золотое число</span>: сколько щёлочи нужно на это масло, то, что отвешивают.</span></li>
     </ul>
@@ -433,15 +433,15 @@
     <p class="note">Значения подставились типовые для выбранного мыла. Меняйте под себя: расчёт ниже обновится сразу. При смене способа значения снова станут типовыми. У «Твёрдого» и «Жидкого» значения свои и не путаются.</p>
     <div class="fields">
       <label class="f" for="beg-alk">Щёлочь <button type="button" class="q" data-t="f:beg-alk">?</button><select id="beg-alk" disabled><option value="NaOH">NaOH, по типу мыла</option><option value="KOH">KOH, по типу мыла</option></select></label>
-      <label class="f" for="beg-sf">Пережир, % <button type="button" class="q" data-t="f:beg-sf">?</button><input class="n manual" id="beg-sf" type="number" step="any" value="5"></label>
-      <label class="f" for="beg-pur">Чистота щёлочи, % <button type="button" class="q" data-t="f:beg-pur">?</button><input class="n manual" id="beg-pur" type="number" step="any" value="100"></label>
-      <label class="f" for="beg-wp">Вода, % от масел <button type="button" class="q" data-t="f:beg-wp">?</button><input class="n manual" id="beg-wp" type="number" step="any" value="33" placeholder="обычно 33"></label>
-      <label class="f only-liq" for="beg-dil">Вода на разведение, % <button type="button" class="q" data-t="f:beg-dil">?</button><input class="n manual" id="beg-dil" type="number" step="any" value="100" placeholder="обычно 100"></label>
+      <label class="f" for="beg-sf">Пережир, % <button type="button" class="q" data-t="f:beg-sf">?</button><input class="n" id="beg-sf" type="number" step="any" value="5"></label>
+      <label class="f" for="beg-pur">Чистота щёлочи, % <button type="button" class="q" data-t="f:beg-pur">?</button><input class="n" id="beg-pur" type="number" step="any" value="100"></label>
+      <label class="f" for="beg-wp">Вода, % от масел <button type="button" class="q" data-t="f:beg-wp">?</button><input class="n" id="beg-wp" type="number" step="any" value="33" placeholder="обычно 33"></label>
+      <label class="f only-liq" for="beg-dil">Вода на разведение, % <button type="button" class="q" data-t="f:beg-dil">?</button><input class="n" id="beg-dil" type="number" step="any" value="100" placeholder="обычно 100"></label>
     </div>
     <p class="note" id="beg-conc-hint"></p>
   </div>
   <div class="block">
-    <header><h2>Масла</h2><span class="note">Серые поля заполняете вы. Белое поле ЧО подставляется из базы само, но его можно поправить</span></header>
+    <header><h2>Масла</h2><span class="note">Белые поля заполняете вы. Серое поле ЧО подставляется из базы само, но его можно поправить</span></header>
     <div class="scroll"><table id="beg-oils"><thead><tr><th>Сырьё</th><th class="n">Вес, г</th><th class="n">ЧО (KOH)</th><th class="n">Щёлочь на полное омыление, г</th><th></th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
     <div class="row"><button class="btn" id="beg-add-oil" type="button">+ Добавить масло</button></div>
   </div>
@@ -504,7 +504,7 @@
   <div class="block">
     <header><h2>Как читать экран</h2></header>
     <ul class="howto">
-      <li><b>Серые поля</b> вписываете вы. <b>Белые</b> подставляются сами, но их можно поправить.</li>
+      <li><b>Белые поля</b> вписываете вы. <b>Серые</b> подставляются сами, но их можно поправить.</li>
       <li><b>Золотые числа</b> — то, что нужно отвесить или добавить.</li>
       <li>Значок <b>?</b> рядом с полем или словом открывает пояснение.</li>
       <li>Строка с плитками вверху показывает главные числа рецепта на всех вкладках, кроме «Твёрдое» и «Жидкое».</li>
