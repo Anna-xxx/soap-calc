@@ -811,7 +811,7 @@ body:not([data-view="calc"]) .mode,body:not([data-view="calc"]) .sticky{display:
   </div>
   <div class="block">
     <header><h2>Параметры</h2><button type="button" class="btn" id="beg-reset">Сбросить</button></header>
-    <p class="note">Значения подставились типовые для выбранного мыла. Меняйте под себя: расчёт ниже обновится сразу. При смене вкладки или способа значения снова станут типовыми.</p>
+    <p class="note">Значения подставились типовые для выбранного мыла. Меняйте под себя: расчёт ниже обновится сразу. При смене способа значения снова станут типовыми. У «Твёрдого» и «Жидкого» значения свои и не путаются.</p>
     <div class="fields">
       <label class="f" for="beg-alk">Щёлочь <button type="button" class="q" data-t="f:beg-alk">?</button><select id="beg-alk" disabled><option value="NaOH">NaOH (твёрдое мыло)</option><option value="KOH">KOH (жидкое мыло)</option></select></label>
       <label class="f" for="beg-sf">Пережир, % <button type="button" class="q" data-t="f:beg-sf">?</button><input class="n manual" id="beg-sf" type="number" step="any" value="5"></label>
@@ -1282,7 +1282,7 @@ function go(step){
   if(step==='beg')step=(S&&S.beg&&S.beg.type)||'hard';
   const calc=/^[1-5]$/.test(step),isBeg=step==='hard'||step==='liquid',tab=calc?'calc':step;
   curStep=step;document.body.dataset.view=isBeg?'beg':calc?'calc':step;{const h=HEAD[calc?'calc':step];if(h){$('hd-eyebrow').textContent=h[0];$('hd-h1').textContent=h[1];$('hd-sub').innerHTML=h[2]}}
-  if(isBeg&&S&&S.beg&&S.beg.type!==step){S.beg.type=step;begApply();persist()}
+  if(isBeg&&S&&S.beg&&S.beg.type!==step){const b=S.beg;b.saved=b.saved||{};b.saved[b.type]={method:b.method,sf:b.sf,pur:b.pur,conc:b.conc,dil:b.dil};b.type=step;if(b.saved[step]){Object.assign(b,b.saved[step]);begFill()}else begApply();persist()}
   document.querySelectorAll('.tabs button').forEach(b=>{if(b.dataset.tab===tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   $('stepnav').hidden=!calc;
   document.querySelectorAll('.stepnav button').forEach(b=>{b.toggleAttribute('aria-current',b.dataset.step===step);if(b.dataset.step===step)b.setAttribute('aria-current','step')});
