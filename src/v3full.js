@@ -529,8 +529,9 @@ function begProps(){const liq=S.beg.type==='liquid',acc={};BEG_PROPS.forEach(p=>
   let tW=0,tS=0,sW=0,sS=0;begOils().forEach(o=>{const w=o.w||0,d=byName[o.n];if(!(w>0))return;if(d&&d.titr){tS+=d.titr*w;tW+=w}sS+=(o.sap||0)*w;sW+=w});
   kv('beg-props',BEG_PROPS.map(([k,l,lo,hi])=>{const x=acc[k][1]?acc[k][0]/acc[k][1]:NaN;const skip=liq&&(k==='hard'||k==='cream');
     const chip='<span style="display:inline-flex;justify-content:flex-end;min-width:96px">'+(!ok(x)||skip?'':x<lo?'<span class="chip warn">ниже нормы</span>':x>hi?'<span class="chip warn">выше нормы</span>':'<span class="chip ok">в норме</span>')+'</span>';
-    const val=!ok(x)?'—':k==='iod'?`<span class="row" style="justify-content:flex-end;flex-wrap:nowrap;gap:8px">${g(x)}${chip}</span>`:`<span class="row" style="justify-content:flex-end;flex-wrap:nowrap;gap:8px">${bar(x)}${chip}</span>`;
-    return [k==='iod'?'Йодное число (устойчивость к прогорканию)':l,val,skip?'для жидкого мыла не важно':`норма ${lo}–${hi}`+(ok(x)&&x<lo&&MSG[k][0]?`: ${MSG[k][0]}`:ok(x)&&x>hi?`: ${MSG[k][1]}`:'')]}).concat([
+    const nrm=`<span class="note" style="display:inline-block;min-width:64px;text-align:right;white-space:nowrap">${skip?'':lo+'–'+hi}</span>`;
+    const val=!ok(x)?'—':`<span class="row" style="justify-content:flex-end;flex-wrap:nowrap;gap:12px">${k==='iod'?g(x):bar(x)}${nrm}${chip}</span>`;
+    return [k==='iod'?'Йодное число (устойчивость к прогорканию)':l,val,skip?'для жидкого мыла не важно':(ok(x)&&x<lo&&MSG[k][0]?MSG[k][0]:ok(x)&&x>hi?MSG[k][1]:'')]}).concat([
     ['Титр жиров',tW?g(tS/tW)+' °С':'—','по маслам с известным титром'],['ЧО смеси жиров (KOH)',sW?nf3.format(sS/sW):'—']]));
   const nodata=begOils().filter(o=>o.w>0&&!byName[o.n]).map(o=>o.n||'без названия');
   const msgs=[];BEG_PROPS.forEach(([k,l,lo,hi])=>{const x=acc[k][1]?acc[k][0]/acc[k][1]:NaN;if(!ok(x)||(liq&&(k==='hard'||k==='cream')))return;if(x<lo&&MSG[k][0])msgs.push(l+' ниже обычного: '+MSG[k][0]+'.');if(x>hi)msgs.push(l+' выше обычного: '+MSG[k][1]+'.')});
