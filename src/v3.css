@@ -356,4 +356,7 @@ table.oils tfoot #t-p{color:var(--muted)}
 @media (max-width:760px){.tabs button{font-size:.9rem;padding:10px 10px 12px}}
 @media (max-width:760px){.tabs{flex-wrap:wrap;overflow:visible}.tabs button{padding:8px 10px 10px}}
 select:disabled{opacity:1;color:var(--muted,inherit);background:var(--bg-soft,transparent);cursor:default;-webkit-appearance:none;appearance:none}
+#tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);padding-top:10px}
+.sticky{top:calc(env(safe-area-inset-top,0px) + var(--tabh,48px))}
+body[data-view="beg"] header.top,body[data-view="beg"] .sticky{display:none}
 </style>

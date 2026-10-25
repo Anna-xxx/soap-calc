@@ -363,13 +363,18 @@ $('recipe-name').addEventListener('input',e=>{S.name=e.target.value;persist();re
 function updSample(){$('sample-note').textContent=S.sample?'Сейчас открыт пример рецепта. Замените масла и веса на свои. ЧО, ПКЭ, Й и титр подставляются из базы, их можно поправить вручную.':'ЧО, ПКЭ, Й и титр подставляются из базы, их можно поправить вручную. Рецепт запоминается в этом браузере.'}
 
 // ---------- steps ----------
+let curStep='1';
+(function(){const t=$('tabs'),set=()=>document.documentElement.style.setProperty('--tabh',t.offsetHeight+'px');set();addEventListener('resize',set);if(document.fonts)document.fonts.ready.then(set)})();
 function go(step){
-  const calc=/^[1-5]$/.test(step),tab=calc?'calc':step;
+  if(step==='beg')step=(S&&S.beg&&S.beg.type)||'hard';
+  const calc=/^[1-5]$/.test(step),isBeg=step==='hard'||step==='liquid',tab=calc?'calc':step;
+  curStep=step;document.body.dataset.view=isBeg?'beg':calc?'calc':step;
+  if(isBeg&&S&&S.beg&&S.beg.type!==step){S.beg.type=step;begApply();persist()}
   document.querySelectorAll('.tabs button').forEach(b=>{if(b.dataset.tab===tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   $('stepnav').hidden=!calc;
   document.querySelectorAll('.stepnav button').forEach(b=>{b.toggleAttribute('aria-current',b.dataset.step===step);if(b.dataset.step===step)b.setAttribute('aria-current','step')});
   const n=calc?+step:0;document.querySelectorAll('.stepnav button').forEach(b=>b.classList.toggle('done',n&&+b.dataset.step<n));
-  document.querySelectorAll('section.panel').forEach(s=>s.hidden=s.id!=='step-'+step);
+  document.querySelectorAll('section.panel').forEach(s=>s.hidden=s.id!=='step-'+(isBeg?'beg':step));
   try{localStorage.setItem('soap.step',step);if(calc)localStorage.setItem('soap.calcstep',step)}catch(e){}
 }
 document.querySelectorAll('.stepnav button').forEach(b=>b.onclick=()=>go(b.dataset.step));
@@ -449,6 +454,9 @@ const BEG_NOTE={
   'hard.hot':'Мыло дополнительно проваривают после смешивания. Оно готово раньше (через 1–2 недели), но масса густая и работать с ней нужно быстро.',
   'liquid.cold':'Жидкое мыло на холодном способе получается мягкой пастой и долго созревает. Новичку проще варить его горячим способом.',
   'liquid.hot':'Основной способ для жидкого мыла: пасту проваривают, а затем разводят водой. Нужна щёлочь KOH, чаще всего её чистота около 90%.'};
+const BEG_INTRO={
+  hard:'Твёрдое мыло варят двумя способами. Холодный: масла смешивают с раствором щёлочи и дают созреть 4–6 недель, варить не нужно. Горячий: массу после смешивания проваривают, и мыло готово через 1–2 недели.',
+  liquid:'Жидкое мыло тоже бывает холодным и горячим. Холодный: паста получается мягкой и долго созревает. Горячий: пасту проваривают и разводят водой, этот способ основной и новичкам проще.'};
 const BEG_TODO={
  'hard.cold':[
   'Отвесьте масла и воду, щёлочь и раствор по расчёту выше. Всё взвешивайте на весах с точностью до 1 г.',
@@ -484,14 +492,14 @@ const BEG_TODO={
   'Дайте мылу отстояться 1–2 недели, при необходимости отфильтруйте. Затем добавьте отдушку и консервант.']};
 function begApply(){const b=S.beg,pr=BEG_PRE[b.type][b.method];Object.assign(b,pr);begFill()}
 function begFill(){const b=S.beg;b.alk=b.type==='liquid'?'KOH':'NaOH';
-  document.querySelectorAll('[data-bt]').forEach(e=>e.setAttribute('aria-pressed',e.dataset.bt===b.type));
+  if(curStep!==b.type&&(curStep==='hard'||curStep==='liquid'))go(b.type);
   document.querySelectorAll('[data-bm]').forEach(e=>e.setAttribute('aria-pressed',e.dataset.bm===b.method));
   $('beg-alk').value=b.alk;$('beg-sf').value=b.sf;$('beg-pur').value=b.pur;$('beg-conc').value=b.conc;$('beg-dil').value=b.dil;
+  $('beg-title').textContent=b.type==='liquid'?'Жидкое мыло':'Твёрдое мыло';$('beg-intro').textContent=BEG_INTRO[b.type];
   $('beg-note').textContent=BEG_NOTE[b.type+'.'+b.method];
   document.querySelectorAll('.only-liq').forEach(e=>e.hidden=b.type!=='liquid');
   $('beg-todo').innerHTML=BEG_TODO[b.type+'.'+b.method].map(t=>`<li>${t}</li>`).join('');
   begRender()}
-document.querySelectorAll('[data-bt]').forEach(e=>e.onclick=()=>{S.beg.type=e.dataset.bt;begApply();persist()});
 document.querySelectorAll('[data-bm]').forEach(e=>e.onclick=()=>{S.beg.method=e.dataset.bm;begApply();persist()});
 $('beg-reset').onclick=()=>{begApply();persist();toast('Типовые значения вернулись')};
 [['beg-alk','alk'],['beg-sf','sf'],['beg-pur','pur'],['beg-conc','conc'],['beg-dil','dil']].forEach(([id,k])=>$(id).addEventListener('input',()=>{S.beg[k]=k==='alk'?$(id).value:v(id);begRender();persist()}));
