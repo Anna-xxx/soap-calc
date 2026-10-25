@@ -565,6 +565,14 @@ function begRender(){
   {const ap=(b.adds||[]).reduce((a,x)=>a+(x.p||0),0);if(ap>0)st.push(['Добавки и эфирные масла',`масла ${g(W)} × ${f(ap)} ÷ 100`,g(W*ap/100)+' г',1])}
   if(b.type==='liquid')st.push(['Воды на разведение пасты',`вес массы × ${f(b.dil)} ÷ 100 (примерно, вес пасты после варки может быть чуть меньше)`,g(dilW)+' г',1]);
   begProps();
+  {const pc=x=>W>0&&ok(x)?nf2.format(x/W*100)+'%':'—',esc=t=>String(t||'без названия').replace(/</g,'&lt;'),gold=x=>`<b class="wv">${g(x)}</b>`;
+   const R=[];rows.forEach(r=>R.push([esc(r.n),r.w]));
+   R.push([(na?'Щёлочь NaOH':'Щёлочь KOH')+(pur<100?` (чистота ${f(pur)}%)`:''),L2]);R.push(['Вода для раствора щёлочи',Wt]);
+   (b.adds||[]).filter(a=>a.p>0).forEach(a=>R.push([esc(a.n||'Добавка'),W*a.p/100]));
+   if(b.type==='liquid')R.push(['Вода на разведение пасты (потом)',dilW]);
+   const T=R.reduce((a,r)=>a+(ok(r[1])?r[1]:0),0);
+   $('beg-recipe').querySelector('tbody').innerHTML=R.map(([n,w],i)=>`<tr${i===rows.length?' class="sep"':''}><td>${n}</td><td class="n">${gold(w)}</td><td class="n">${pc(w)}</td></tr>`).join('');
+   $('beg-recipe').querySelector('tfoot').innerHTML=`<tr><td>Всего</td><td class="n">${g(T)}</td><td class="n"></td></tr>`;}
   {let ap=0;const trs=$('beg-adds').querySelectorAll('tbody tr[data-i]');(b.adds||[]).forEach((a,i)=>{ap+=a.p||0;if(trs[i])trs[i].querySelector('[data-o=g]').textContent=g(W*(a.p||0)/100)});$('beg-adds-p').textContent=nf2.format(ap)+'%';$('beg-adds-g').textContent=g(W*ap/100);$('beg-adds-note').textContent=BEG_ADD_WHEN[b.type+'.'+b.method]+(ap>5?' Сейчас добавок больше 5%: проверьте, не много ли.':'');}
   $('beg-steps').querySelector('tbody').innerHTML=st.map((r,i)=>`<tr class="${r[3]?'hl':''}"><td>${i+1}</td><td>${r[0]}</td><td class="how">${r[1]}</td><td class="n">${r[2]}</td></tr>`).join('');
   const w=[];if(!(pur>0))w.push('Чистота щёлочи должна быть больше 0.');if(!(c>0&&c<100))w.push('Крепость раствора укажите от 1 до 99%.');

@@ -371,4 +371,6 @@ body:not([data-view="calc"]) .mode,body:not([data-view="calc"]) .sticky{display:
 #beg-oils tbody td[data-o]{align-self:end;padding-bottom:12px}
 #beg-props th,#beg-props td{padding-inline:4px;font-size:.82rem}
 }
+#beg-recipe .wv{color:var(--lye);font-weight:700}
+#beg-recipe tr.sep td{border-top:2px solid var(--line)}
 </style>
