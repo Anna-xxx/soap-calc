@@ -492,7 +492,7 @@ const BEG_TODO={
   'Влейте раствор в масла и перемешайте блендером до густой массы-пасты.',
   'Накройте и утеплите на 24–48 часов. Паста останется мягкой и вязкой.',
   'Проверьте готовность индикаторной полоской pH: у готовой пасты она не должна быть выше 10. Если рН выше, подержите пасту ещё несколько дней или проварите.',
-  'Растворите пасту в горячей воде в нужной пропорции (см. «Вода на разведение» в расчёте). Оставьте на сутки-двое до полного растворения.',
+  'Если нужно жидкое мыло, растворите пасту в горячей воде до нужной густоты (обычно на 1 часть пасты 1–3 части воды). Оставьте на сутки-двое до полного растворения.',
   'Дайте жидкому мылу отстояться 1–2 недели, при необходимости отфильтруйте. Затем добавьте отдушку и консервант.'],
  'liquid.hot':[
   'Отвесьте масла, воду и KOH по расчёту выше. Особенно аккуратно: KOH сильно греется и «пылит».',
@@ -500,13 +500,13 @@ const BEG_TODO={
   'Влейте раствор в масла и перемешайте блендером до густой массы-пасты.',
   'Поставьте на водяную баню или в мультиварку на слабый нагрев, накройте крышкой. Помешивайте раз в 15–20 минут и не давайте пасте убегать.',
   'Варите 1,5–3 часа: паста станет тягучей, резиновой и прозрачной, цвета янтаря. Проба: растворите немного пасты в горячей воде. Раствор должен быть прозрачным, без масляных капель. Проверьте pH индикаторной полоской: он должен быть не выше 10.',
-  'Растворите пасту в горячей воде по расчёту (см. «Вода на разведение»). Оставьте на сутки-двое до полного растворения.',
+  'Если нужно жидкое мыло, растворите пасту в горячей воде до нужной густоты (обычно на 1 часть пасты 1–3 части воды). Оставьте на сутки-двое до полного растворения.',
   'Дайте мылу отстояться 1–2 недели, при необходимости отфильтруйте. Затем добавьте отдушку и консервант.']};
 function begApply(){const b=S.beg,pr=BEG_PRE[b.type][b.method];Object.assign(b,pr);begFill()}
 function begFill(){const b=S.beg;b.adds=b.adds||[];begAddsRender();begOilsRender();b.alk=b.type==='liquid'?'KOH':'NaOH';
   if(curStep!==b.type&&(curStep==='hard'||curStep==='liquid'))go(b.type);
   document.querySelectorAll('[data-bm]').forEach(e=>e.setAttribute('aria-pressed',e.dataset.bm===b.method));
-  $('beg-alk').value=b.alk;$('beg-sf').value=b.sf;$('beg-pur').value=b.pur;$('beg-wp').value=b.wp;$('beg-dil').value=b.dil;
+  $('beg-alk').value=b.alk;$('beg-sf').value=b.sf;$('beg-pur').value=b.pur;$('beg-wp').value=b.wp;
   $('beg-intro').textContent=BEG_INTRO[b.type];
   $('beg-note').textContent=BEG_NOTE[b.type+'.'+b.method];
   document.querySelectorAll('.only-liq').forEach(e=>e.hidden=b.type!=='liquid');
@@ -514,7 +514,7 @@ function begFill(){const b=S.beg;b.adds=b.adds||[];begAddsRender();begOilsRender
   begRender()}
 document.querySelectorAll('[data-bm]').forEach(e=>e.onclick=()=>{S.beg.method=e.dataset.bm;begApply();persist()});
 $('beg-reset').onclick=()=>{begApply();persist();toast('Параметры сброшены к типовым')};
-[['beg-alk','alk'],['beg-sf','sf'],['beg-pur','pur'],['beg-wp','wp'],['beg-dil','dil']].forEach(([id,k])=>$(id).addEventListener('input',()=>{S.beg[k]=k==='alk'?$(id).value:v(id);begRender();persist()}));
+[['beg-alk','alk'],['beg-sf','sf'],['beg-pur','pur'],['beg-wp','wp']].forEach(([id,k])=>$(id).addEventListener('input',()=>{S.beg[k]=k==='alk'?$(id).value:v(id);begRender();persist()}));
 function begAddsRender(){
   $('beg-adds').querySelector('tbody').innerHTML=S.beg.adds.map((a,i)=>`<tr data-i="${i}"><td><input class="manual" data-k="n" value="${(a.n||'').replace(/"/g,'&quot;')}" placeholder="Название" aria-label="Добавка"></td><td class="n"><input class="n manual" style="width:80px" type="number" step="any" data-k="p" value="${a.p}" aria-label="%"></td><td class="n" data-o="g"></td><td><button class="btn ghost" type="button" data-del="${i}" aria-label="Удалить">✕</button></td></tr>`).join('')||'<tr><td colspan="4" class="note">Пока ничего. Нажмите кнопку ниже, чтобы добавить.</td></tr>'}
 $('beg-adds').querySelector('tbody').addEventListener('input',e=>{const tr=e.target.closest('tr');if(!tr||tr.dataset.i==null)return;const a=S.beg.adds[+tr.dataset.i],k=e.target.dataset.k;a[k]=k==='n'?e.target.value:(parseFloat(e.target.value)||0);begRender();persist()});
@@ -555,9 +555,9 @@ function begRender(){
   {const trs=$('beg-oils').querySelectorAll('tbody tr[data-i]');L.forEach((r,k)=>{if(trs[k])trs[k].querySelector('[data-o=lye]').textContent=r.w>0?g(lye(r)):'—'})}
   $('beg-oils').querySelector('tfoot').innerHTML=`<tr><td>Итого</td><td class="n">${g(W)}</td><td class="n"></td><td class="n">${g(L0)}</td><td></td></tr>`;
   const sf=b.sf,pur=b.pur,wp=b.wp;
-  const L1=L0*(1-sf/100),L2=pur>0?L1/(pur/100):NaN,Wt=wp>0?W*wp/100:NaN,c=ok(Wt)&&L2>0?L2/(L2+Wt)*100:NaN,sol=L2+Wt,tot=W+sol,dilW=tot*b.dil/100;
+  const L1=L0*(1-sf/100),L2=pur>0?L1/(pur/100):NaN,Wt=wp>0?W*wp/100:NaN,c=ok(Wt)&&L2>0?L2/(L2+Wt)*100:NaN,sol=L2+Wt,tot=W+sol;
   const f=x=>String(+x.toFixed(2)).replace('.',',');
-  $('beg-conc-hint').textContent='Вода, % от масел: сколько воды взять для раствора щёлочи от веса масел. '+(b.type==='liquid'?'Для жидкого мыла обычно 50–60%. ':'Для твёрдого мыла обычно 30–38%. ')+(ok(Wt)&&ok(c)?`Сейчас ${g(Wt)} г воды, раствор щёлочи ${f(c)}%.`+(c>50?' Воды мало: щёлочь может не раствориться, добавьте воды.':c<20?' Воды много: мыло будет долго схватываться и сохнуть.':''):'Впишите число больше 0.')+(b.type==='liquid'?' Вода на разведение: сколько воды добавить к готовой пасте, % от её веса; 100% значит столько же воды, сколько пасты.':'');
+  $('beg-conc-hint').textContent='Вода, % от масел: сколько воды взять для раствора щёлочи от веса масел. '+(b.type==='liquid'?'Для жидкого мыла обычно 50–60%. ':'Для твёрдого мыла обычно 30–38%. ')+(ok(Wt)&&ok(c)?`Сейчас ${g(Wt)} г воды, раствор щёлочи ${f(c)}%.`+(c>50?' Воды мало: щёлочь может не раствориться, добавьте воды.':c<20?' Воды много: мыло будет долго схватываться и сохнуть.':''):'Впишите число больше 0.');
   const st=[
    ['Масса масел','сумма весов всех масел',g(W)+' г'],
    ['Щёлочь на полное омыление',na?'Σ (вес × ЧО ÷ 1,403) для каждого масла (ЧО даётся для KOH, для NaOH делим на 1,403)':'Σ (вес × ЧО) для каждого масла',g(L0)+' г'],
@@ -567,13 +567,11 @@ function begRender(){
    ['Вес раствора щёлочи','щёлочь + вода',g(sol)+' г'],
    ['Вес массы мыла',`масла ${g(W)} + раствор ${g(sol)}`,g(tot)+' г']];
   {const ap=(b.adds||[]).reduce((a,x)=>a+(x.p||0),0);if(ap>0)st.push(['Добавки и эфирные масла',`масла ${g(W)} × ${f(ap)} ÷ 100`,g(W*ap/100)+' г',1])}
-  if(b.type==='liquid')st.push(['Воды на разведение пасты',`вес массы × ${f(b.dil)} ÷ 100 (примерно, вес пасты после варки может быть чуть меньше)`,g(dilW)+' г',1]);
   begProps();
   {const pc=x=>W>0&&ok(x)?nf2.format(x/W*100)+'%':'—',esc=t=>String(t||'без названия').replace(/</g,'&lt;'),gold=x=>`<b class="wv">${g(x)}</b>`;
    const R=[];rows.forEach(r=>R.push([esc(r.n),r.w]));
    R.push([(na?'Щёлочь NaOH':'Щёлочь KOH')+(pur<100?` (чистота ${f(pur)}%)`:''),L2]);R.push(['Вода для раствора щёлочи',Wt]);
    (b.adds||[]).filter(a=>a.p>0).forEach(a=>R.push([esc(a.n||'Добавка'),W*a.p/100]));
-   if(b.type==='liquid')R.push(['Вода на разведение пасты (потом)',dilW]);
    const T=R.reduce((a,r)=>a+(ok(r[1])?r[1]:0),0);
    $('beg-recipe').querySelector('tbody').innerHTML=R.map(([n,w],i)=>`<tr${i===rows.length?' class="sep"':''}><td>${n}</td><td class="n">${gold(w)}</td><td class="n">${pc(w)}</td></tr>`).join('');
    $('beg-recipe').querySelector('tfoot').innerHTML=`<tr><td>Всего</td><td class="n">${g(T)}</td><td class="n"></td></tr>`;}
