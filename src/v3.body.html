@@ -11,16 +11,25 @@
   <div style="display:grid;gap:8px">
     <span class="eyebrow" id="hd-eyebrow">Варка на ядро · по шаблону «Рассчёт варки»</span>
     <h1 id="hd-h1">Варка на ядро</h1>
-    <p class="sub" id="hd-sub">Горячая варка: прямой способ даёт клеевое мыло, косвенный (с высолкой) ядровое. Пять этапов от рецепта до разлива в формы. На каждом этапе написано, что делать, а значок <span class="q static">?</span> объясняет термин. Все веса в граммах.</p>
-  </div>
-  <div class="mode">
-    <span class="note">Способ варки <button type="button" class="q" data-t="Способ">?</button></span>
-    <div class="seg" role="group" aria-label="Способ варки">
-      <button type="button" id="m-direct" aria-pressed="true">Прямой</button>
-      <button type="button" id="m-indirect" aria-pressed="false">Косвенный</button>
-    </div>
+    <p class="sub" id="hd-sub">Горячая варка по шаблону: пять этапов от рецепта до разлива в формы. На каждом этапе написано, что делать, а значок <span class="q static">?</span> объясняет термин. Все веса в граммах.</p>
   </div>
 </header>
+
+<div id="calc-intro">
+  <div class="todo">
+    <h3>Как варят</h3>
+    <p>Мыло варят на огне двумя способами. <b>Прямой</b>: все жиры омыляют вместе, высолки нет, получается <b>клеевое мыло</b> <button type="button" class="q" data-t="Клеевое мыло">?</button>, его сразу разливают в формы. <b>Косвенный</b>: после омыления делают <b>высолку</b> <button type="button" class="q" data-t="Высолка">?</button>, масса делится на <b>ядро</b> <button type="button" class="q" data-t="Ядро">?</button> и щёлок, из ядра получается ядровое мыло. Выберите способ ниже и пройдите пять этапов по порядку.</p>
+  </div>
+  <div class="block">
+    <header><h2>Способ варки</h2><button type="button" class="q" data-t="Способ">?</button></header>
+    <div class="beg-pick"><div><span class="pick-l">Способ</span>
+      <div class="seg" role="group" aria-label="Способ варки">
+        <button type="button" id="m-direct" aria-pressed="true">Прямой способ</button>
+        <button type="button" id="m-indirect" aria-pressed="false">Косвенный способ</button>
+      </div></div></div>
+    <p class="note" id="mode-note"></p>
+  </div>
+</div>
 
 <div class="sticky">
   <div class="tiles" id="tiles"></div>
