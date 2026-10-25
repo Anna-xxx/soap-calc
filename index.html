@@ -1436,15 +1436,15 @@ $('beg-add-x').onclick=()=>{S.beg.adds.push({n:'',p:1});begAddsRender();begRende
 const BEG_PROPS=[['hard','Твёрдость',29,54],['clean','Очищающие качества',12,22],['cond','Смягчающие качества',44,69],['bub','Пузыристость пены',14,46],['cream','Кремовость пены',16,48],['iod','Йодное число',41,70]];
 function begProps(){const liq=S.beg.type==='liquid',acc={};BEG_PROPS.forEach(p=>acc[p[0]]=[0,0]);
   begOils().forEach(o=>{const w=o.w||0,d=byName[o.n];if(!d||!(w>0))return;BEG_PROPS.forEach(([k])=>{const val=d[k];if(val!=null){acc[k][0]+=val*w;acc[k][1]+=w}})});
+  const MSG={hard:['мыло мягкое, дольше сохнет и быстрее размокает','мыло может крошиться при нарезке'],clean:['мыло моет мягче','мыло может сушить кожу'],cond:['мыло меньше смягчает кожу','мыло может быть мягким и липким'],bub:['пены будет мало','пена крупная и быстро оседает'],cream:['пена будет жидковатой','пена очень густая'],iod:['','мыло быстрее прогоркает и желтеет']};
   const bar=x=>`<span class="row" style="justify-content:flex-end;flex-wrap:nowrap"><span class="bar" style="width:90px"><i style="width:${Math.min(100,x)}%"></i></span>${nf0.format(x)}</span>`;
   let tW=0,tS=0,sW=0,sS=0;begOils().forEach(o=>{const w=o.w||0,d=byName[o.n];if(!(w>0))return;if(d&&d.titr){tS+=d.titr*w;tW+=w}sS+=(o.sap||0)*w;sW+=w});
   kv('beg-props',BEG_PROPS.map(([k,l,lo,hi])=>{const x=acc[k][1]?acc[k][0]/acc[k][1]:NaN;const skip=liq&&(k==='hard'||k==='cream');
-    const chip='<span style="display:inline-flex;justify-content:flex-end;min-width:76px">'+(!ok(x)||skip?'':x<lo?'<span class="chip warn">ниже</span>':x>hi?'<span class="chip warn">выше</span>':'<span class="chip ok">в норме</span>')+'</span>';
+    const chip='<span style="display:inline-flex;justify-content:flex-end;min-width:96px">'+(!ok(x)||skip?'':x<lo?'<span class="chip warn">ниже нормы</span>':x>hi?'<span class="chip warn">выше нормы</span>':'<span class="chip ok">в норме</span>')+'</span>';
     const val=!ok(x)?'—':k==='iod'?`<span class="row" style="justify-content:flex-end;flex-wrap:nowrap;gap:8px">${g(x)}${chip}</span>`:`<span class="row" style="justify-content:flex-end;flex-wrap:nowrap;gap:8px">${bar(x)}${chip}</span>`;
-    return [k==='iod'?'Йодное число (устойчивость к прогорканию)':l,val,skip?'для жидкого мыла не важно':`обычно ${lo}–${hi}`]}).concat([
+    return [k==='iod'?'Йодное число (устойчивость к прогорканию)':l,val,skip?'для жидкого мыла не важно':`норма ${lo}–${hi}`+(ok(x)&&x<lo&&MSG[k][0]?`: ${MSG[k][0]}`:ok(x)&&x>hi?`: ${MSG[k][1]}`:'')]}).concat([
     ['Титр жиров',tW?g(tS/tW)+' °С':'—','по маслам с известным титром'],['ЧО смеси жиров (KOH)',sW?nf3.format(sS/sW):'—']]));
   const nodata=begOils().filter(o=>o.w>0&&!byName[o.n]).map(o=>o.n||'без названия');
-  const MSG={hard:['мыло мягкое, дольше сохнет и быстрее размокает','мыло может крошиться при нарезке'],clean:['мыло моет мягче','мыло может сушить кожу'],cond:['мыло меньше смягчает кожу','мыло может быть мягким и липким'],bub:['пены будет мало','пена крупная и быстро оседает'],cream:['пена будет жидковатой','пена очень густая'],iod:['','мыло быстрее прогоркает и желтеет']};
   const msgs=[];BEG_PROPS.forEach(([k,l,lo,hi])=>{const x=acc[k][1]?acc[k][0]/acc[k][1]:NaN;if(!ok(x)||(liq&&(k==='hard'||k==='cream')))return;if(x<lo&&MSG[k][0])msgs.push(l+' ниже обычного: '+MSG[k][0]+'.');if(x>hi)msgs.push(l+' выше обычного: '+MSG[k][1]+'.')});
   $('beg-props-note').textContent=(liq?'Жидкое мыло мягкое по природе, твёрдость и кремовость для него не важны. ':'')+(msgs.length?msgs.join(' ')+' Поменяйте доли масел выше, если хотите другой результат.':'Все свойства в обычных пределах.')+(nodata.length?' Нет данных о свойствах: '+nodata.join(', ')+'.':'')}
 function begOils(){const b=S.beg;if(!b.oils||Array.isArray(b.oils))b.oils={};
