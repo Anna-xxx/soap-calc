@@ -360,17 +360,6 @@ select:disabled{opacity:1;color:var(--ink);background:transparent;border-color:t
 #tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);padding-top:10px}
 .sticky{top:calc(env(safe-area-inset-top,0px) + var(--tabh,48px))}
 body:not([data-view="calc"]) .mode,body:not([data-view="calc"]) .sticky{display:none}
-@media (max-width:600px){
-#beg-oils thead{display:none}
-#beg-oils,#beg-oils tbody,#beg-oils tfoot{display:block;width:100%}
-#beg-oils tfoot tr{display:flex;justify-content:space-between;gap:12px}
-#beg-oils tbody tr[data-i]{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:4px 8px;align-items:end;padding:10px 0;border-bottom:1px solid var(--line)}
-#beg-oils tbody td{border:0;padding:0}
-#beg-oils tbody td:first-child{grid-column:1/-1}
-#beg-oils tbody td[data-label]::before{content:attr(data-label);display:block;font-size:.8rem;font-weight:500;color:var(--muted);text-align:left;margin-bottom:4px;font-family:var(--f-ui);white-space:nowrap}
-#beg-oils tbody input{width:100%!important}
-#beg-oils tbody td[data-o]{align-self:end;padding-bottom:12px}
-#beg-props th,#beg-props td{padding-inline:4px;font-size:.82rem}
 }
 #beg-recipe .wv{color:var(--lye);font-weight:700}
 #beg-recipe tr.sep td{border-top:2px solid var(--line)}
@@ -380,4 +369,40 @@ body:not([data-view="calc"]) .mode,body:not([data-view="calc"]) .sticky{display:
 #step-beg .fields label.f{white-space:nowrap}
 body:not([data-view="calc"]) #calc-intro{display:none}
 #calc-intro{margin-bottom:8px}
+@media (max-width:600px){
+#props,#beg-props{grid-template-columns:minmax(0,1fr)}
+#props dt,#beg-props dt{border-bottom:0;padding-bottom:2px}
+#props dd,#beg-props dd{padding-top:2px}
+#props .prow,#beg-props .prow{justify-content:space-between!important;gap:8px!important}
+#props .prow>span,#beg-props .prow>span{min-width:0!important}
+#props .nrm::before,#beg-props .nrm::before{content:"норма "}
+#props .bar,#beg-props .bar{width:60px!important}
+.beg-props-head{display:none}
+#beg-adds input[data-k=n]{min-width:0;width:100%}
+#beg-adds td{padding-inline:3px}
+}
+@media (max-width:600px){.stepnav{flex-wrap:wrap;overflow:visible}.stepnav button{padding:8px 8px 10px;gap:6px}}
+@media (max-width:600px){
+.sticky{position:static}
+table.mcard thead{display:none}
+table.mcard,table.mcard tbody,table.mcard tfoot{display:block;width:100%}
+table.mcard tfoot tr{display:flex;justify-content:space-between;gap:12px}
+table.mcard tbody tr[data-i]{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:4px 8px;align-items:end;padding:10px 0;border-bottom:1px solid var(--line)}
+table.mcard tbody td{border:0;padding:0;min-width:0}
+table.mcard tbody td:first-child{grid-column:1/-1}
+table.mcard tbody td[data-label]::before{content:attr(data-label);display:block;font-size:.8rem;font-weight:500;color:var(--muted);text-align:left;margin-bottom:4px;font-family:var(--f-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.mcard tbody input{width:100%!important}
+table.mcard tbody td[data-o]{align-self:end;padding-bottom:12px}
+#gost tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;padding:10px 0;border-bottom:1px solid var(--line)}
+#gost tbody td:first-child{font-weight:600}
+#costs.mcard tbody tr[data-i]{grid-template-columns:repeat(2,minmax(0,1fr))}
+#costs.mcard tbody td:last-child{grid-column:1/-1;justify-self:end}
+.seg button{white-space:nowrap;padding-inline:12px;font-size:.88rem}
+#step-beg .fields,#step-2 .fields,#step-3 .fields,#step-5 .fields,#step-ref .fields,#step-cost .fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+#beg-adds th,#beg-adds td,#adds th,#adds td,#beg-recipe th,#beg-recipe td,#sol th,#sol td{padding-inline:3px;font-size:.82rem}
+#beg-adds td input,#adds td input{min-width:0}
+#sol td input{width:52px!important;padding-inline:4px}
+#beg-recipe th{white-space:normal}
+}
+@media (max-width:600px){.scroll table td,.scroll table th{white-space:normal}#pkefa th,#pkefa td{padding-inline:3px;font-size:.8rem}#pkefa td input{width:56px!important}#carb td,#carb th{padding-inline:3px;font-size:.82rem}}
 </style>

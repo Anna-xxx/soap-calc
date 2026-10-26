@@ -74,15 +74,15 @@ function propRow(k,l,lo,hi,x,skip){
   const MSG={hard:['мыло мягкое, дольше сохнет и быстрее размокает','мыло может крошиться при нарезке'],clean:['мыло моет мягче','мыло может сушить кожу'],cond:['мыло меньше смягчает кожу','мыло может быть мягким и липким'],bub:['пены будет мало','пена крупная и быстро оседает'],cream:['пена будет жидковатой','пена очень густая'],iod:['','мыло быстрее прогоркает и желтеет']};
   const bar=`<span class="row" style="justify-content:flex-end;flex-wrap:nowrap"><span class="bar" style="width:90px"><i style="width:${Math.min(100,x)}%"></i></span>${nf0.format(x)}</span>`;
   const chip='<span style="display:inline-flex;justify-content:flex-end;min-width:96px">'+(!ok(x)||skip?'':lo!=null&&x<lo?'<span class="chip warn">ниже нормы</span>':x>hi?'<span class="chip warn">выше нормы</span>':'<span class="chip ok">в норме</span>')+'</span>';
-  const nrm=`<span class="note" style="display:inline-block;min-width:64px;text-align:right;white-space:nowrap">${skip?'':lo!=null?lo+'–'+hi:'до '+hi}</span>`;
-  const val=!ok(x)?'—':`<span class="row" style="justify-content:flex-end;flex-wrap:nowrap;gap:12px">${nrm}<span style="display:inline-flex;justify-content:flex-end;min-width:120px">${k==='iod'?g(x):bar}</span>${chip}</span>`;
+  const nrm=`<span class="note nrm" style="display:inline-block;min-width:64px;text-align:right;white-space:nowrap">${skip?'':lo!=null?lo+'–'+hi:'до '+hi}</span>`;
+  const val=!ok(x)?'—':`<span class="row prow" style="justify-content:flex-end;flex-wrap:nowrap;gap:12px">${nrm}<span style="display:inline-flex;justify-content:flex-end;min-width:120px">${k==='iod'?g(x):bar}</span>${chip}</span>`;
   return [l,val,skip?'для жидкого мыла не важно':(ok(x)&&lo!=null&&x<lo&&MSG[k][0]?MSG[k][0]:ok(x)&&x>hi?MSG[k][1]:'')]}
 // ---------- additives ----------
 function renderAdds(){
   document.querySelector('#adds tbody').innerHTML=S.adds.map((a,i)=>`<tr data-i="${i}">
    <td><input data-k="n" value="${(a.n||'').replace(/"/g,'&quot;')}" placeholder="Название" aria-label="Добавка"></td>
-   <td class="n"><input class="n manual" style="width:80px" type="number" step="any" data-k="p" value="${a.p}" aria-label="%"></td>
-   <td class="n" data-o="g"></td><td><button class="btn ghost" type="button" data-del="${i}" aria-label="Удалить">✕</button></td></tr>`).join('');
+   <td class="n" data-label="%"><input class="n manual" style="width:80px" type="number" step="any" data-k="p" value="${a.p}" aria-label="%"></td>
+   <td class="n" data-o="g" data-label="Вес, г"></td><td><button class="btn ghost" type="button" data-del="${i}" aria-label="Удалить">✕</button></td></tr>`).join('');
 }
 document.querySelector('#adds tbody').addEventListener('input',e=>{const i=+e.target.closest('tr').dataset.i,k=e.target.dataset.k;S.adds[i][k]=k==='n'?e.target.value:(parseFloat(e.target.value)||0);calc()});
 document.querySelector('#adds tbody').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!=null){S.adds.splice(+d,1);renderAdds();calc()}});
@@ -323,10 +323,10 @@ function calcRef(){
     ['Вес натровой соли',ac.ksNa?g(w*ac.ksNa)+' г':'—',ac.ksNa?`КС ${ac.ksNa}`:'КС не указан'],['Вес калийной соли',ac.ksK?g(w*ac.ksK)+' г':'—',ac.ksK?`КС ${ac.ksK}`:'']]);
   kv('cv',[['NaOH из KOH',g(v('cv-k')/1.403)+' г'],['KOH из NaOH',g(v('cv-na')*1.403)+' г']]);
 }
-$('sol').querySelector('tbody').innerHTML=[['40% р-р NaOH',40],['40% р-р KOH',40],['20% р-р NaCl',20],['NaOH',''],['KOH',''],['NaCl','']].map((r,i)=>`<tr><td>${r[0]}</td>
-  <td class="n"><input class="n manual" style="width:80px" type="number" step="any" id="sol-a${i}" value="0" aria-label="Вес"></td>
-  <td class="n"><input class="n manual" style="width:80px" type="number" step="any" id="sol-b${i}" value="0" aria-label="Вода"></td>
-  <td class="n" data-o="s"></td><td class="n"><input class="n manual" style="width:64px" type="number" step="any" id="sol-c${i}" value="${r[1]}" aria-label="Нужно %"></td><td class="n" data-o="w"></td></tr>`).join('');
+$('sol').querySelector('tbody').innerHTML=[['40% р-р NaOH',40],['40% р-р KOH',40],['20% р-р NaCl',20],['NaOH',''],['KOH',''],['NaCl','']].map((r,i)=>`<tr data-i="${i}"><td>${r[0]}</td>
+  <td class="n" data-label="Вещество, г"><input class="n manual" style="width:80px" type="number" step="any" id="sol-a${i}" value="0" aria-label="Вес"></td>
+  <td class="n" data-label="Вода, г"><input class="n manual" style="width:80px" type="number" step="any" id="sol-b${i}" value="0" aria-label="Вода"></td>
+  <td class="n" data-o="s" data-label="Крепость"></td><td class="n" data-label="Нужно, %"><input class="n manual" style="width:64px" type="number" step="any" id="sol-c${i}" value="${r[1]}" aria-label="Нужно %"></td><td class="n" data-o="w" data-label="Воды нужно, мл"></td></tr>`).join('');
 $('pkefa').querySelector('tbody').innerHTML=FA.map((f,i)=>`<tr><td>${f[0]}</td><td class="n"><input class="n manual" style="width:80px" type="number" step="any" id="fa${i}" value="0" aria-label="Доля ${f[0]}"></td><td class="n">${pc(f[1],1)}</td><td class="n">${pc(f[2],1)}</td></tr>`).join('');
 $('acid').innerHTML=ACIDS.map((a,i)=>`<option value="${i}">${a.n}</option>`).join('');
 document.getElementById('step-ref').addEventListener('input',calcRef);
@@ -339,9 +339,9 @@ $('apply-k').onclick=()=>{const [a,b]=calcRef.k||[];let n=0;
 let COST=[['Масла и жиры, кг',0,0,0],['Реактивы',0,0,0],['Эфирные',0,0,0],['Отдушки',0,0,0],['Травы, кг',0,0,0],['Экстракты',0,0,0],['Добавки',0,0,0],['Тара/упаковка',0,0,0],['Этикетки',0,0,0],['Электричество, часы',1,21,0],['Вода, литры',1000,60,0]];
 try{const c=JSON.parse(localStorage.getItem('soap.cost'));if(Array.isArray(c))COST=c}catch(e){}
 function renderCost(){
-  $('costs').querySelector('tbody').innerHTML=COST.map((r,i)=>`<tr data-i="${i}"><td><input data-c="0" value="${String(r[0]).replace(/"/g,'&quot;')}" aria-label="Статья"></td>
-  ${[1,2].map(c=>`<td class="n"><input class="n manual" style="width:90px" type="number" step="any" data-c="${c}" value="${r[c]}"></td>`).join('')}
-  <td class="n" data-o="u"></td><td class="n"><input class="n manual" style="width:90px" type="number" step="any" data-c="3" value="${r[3]}"></td><td class="n" data-o="t"></td>
+  $('costs').querySelector('tbody').innerHTML=COST.map((r,i)=>`<tr data-i="${i}"><td data-label="Статья"><input class="manual" data-c="0" value="${String(r[0]).replace(/"/g,'&quot;')}" aria-label="Статья"></td>
+  ${[1,2].map(c=>`<td class="n" data-label="${c===1?'Закуплено, ед.':'Сумма, ₽'}"><input class="n manual" style="width:90px" type="number" step="any" data-c="${c}" value="${r[c]}"></td>`).join('')}
+  <td class="n" data-o="u" data-label="Цена ед."></td><td class="n" data-label="Потрачено, ед."><input class="n manual" style="width:90px" type="number" step="any" data-c="3" value="${r[3]}"></td><td class="n" data-o="t" data-label="Итого, ₽"></td>
   <td><button class="btn ghost" type="button" data-del="${i}" aria-label="Удалить">✕</button></td></tr>`).join('');
 }
 function calcCost(){
@@ -526,7 +526,7 @@ document.querySelectorAll('[data-bm]').forEach(e=>e.onclick=()=>{S.beg.method=e.
 $('beg-reset').onclick=()=>{begApply();persist();toast('Параметры сброшены к типовым')};
 [['beg-alk','alk'],['beg-sf','sf'],['beg-pur','pur'],['beg-wp','wp']].forEach(([id,k])=>$(id).addEventListener('input',()=>{S.beg[k]=k==='alk'?$(id).value:v(id);begRender();persist()}));
 function begAddsRender(){
-  $('beg-adds').querySelector('tbody').innerHTML=S.beg.adds.map((a,i)=>`<tr data-i="${i}"><td><input class="manual" data-k="n" value="${(a.n||'').replace(/"/g,'&quot;')}" placeholder="Название" aria-label="Добавка"></td><td class="n"><input class="n manual" style="width:80px" type="number" step="any" data-k="p" value="${a.p}" aria-label="%"></td><td class="n" data-o="g"></td><td><button class="btn ghost" type="button" data-del="${i}" aria-label="Удалить">✕</button></td></tr>`).join('')||'<tr><td colspan="4" class="note">Пока ничего. Нажмите кнопку ниже, чтобы добавить.</td></tr>'}
+  $('beg-adds').querySelector('tbody').innerHTML=S.beg.adds.map((a,i)=>`<tr data-i="${i}"><td><input class="manual" data-k="n" value="${(a.n||'').replace(/"/g,'&quot;')}" placeholder="Название" aria-label="Добавка"></td><td class="n" data-label="%"><input class="n manual" style="width:80px" type="number" step="any" data-k="p" value="${a.p}" aria-label="%"></td><td class="n" data-o="g" data-label="Вес, г"></td><td><button class="btn ghost" type="button" data-del="${i}" aria-label="Удалить">✕</button></td></tr>`).join('')||'<tr><td colspan="4" class="note">Пока ничего. Нажмите кнопку ниже, чтобы добавить.</td></tr>'}
 $('beg-adds').querySelector('tbody').addEventListener('input',e=>{const tr=e.target.closest('tr');if(!tr||tr.dataset.i==null)return;const a=S.beg.adds[+tr.dataset.i],k=e.target.dataset.k;a[k]=k==='n'?e.target.value:(parseFloat(e.target.value)||0);begRender();persist()});
 $('beg-adds').querySelector('tbody').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!=null){S.beg.adds.splice(+d,1);begAddsRender();begRender();persist()}});
 $('beg-add-eo').onclick=()=>{S.beg.adds.push({n:'Эфирное масло',p:2});begAddsRender();begRender();persist()};
@@ -537,11 +537,7 @@ function begProps(){const liq=S.beg.type==='liquid',acc={};BEG_PROPS.forEach(p=>
   const MSG={hard:['мыло мягкое, дольше сохнет и быстрее размокает','мыло может крошиться при нарезке'],clean:['мыло моет мягче','мыло может сушить кожу'],cond:['мыло меньше смягчает кожу','мыло может быть мягким и липким'],bub:['пены будет мало','пена крупная и быстро оседает'],cream:['пена будет жидковатой','пена очень густая'],iod:['','мыло быстрее прогоркает и желтеет']};
   const bar=x=>`<span class="row" style="justify-content:flex-end;flex-wrap:nowrap"><span class="bar" style="width:90px"><i style="width:${Math.min(100,x)}%"></i></span>${nf0.format(x)}</span>`;
   let tW=0,tS=0,sW=0,sS=0;begOils().forEach(o=>{const w=o.w||0,d=byName[o.n];if(!(w>0))return;if(d&&d.titr){tS+=d.titr*w;tW+=w}sS+=(o.sap||0)*w;sW+=w});
-  kv('beg-props',BEG_PROPS.map(([k,l,lo,hi])=>{const x=acc[k][1]?acc[k][0]/acc[k][1]:NaN;const skip=liq&&(k==='hard'||k==='cream');
-    const chip='<span style="display:inline-flex;justify-content:flex-end;min-width:96px">'+(!ok(x)||skip?'':x<lo?'<span class="chip warn">ниже нормы</span>':x>hi?'<span class="chip warn">выше нормы</span>':'<span class="chip ok">в норме</span>')+'</span>';
-    const nrm=`<span class="note" style="display:inline-block;min-width:64px;text-align:right;white-space:nowrap">${skip?'':lo+'–'+hi}</span>`;
-    const val=!ok(x)?'—':`<span class="row" style="justify-content:flex-end;flex-wrap:nowrap;gap:12px">${nrm}<span style="display:inline-flex;justify-content:flex-end;min-width:120px">${k==='iod'?g(x):bar(x)}</span>${chip}</span>`;
-    return [k==='iod'?'Йодное число (устойчивость к прогорканию)':l,val,skip?'для жидкого мыла не важно':(ok(x)&&x<lo&&MSG[k][0]?MSG[k][0]:ok(x)&&x>hi?MSG[k][1]:'')]}).concat([
+  kv('beg-props',BEG_PROPS.map(([k,l,lo,hi])=>{const x=acc[k][1]?acc[k][0]/acc[k][1]:NaN;return propRow(k,k==='iod'?'Йодное число (устойчивость к прогорканию)':l,lo,hi,x,liq&&(k==='hard'||k==='cream'))}).concat([
     ['Титр жиров',tW?g(tS/tW)+' °С':'—','по маслам с известным титром'],['ЧО смеси жиров (KOH)',sW?nf3.format(sS/sW):'—']]));
   const nodata=begOils().filter(o=>o.w>0&&!byName[o.n]).map(o=>o.n||'без названия');
   const msgs=[];BEG_PROPS.forEach(([k,l,lo,hi])=>{const x=acc[k][1]?acc[k][0]/acc[k][1]:NaN;if(!ok(x)||(liq&&(k==='hard'||k==='cream')))return;if(x<lo&&MSG[k][0])msgs.push(l+' ниже обычного: '+MSG[k][0]+'.');if(x>hi)msgs.push(l+' выше обычного: '+MSG[k][1]+'.')});
