@@ -395,6 +395,7 @@ table.mcard tbody input{width:100%!important}
 table.mcard tbody td[data-o]{align-self:end;padding-bottom:12px}
 #gost tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;padding:10px 0;border-bottom:1px solid var(--line)}
 #gost tbody td:first-child{font-weight:600}
+#beg-acids tbody tr[data-i]{grid-template-columns:repeat(4,minmax(0,1fr)) auto}
 #costs.mcard tbody tr[data-i]{grid-template-columns:repeat(2,minmax(0,1fr))}
 #costs.mcard tbody td:last-child{grid-column:1/-1;justify-self:end}
 .seg button{white-space:nowrap;padding-inline:12px;font-size:.88rem}
@@ -405,4 +406,9 @@ table.mcard tbody td[data-o]{align-self:end;padding-bottom:12px}
 #beg-recipe th{white-space:normal}
 }
 @media (max-width:600px){.scroll table td,.scroll table th{white-space:normal}#pkefa th,#pkefa td{padding-inline:3px;font-size:.8rem}#pkefa td input{width:56px!important}#carb td,#carb th{padding-inline:3px;font-size:.82rem}}
+.pickbox{position:absolute;z-index:60;max-height:320px;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:4px 0}
+.pickbox .opt{padding:8px 12px;cursor:pointer;font-size:.92rem;line-height:1.3}
+.pickbox .opt small{display:block;color:var(--muted);font-size:.78rem}
+.pickbox .opt:hover,.pickbox .opt.on{background:var(--sunk)}
+.pickbox .none{padding:10px 12px;color:var(--muted);font-size:.85rem}
 </style>

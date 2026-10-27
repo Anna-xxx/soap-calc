@@ -317,7 +317,7 @@
       <div class="fields">
         <label class="f" for="ff-na">Проба ФФ, % NaOH <button type="button" class="q" data-t="f:ff-na">?</button><input class="n manual" id="ff-na" type="number" step="any" value="0"></label>
         <label class="f" for="ff-k">Проба ФФ, % KOH <button type="button" class="q" data-t="f:ff-k">?</button><input class="n manual" id="ff-k" type="number" step="any" value="0"></label>
-        <label class="f" for="neut-oil">Чем нейтрализовать <button type="button" class="q" data-t="f:neut-oil">?</button><input id="neut-oil" list="oil-names" placeholder="смесь рецепта"></label>
+        <label class="f" for="neut-oil">Чем нейтрализовать <button type="button" class="q" data-t="f:neut-oil">?</button><input id="neut-oil" class="oilpick" autocomplete="off" placeholder="смесь рецепта"></label>
         <label class="f" for="neut-w">Вес этого жира, г <button type="button" class="q" data-t="f:neut-w">?</button><input class="n manual" id="neut-w" type="number" step="any" value="0"></label>
       </div>
       <dl class="kv" id="neut"></dl>
@@ -460,12 +460,20 @@
       <tfoot><tr><td>Итого</td><td class="n" id="beg-adds-p"></td><td class="n" id="beg-adds-g"></td><td></td></tr></tfoot></table></div>
     <div class="row"><button class="btn" id="beg-add-eo" type="button">+ Эфирное масло</button><button class="btn" id="beg-add-x" type="button">+ Другая добавка</button></div>
     <p class="note" id="beg-adds-note"></p>
+    <h3>Кислоты</h3>
+    <p class="note">Лимонная, молочная и другие кислоты забирают щёлочь: калькулятор добавит её к навеске, чтобы пережир остался прежним. ЧО кислоты подставляется из справочника, его можно поправить.</p>
+    <div class="scroll"><table id="beg-acids" class="mcard"><thead><tr><th>Кислота</th><th class="n">% от масел</th><th class="n">ЧО (KOH)</th><th class="n">Вес, г</th><th class="n">Щёлочь, г</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div class="row"><button class="btn" id="beg-add-acid" type="button">+ Кислота</button></div>
   </div>
   <div class="block">
     <header><h2>Каким получится мыло</h2><span class="note">ориентировочно, по базе масел из шаблона</span></header>
     <div class="beg-props-head"><span>норма</span><span>получится</span><span>оценка</span></div>
     <dl class="kv" id="beg-props"></dl>
     <p class="note" id="beg-props-note"></p>
+    <h3>Качественное число (КЧ) <button type="button" class="q" data-t="КЧ">?</button></h3>
+    <div class="fields" style="max-width:320px"><label class="f" for="beg-dry">Вес готового мыла, г <button type="button" class="q" data-t="f:beg-dry">?</button><input class="n manual" id="beg-dry" type="number" step="any" placeholder="после сушки"></label></div>
+    <dl class="kv" id="beg-kch"></dl>
+    <p class="note" id="beg-kch-note"></p>
   </div>
   <div class="block">
     <header><h2>Рецепт: что отвесить</h2><span class="note">всё в граммах, золотым то, что кладёте на весы</span></header>
